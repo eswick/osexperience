@@ -19,8 +19,6 @@
 	CGPoint dragOffset;
 	CGPoint startingPoint;
 
-
-
 	bool selected;
 
 }

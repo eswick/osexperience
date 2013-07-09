@@ -20,6 +20,8 @@
 		return nil;
 	}
 
+	
+
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.clipsToBounds = true;
 

@@ -1,7 +1,7 @@
 Package: com.eswick.osexperience
 Name: OS Experience
 Depends: mobilesubstrate
-Version: 0.0.1
+Version: 0.8.0
 Architecture: iphoneos-arm
 Description: An awesome MobileSubstrate tweak!
 Maintainer: Evan Swick
