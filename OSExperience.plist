@@ -1,1 +1,11 @@
-{ Filter = { Bundles = ( "com.apple.springboard" ); }; }
+{
+	Filter = {
+		Mode = Any;
+		Executables = (
+			backboardd,
+		);
+		Bundles = (
+			"com.apple.springboard",
+		);
+	};
+}

@@ -29,6 +29,8 @@
 	self.appView = [self.application contextHostViewForRequester:@"WindowManager" enableAndOrderFront:true];
 	[self addSubview:self.appView];
 
+	
+
 	return self;
 }
 

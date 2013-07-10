@@ -12,7 +12,7 @@
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	self.view.autoresizesSubviews = true;
 	
-	self.slider = [[OSSlider alloc] init];
+	self.slider = [OSSlider sharedInstance];
 
 	OSDesktopPane *desktopPane = [[OSDesktopPane alloc] init];
 	[self.slider addPane:desktopPane];
