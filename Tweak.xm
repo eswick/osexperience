@@ -266,19 +266,6 @@ static char osViewKey;
 
 
 
-%hook SBDockIconListView
-
-
-
-- (id)initForOrientation:(int)arg1 viewMap:(id)arg2{
-	NSLog(@"SBDockIconListView init; viewMap: %@", arg2);
-	return %orig;
-}
-
-
-%end
-
-
 
 %hook SBWorkspace
 

@@ -76,41 +76,26 @@
 -(void)gestureChanged:(float)percentage{
 
 	[self setContentOffset:CGPointMake(self.startingOffset.x - ([UIScreen mainScreen].bounds.size.width * percentage), self.contentOffset.y) animated:false];
+
 }
 
 -(void)gestureCancelled{
 
-	bool goingUp = false;
+
+
+	float xOffset;
 	
-	if(fmod(self.contentOffset.x, self.frame.size.width) > self.frame.size.width / 2 || self.contentOffset.x < 0){
-		goingUp = true;
-	}
-
-	if(self.contentOffset.x > self.contentSize.width - (self.frame.size.width / 2)){
-		goingUp = false;
-	}
-
-	float xOffset = self.contentOffset.x;
-	while((int)fmod(xOffset, self.frame.size.width) != 0){
-		if(goingUp){
-			xOffset++;
-		}else{
-			xOffset--;
+	if(fmod(self.contentOffset.x, self.frame.size.width) > self.frame.size.width / 2 && self.contentOffset.x < (self.contentSize.width - (self.frame.size.width / 2))){
+		if(self.contentOffset.x < 0){
+			[self setContentOffset:CGPointMake(0, self.contentOffset.y) animated:true];
+			return;
 		}
+		xOffset = ((self.frame.size.width) - fmod(self.contentOffset.x, self.frame.size.width)) + self.contentOffset.x;
+	}else{
+		xOffset = self.contentOffset.x - fmod(self.contentOffset.x, self.frame.size.width);
 	}
 
 	[self setContentOffset:CGPointMake(xOffset, self.contentOffset.y) animated:true];
-
-	 /*  [UIView animateWithDuration:0.5
-                          delay:0.0
-                        options: UIViewAnimationCurveEaseOut
-                     animations:^{
-                         [self setContentOffset:CGPointMake(xOffset, self.contentOffset.y)];
-                     } 
-                     completion:^(BOOL finished){
-                     }];*/
-
-	//[self _endPanWithEvent:nil];
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView{
@@ -128,7 +113,7 @@
 
 		intrudingPane = [self paneAtIndex:self.currentPageIndex + 1];
 
-	}else /*if(self.contentOffset.x < self.currentPane.frame.origin.x)*/{
+	}else{
 
 		intrudingPane = [self paneAtIndex:self.currentPageIndex - 1];
 		
