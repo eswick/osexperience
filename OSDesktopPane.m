@@ -31,6 +31,11 @@
 }
 
 
+-(BOOL)showsDock{
+	return true;
+}
+
+
 
 
 

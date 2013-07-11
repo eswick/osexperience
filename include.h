@@ -19,7 +19,7 @@
 
 -(int)suspendType;
 -(void)setSuspendType:(int)arg1;
-- (id)initWithBundleIdentifier:(id)arg1 queue:(dispatch_queue_s*)arg2;
+//- (id)initWithBundleIdentifier:(id)arg1 queue:(dispatch_queue_s*)arg2;
 
 @end
 
@@ -39,7 +39,18 @@
 - (id)contextHostViewForRequester:(id)arg1 enableAndOrderFront:(BOOL)arg2;
 - (id)bundleIdentifier;
 - (void)activate; //New
+- (BOOL)activationFlag:(unsigned int)arg1;
+-(void)addToSlider; //New
 
+
+@end
+
+
+
+
+@interface SBWorkspace : NSObject
+
+-(void)setCurrentTransaction:(id)arg1;
 
 @end
 
@@ -62,6 +73,22 @@
 
 @end
 
+
+@interface SBIconController
+
++(id)sharedInstance;
+
+-(id)dock;
+
+@end
+
+
+@interface SBDockIconListView : UIView{
+
+}
+
+
+@end
 
 @interface SBHostWrapperView : UIView
 
@@ -102,6 +129,12 @@
 
 @end
 
+@interface BKSApplicationProcessInfo
+
+-(BOOL)suspended;
+-(id)bundleIdentifier;
+
+@end
 
 @interface UIApplication(OSAdditions)
 -(id)displayIdentifier;

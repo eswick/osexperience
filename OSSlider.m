@@ -9,6 +9,8 @@
 @implementation OSSlider
 @synthesize panes = _panes;
 @synthesize startingOffset = _startingOffset;
+@synthesize currentPageIndex = _currentPageIndex;
+@synthesize currentPane = _currentPane;
 
 
 + (id)sharedInstance
@@ -41,6 +43,8 @@
 
 
 	self.panes = [NSMutableArray arrayWithCapacity:0];
+
+	[self setDelegate:self];
 
 	return self;
 }
@@ -95,19 +99,87 @@
 		}
 	}
 
-	   [UIView animateWithDuration:0.5
+	[self setContentOffset:CGPointMake(xOffset, self.contentOffset.y) animated:true];
+
+	 /*  [UIView animateWithDuration:0.5
                           delay:0.0
                         options: UIViewAnimationCurveEaseOut
                      animations:^{
                          [self setContentOffset:CGPointMake(xOffset, self.contentOffset.y)];
                      } 
                      completion:^(BOOL finished){
-                     }];
+                     }];*/
 
 	//[self _endPanWithEvent:nil];
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+	[self updateDockPosition];
+}
 
+
+
+-(void)updateDockPosition{
+	OSPane *intrudingPane;
+	CGRect currentPaneRect = CGRectIntersection([self convertRect:self.currentPane.frame toView:UIApplication.sharedApplication.keyWindow], self.frame);
+	CGRect intrudingPaneRect;
+
+	if(self.contentOffset.x >= self.currentPane.frame.origin.x){
+
+		intrudingPane = [self paneAtIndex:self.currentPageIndex + 1];
+
+	}else /*if(self.contentOffset.x < self.currentPane.frame.origin.x)*/{
+
+		intrudingPane = [self paneAtIndex:self.currentPageIndex - 1];
+		
+	}
+
+	if(!intrudingPane)
+		return;
+
+	intrudingPaneRect = CGRectIntersection([self convertRect:intrudingPane.frame toView:UIApplication.sharedApplication.keyWindow], self.frame);
+
+	float currentPanePercentage = (currentPaneRect.size.width * 100) / (self.frame.size.width - marginSize);
+	float intrudingPanePercentage = (intrudingPaneRect.size.width * 100) / (self.frame.size.width - marginSize);
+
+
+	float shownPercentage = 0;
+
+	if(!self.currentPane.showsDock)
+		shownPercentage += currentPanePercentage;
+
+	if(!intrudingPane.showsDock)
+		shownPercentage += intrudingPanePercentage;
+
+	shownPercentage = shownPercentage * 0.01;
+
+	CGRect dockFrame = [[[OSViewController sharedInstance] dock] frame];
+
+	float dockShownY = [[OSViewController sharedInstance] view].frame.size.height - dockFrame.size.height;
+
+	dockFrame.origin.y = dockShownY + (shownPercentage * dockFrame.size.height);
+
+	[[[OSViewController sharedInstance] dock] setFrame:dockFrame];
+}
+
+-(int)currentPageIndex{
+	return nearbyint(self.contentOffset.x / self.frame.size.width);
+}
+
+-(OSPane*)currentPane{
+	return [self paneAtIndex:self.currentPageIndex];
+}
+
+-(OSPane*)paneAtIndex:(int)index{
+	if(index < 0 || index > self.panes.count - 1)
+		return nil;
+	return [self.panes objectAtIndex:index];
+}
+
+/*-(void)setContentOffset:(CGPoint)arg1{
+	[super setContentOffset:arg1];
+	NSLog(@"Set content offset!");
+}*/
 
 
 @end

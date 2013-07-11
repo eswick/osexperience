@@ -11,7 +11,7 @@
 
 
 -(id)initWithName:(NSString*)name thumbnail:(UIImage*)thumbnail;
-
+-(BOOL)showsDock;
 
 
 

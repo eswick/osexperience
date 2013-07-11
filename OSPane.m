@@ -22,4 +22,9 @@
 }
 
 
+-(BOOL)showsDock{
+	return false;
+}
+
+
 @end

@@ -39,7 +39,7 @@ static char osViewKey;
 	[[self rootView] removeFromSuperview];
 
 
-	OSViewController *viewController = [[OSViewController alloc] init];
+	OSViewController *viewController = [OSViewController sharedInstance];
 
 	[UIApp.keyWindow addSubview:viewController.view];
 	[UIApp.keyWindow setRootViewController:viewController];
@@ -49,6 +49,7 @@ static char osViewKey;
 
 	return self;
 }
+
 
 
 
@@ -132,6 +133,7 @@ static char osViewKey;
 
 
 
+
 //Background process handling
 
 
@@ -180,13 +182,46 @@ static char osViewKey;
 
 %hook SBApplication
 
+-(void)didSuspend{
+	%orig;
+}
 
-- (void)didLaunch:(id)arg1{
+-(void)willActivate{
+	%orig;
+	[self addToSlider];
+ 
+}
+
+- (void)didLaunch:(BKSApplicationProcessInfo*)arg1{
 	%orig;
 	NSLog(@"%@", arg1);
-	OSAppPane *appPane = [[OSAppPane alloc] initWithDisplayIdentifier:[arg1 bundleIdentifier]];
-	[[OSSlider sharedInstance] addPane:appPane];
-	[self activate];
+	if([arg1 suspended]){
+		return;
+	}
+
+	[self addToSlider];
+
+}
+
+
+%new
+-(void)addToSlider{
+	BOOL found = false;
+
+	for(OSAppPane *pane in [[OSSlider sharedInstance] subviews]){
+		if(![pane isKindOfClass:[OSAppPane class]]){
+			continue;
+		}
+		if(pane.application == self){
+			found = true;
+		}
+	}
+
+	if(!found){
+		OSAppPane *appPane = [[OSAppPane alloc] initWithDisplayIdentifier:[self bundleIdentifier]];
+		[[OSSlider sharedInstance] addPane:appPane];
+		[self activate];
+	}
 }
 
 - (void)activate{
@@ -200,6 +235,10 @@ static char osViewKey;
 	[messagingCenter sendMessageName:@"activate" userInfo:dictionary];
 }
 
+
+
+
+/*
 - (void)setActivationSetting:(unsigned int)arg1 flag:(BOOL)arg2{
 	NSLog(@"Activation setting set!");
 	if(arg1 == 2){
@@ -220,7 +259,46 @@ static char osViewKey;
 	}else{
 		return %orig;
 	}
+}*/
+
+%end
+
+
+
+
+%hook SBDockIconListView
+
+
+
+- (id)initForOrientation:(int)arg1 viewMap:(id)arg2{
+	NSLog(@"SBDockIconListView init; viewMap: %@", arg2);
+	return %orig;
 }
+
+
+%end
+
+
+
+%hook SBWorkspace
+
+- (void)workspace:(id)arg1 applicationActivated:(id)arg2{
+	%orig(arg1, arg2);
+}
+
+
+
+- (void)workspace:(id)arg1 applicationDidBecomeReceiver:(id)arg2 fromApplication:(id)arg3{
+	%orig(arg1, arg2, nil);
+	//[[[objc_getClass("SBApplicationController") sharedInstance] applicationWithDisplayIdentifier:arg3] activate];
+}
+
+- (id)workspace:(id)arg1 applicationWillBecomeReceiver:(id)arg2 fromApplication:(id)arg3{
+	return %orig(arg1, arg2, nil);
+}
+
+
+
 
 %end
 
