@@ -24,9 +24,6 @@
 
 + (id)sharedInstance;
 - (void)addPane:(OSPane*)pane;
-- (void)gestureBegan:(float)percentage;
-- (void)gestureChanged:(float)percentage;
-- (void)gestureCancelled;
 - (void)updateDockPosition;
 -(OSPane*)paneAtIndex:(int)index;
 //-(void)_endPanWithEvent:(id)event;

@@ -5,7 +5,6 @@
 			backboardd,
 		);
 		Bundles = (
-			"com.apple.UIKit",
 			"com.apple.springboard",
 		);
 	};
