@@ -21,9 +21,16 @@
 }
 
 
+
+
 -(void)loadView{
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	self.view.autoresizesSubviews = true;
+
+	
+
+
+
+	//self.view.autoresizesSubviews = true;
 	
 	self.slider = [OSSlider sharedInstance];
 
@@ -40,6 +47,9 @@
 	
 	
 }
+
+
+
 
 
 

@@ -2,6 +2,8 @@
 #import "OSViewController.h"
 #import "OSAppPane.h"
 #import <dispatch/dispatch.h>
+#import <GraphicsServices/GraphicsServices.h>
+#import <UIKit/UIKit.h>
 
 
 
@@ -41,10 +43,13 @@ static char osViewKey;
 
 	OSViewController *viewController = [OSViewController sharedInstance];
 
-	[UIApp.keyWindow addSubview:viewController.view];
+	//[UIApp.keyWindow addSubview:viewController.view];
 	[UIApp.keyWindow setRootViewController:viewController];
+	[viewController.view setFrame:[[UIScreen mainScreen] bounds]];
+
 	[self setOSView:viewController.view];
 
+	NSLog(@"View: %@", NSStringFromCGRect(viewController.view.frame));
 
 
 	return self;
@@ -99,6 +104,7 @@ static char osViewKey;
 
 - (void)_switchAppGestureCancelled{
 	[[OSSlider sharedInstance] gestureCancelled];
+	//NSLog(@"Switch app gesture cancelled.");
 }
 
 - (void)_switchAppGestureEndedWithCompletionType:(int)arg1 cumulativePercentage:(float)arg2{
@@ -111,6 +117,7 @@ static char osViewKey;
 	[[OSSlider sharedInstance] gestureChanged:arg1];
 }
 - (void)_switchAppGestureBegan:(float)arg1{
+	//NSLog(@"Switch app gesture began!");
 	[[OSSlider sharedInstance] gestureBegan:arg1];
 }
 
@@ -123,12 +130,15 @@ static char osViewKey;
 }
 
 - (BOOL)shouldSendTouchesToSystemGestures{
-	return true;
+	return false;
+}
+
+- (void)_installSystemGestureView:(id)arg1 forKey:(id)arg2 forGesture:(unsigned int)arg3{
+	//NSLog(@"System gesture view installed, %@, key: %@, gesture: %i", arg1, arg2, arg3);
+	%orig;
 }
 
 %end
-
-
 
 
 
@@ -180,7 +190,53 @@ static char osViewKey;
 
 
 
+
+
+
+/*%hook UIApplication
+
+- (void)sendEvent:(UITouchesEvent*)arg1{
+	
+	if(/*[[arg1 allTouches] count] == 4 &&* ![[self displayIdentifier] isEqualToString:@"com.apple.springboard"]){
+		//NSLog(@"Event send: %@", arg1);
+		GSEventRef event = [arg1 _gsEvent];
+		
+		const GSEventRecord* record = _GSEventGetGSEventRecord(event);
+
+		NSLog(@"Location: %@, Location in window: %@", NSStringFromCGPoint(record->location), NSStringFromCGPoint(record->windowLocation));
+
+		GSSendEvent(record, GSGetPurpleSystemEventPort());
+		//return;
+	}
+
+	%orig;
+}
+
+%end*/
+
+
+
+
+%hook SpringBoard
+
+
+- (void)frontDisplayDidChange{
+
+}
+
+- (unsigned int)_frontmostApplicationPort{
+	return 0;
+}
+
+
+%end
+
 %hook SBApplication
+
+
+- (void)didDeactivateForEventsOnly:(BOOL)arg1{
+
+}
 
 -(void)didSuspend{
 	%orig;
@@ -236,35 +292,62 @@ static char osViewKey;
 }
 
 
+%end
 
 
-/*
-- (void)setActivationSetting:(unsigned int)arg1 flag:(BOOL)arg2{
-	NSLog(@"Activation setting set!");
-	if(arg1 == 2){
-		//%orig(2, true);
-		%orig;
-	}else{
-		%orig;
+%hook SBIconController
+
+-(void)iconWasTapped:(SBApplicationIcon*)arg1{
+	[arg1 launchFromViewSwitcher];
+
+
+	for(OSAppPane *pane in [[OSSlider sharedInstance] subviews]){
+		if(![pane isKindOfClass:[OSAppPane class]])
+			continue;
+		if(pane.application == arg1.application){
+			[[OSSlider sharedInstance] setContentOffset:CGPointMake(pane.frame.origin.x, 0) animated:true];
+		}
 	}
+
 
 }
-
-
-- (BOOL)activationFlag:(unsigned int)arg1{
-
-	if(arg1 == 2){
-		NSLog(@"Activation flag 2!");
-		return %orig;
-	}else{
-		return %orig;
-	}
-}*/
 
 %end
 
 
+%hook SBPanGestureRecognizer
 
+
+-(id)init{
+	self = %orig;
+	//NSLog(@"Pan gesture recognizer: %@", self);
+	return self;
+}
+
+%end
+
+
+%hook BKSWorkspace
+
+- (id)topApplication{
+	//return %orig;
+	return nil;
+}
+
+%end
+
+%hook SBWorkspaceTransaction
+
+
+- (BOOL)applicationWillBecomeReceiver:(id)arg1 fromApplication:(id)arg2{
+
+	%orig(arg1, nil);
+
+	return true;
+}
+
+
+%end
 
 
 %hook SBWorkspace
@@ -281,13 +364,15 @@ static char osViewKey;
 }
 
 - (id)workspace:(id)arg1 applicationWillBecomeReceiver:(id)arg2 fromApplication:(id)arg3{
-	return %orig(arg1, arg2, nil);
+	id returnValue = %orig;
+	NSLog(@"Workspace: %@, reciever: %@, fromApplication: %@", arg1, arg2, arg3);
+	NSLog(@"Return value: %@", returnValue);
+
+	return returnValue;
 }
 
-
-
-
 %end
+
 
 
 %hook BKProcess
@@ -310,7 +395,6 @@ static char osViewKey;
 
 
 %end
-
 
 
 

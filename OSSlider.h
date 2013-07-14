@@ -1,5 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "OSPane.h"
+#import "OSAppPane.h"
 #import "UIView+FrameExtensions.h"
 #import "OSViewController.h"
 

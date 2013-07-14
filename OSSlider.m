@@ -38,8 +38,10 @@
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.pagingEnabled = true;
 	self.panGestureRecognizer.minimumNumberOfTouches = 4;
-	self.panGestureRecognizer.enabled = false;
+	//self.panGestureRecognizer.enabled = false;
+	self.panGestureRecognizer.cancelsTouchesInView = false;
 	self.showsHorizontalScrollIndicator = false;
+
 
 
 	self.panes = [NSMutableArray arrayWithCapacity:0];
@@ -48,6 +50,21 @@
 
 	return self;
 }
+
+/*
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch{
+	NSLog(@"Should recieve touch");
+	return true;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer{
+	NSLog(@"Should begin");
+	return true;
+}
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
+	NSLog(@"Should recognize simultaneously");
+	return true;
+}*/
 
 
 -(void)addPane:(OSPane*)pane{
@@ -63,10 +80,11 @@
 	[self addSubview:pane];
 }
 
--(void)layoutSubviews{
 
+- (BOOL)canHandleGestures
+{
+   return true;
 }
-
 
 
 -(void)gestureBegan:(float)percentage{
@@ -81,7 +99,7 @@
 
 -(void)gestureCancelled{
 
-
+return;
 
 	float xOffset;
 	

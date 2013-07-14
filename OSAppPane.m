@@ -29,6 +29,18 @@
 	self.appView = [self.application contextHostViewForRequester:@"WindowManager" enableAndOrderFront:true];
 	[self addSubview:self.appView];
 
+
+
+	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
+	overlayView.alpha = 0.1;
+	overlayView.backgroundColor = [UIColor grayColor];
+
+	OSTouchForwarder *touchForwarder = [[OSTouchForwarder alloc] initWithApplication:self.application];
+    [overlayView addGestureRecognizer:touchForwarder];
+
+	[self addSubview:overlayView];
+
+
 	
 
 	return self;

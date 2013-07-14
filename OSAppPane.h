@@ -1,6 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "OSPane.h"
 #import "include.h"
+#import "OSTouchForwarder.h"
 
 
 

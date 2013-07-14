@@ -2,6 +2,7 @@
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 
 
+
 @interface BKProcess{
 
 }
@@ -23,7 +24,36 @@
 
 @end
 
+@interface SBFakeStatusBarView : UIView
 
+
+
+@end
+
+
+@interface UIEvent(OSAdditions)
+
+-(struct __GSEvent*)_gsEvent;
+
+@end
+
+
+@interface UITouchesEvent : NSObject
+
+
+- (id)allTouches;
+- (struct __GSEvent*)_gsEvent;
+
+
+@end
+
+
+@interface UIStatusBar : UIView
+
++ (int)defaultStatusBarStyleWithTint:(BOOL)arg1;
++ (CGRect)frameForStyle:(int)arg1 orientation:(int)arg2;
+
+@end
 
 
 
@@ -40,7 +70,8 @@
 - (id)bundleIdentifier;
 - (void)activate; //New
 - (BOOL)activationFlag:(unsigned int)arg1;
--(void)addToSlider; //New
+- (void)addToSlider; //New
+- (unsigned int)eventPort;
 
 
 @end
@@ -83,12 +114,47 @@
 @end
 
 
-@interface SBDockIconListView : UIView{
-
-}
+@interface SBDockIconListView : UIView
 
 
 @end
+
+@interface SBUIAnimationZoomUpApp
+
+- (void)_noteAnimationDidFinish:(BOOL)arg1;
+
+@end 
+
+@interface SBApplicationIcon
+
+
+-(void)launch;
+-(void)launchFromViewSwitcher;
+-(SBApplication*)application;
+
+@end
+
+@interface SBAppToAppTransitionController
+
+
+-(SBApplication*)activatingApp;
+- (void)_cleanupAnimation;
+- (void)_cancelAnimation;
+- (void)appTransitionViewAnimationDidStop:(id)arg1;
+
+@end
+
+
+
+
+@interface SBIconView : UIImageView
+
+-(id)icon;
+
+
+@end
+
+
 
 @interface SBHostWrapperView : UIView
 
