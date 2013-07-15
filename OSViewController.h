@@ -3,18 +3,28 @@
 #import "OSSlider.h"
 #import "OSDesktopPane.h"
 #import "include.h"
+#import "launchpad/OSIconContentView.h"
 
 
-@class OSSlider;
+@class OSSlider, OSIconContentView;
 
 @interface OSViewController : UIViewController{
 	OSSlider *_slider;
 	SBDockIconListView *_dock;
+	OSIconContentView *_iconContentView;
+	BOOL _launchpadActive;
+	BOOL _launchpadIsAnimating;
 }
 
 @property (nonatomic, retain) OSSlider *slider;
 @property (nonatomic, retain) SBDockIconListView *dock;
+@property (nonatomic, retain) OSIconContentView *iconContentView;
+@property (nonatomic, readwrite) BOOL launchpadActive;
+@property (nonatomic, readwrite) BOOL launchpadIsAnimating;
 
-+(id)sharedInstance;
+
++ (id)sharedInstance;
+- (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated;
+- (void)menuButtonPressed;
 
 @end

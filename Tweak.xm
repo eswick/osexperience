@@ -17,9 +17,17 @@
 
 
 
+
+
 %hook SBUIController
 
 static char osViewKey;
+
+-(BOOL)clickedMenuButton{
+    [[OSViewController sharedInstance] menuButtonPressed];
+   
+    return true;
+}
 
 
 %new
@@ -96,7 +104,7 @@ static char osViewKey;
 }
 
 - (void)handleFluidHorizontalSystemGesture:(id)arg1{
-	%orig;
+	//%orig;
 }
 
 
