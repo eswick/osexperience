@@ -25,6 +25,8 @@
 
 + (id)sharedInstance;
 - (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated;
+- (void)deactivateWithIconView:(SBIconView*)icon;
+- (void)animateIconLaunch:(SBIconView*)iconView;
 - (void)menuButtonPressed;
 
 @end

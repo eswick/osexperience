@@ -4,6 +4,7 @@
 #import <dispatch/dispatch.h>
 #import <GraphicsServices/GraphicsServices.h>
 #import <UIKit/UIKit.h>
+#import "launchpad/UIImage+StackBlur.h"
 
 
 
@@ -96,6 +97,8 @@ static char osViewKey;
 
 	[UIView commitAnimations];
 
+	[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
+	[[objc_getClass("SBIconController") sharedInstance] willAnimateRotationToInterfaceOrientation:arg2 duration:arg3];
 }
 
 
@@ -227,7 +230,33 @@ static char osViewKey;
 %end
 
 
+%hook SBFolderSlidingView
+
+- (id)initWithPosition:(int)arg1 folderView:(id)arg2{
+	self = %orig;
+
+	[[self valueForKey:@"dockView"] setHidden:true];
+	[[self valueForKey:@"outgoingDockView"] setHidden:true];
+	[[self valueForKey:@"wallpaperView"] setImage:[[[[OSViewController sharedInstance] iconContentView] wallpaperView] image]];
+
+
+	return self;
+}
+
+
+%end
+
+%hook SBAwayController
+
+-(void)lock{
+    [[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
+    %orig;
+}
+
+%end
+
 %hook SBIconController
+
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
 	[arg1 launchFromViewSwitcher];
@@ -243,6 +272,23 @@ static char osViewKey;
 
 
 }
+
+
+-(void)iconTapped:(SBIconView*)arg1{
+    if(![[OSViewController sharedInstance] launchpadActive]){
+        %orig;
+        return;
+    }
+    
+    if([[arg1 icon] isFolderIcon] || [[arg1 icon] isNewsstandIcon]){
+        [[arg1 icon] launch];
+    }else{
+        [[OSViewController sharedInstance] deactivateWithIconView:arg1];
+        %orig;
+    }
+
+}
+
 
 %end
 

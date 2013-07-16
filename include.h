@@ -86,6 +86,21 @@
 @end
 
 
+@interface UITouch(FixAdditions)
+
+
+- (void)_loadStateFromTouch:(id)arg1;
+
+@end
+
+@interface UITouchesEvent(FixAdditions)
+
+
+-(void)_addTouch:(id)touch forDelayedDelivery:(BOOL)delayedDelivery;
+-(void)_removeTouch:(id)touch;
+
+@end
+
 
 
 @interface CPDistributedMessagingCenter : NSObject
@@ -107,9 +122,11 @@
 
 @interface SBIconController
 
-+(id)sharedInstance;
-
--(id)dock;
++ (id)sharedInstance;
+- (void)prepareToRotateFolderAndSlidingViewsToOrientation:(int)arg1;
+- (id)dock;
+- (id)contentView;
+- (BOOL)hasOpenFolder;
 
 @end
 
@@ -146,13 +163,30 @@
 
 
 
+@interface SBIcon : NSObject
 
-@interface SBIconView : UIImageView
 
--(id)icon;
+- (BOOL)isFolderIcon;
+- (BOOL)isNewsstandIcon;
+- (void)launch;
+- (id)generateIconImage:(int)arg1;
+- (id)getIconImage:(int)arg1;
 
 
 @end
+
+
+@interface SBIconView : UIImageView
+
+-(SBIcon*)icon;
+-(id)iconImageView;
+-(BOOL)isGrabbed;
+
+
+@end
+
+
+
 
 
 
@@ -222,6 +256,10 @@
 
 }
 
++(id)sharedInstance;
+
+
+-(id)wallpaperView;
 -(id)rootView;
 - (void)activateApplicationAnimated:(id)arg1;
 
