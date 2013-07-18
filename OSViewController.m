@@ -60,8 +60,13 @@
 	[self.view addSubview:self.slider];
 
 	OSDesktopPane *desktopPane = [[OSDesktopPane alloc] init];
+    OSDesktopPane *desktopPaneTwo = [[OSDesktopPane alloc] init];
 	[self.slider addPane:desktopPane];
-	[self.slider addPane:[[OSDesktopPane alloc] init]];
+	[self.slider addPane:desktopPaneTwo];
+
+    [desktopPane release];
+    [desktopPaneTwo release];
+
 
 
 
@@ -92,6 +97,12 @@
 
 	
 	
+}
+
+-(void)dealloc{
+    [self.view release];
+    [self.iconContentView release];
+    [super dealloc];
 }
 
 - (void)menuButtonPressed{

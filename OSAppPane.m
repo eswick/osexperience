@@ -40,7 +40,8 @@
 
 	[self addSubview:overlayView];
 
-
+	[overlayView release];
+	[touchForwarder release];
 
 	return self;
 }

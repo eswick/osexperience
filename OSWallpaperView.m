@@ -6,15 +6,28 @@
 @implementation OSWallpaperView
 
 
++(UIImage*)wallpaperImage{
+    static UIImage *image;
+
+    if(image == nil){
+
+        NSData *wallpaperFile = [NSData dataWithContentsOfFile:@"/var/mobile/Library/SpringBoard/LockBackground.cpbitmap"];
+        CGImageRef wallpaper = CGImageFromCPBitmap((unsigned char*)[wallpaperFile bytes], [wallpaperFile length]);
+        image = [UIImage imageWithCGImage:wallpaper];
+        CFRelease(wallpaper);
+    }
+
+    return image;
+}
+
+
 -(id)init{
 	if(![super initWithFrame:[[UIScreen mainScreen] bounds]]){
 		return nil;
 	}
 
-	NSData *wallpaperFile = [NSData dataWithContentsOfFile:@"/var/mobile/Library/SpringBoard/LockBackground.cpbitmap"];
-    CGImageRef wallpaper = CGImageFromCPBitmap((unsigned char*)[wallpaperFile bytes], [wallpaperFile length]);
-    [self setImage:[UIImage imageWithCGImage:wallpaper]];
 
+    [self setImage:[OSWallpaperView wallpaperImage]];
 
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.backgroundColor = [UIColor blackColor];

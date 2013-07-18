@@ -8,5 +8,8 @@
 }
 
 
++(UIImage*)wallpaperImage;
+
+
 
 @end 

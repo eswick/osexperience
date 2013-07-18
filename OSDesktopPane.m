@@ -40,7 +40,13 @@
 }
 
 
-
+-(void)dealloc{
+	[self.wallpaperView release];
+	[self.gridView release];
+	[self.statusBar release];
+	
+	[super dealloc];
+}
 
 
 

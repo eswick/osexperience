@@ -18,10 +18,7 @@
 
 
 	self.wallpaperView = [[UIImageView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-	NSData *wallpaperFile = [NSData dataWithContentsOfFile:@"/var/mobile/Library/SpringBoard/LockBackground.cpbitmap"];
-    CGImageRef wallpaper = CGImageFromCPBitmap((unsigned char*)[wallpaperFile bytes], [wallpaperFile length]);
-    UIImage *wallpaperImage = [UIImage imageWithCGImage:wallpaper];
-    self.wallpaperView.image = [[wallpaperImage normalize] stackBlur:50.0f];
+    self.wallpaperView.image = [[[OSWallpaperView wallpaperImage] normalize] stackBlur:50.0f];
 
 
     self.wallpaperView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -48,6 +45,11 @@
 -(void)prepareForDisplay{
 	[self bringSubviewToFront:self.wallpaperView];
 	[self addSubview:self.contentView];
+}
+
+-(void)dealloc{
+	[self.wallpaperView release];
+	[super dealloc];
 }
 
 @end

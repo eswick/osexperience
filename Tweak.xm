@@ -269,6 +269,7 @@ static char osViewKey;
 
 		[[OSSlider sharedInstance] addPane:appPane];
 		[self activate];
+		[appPane release];
 	}
 
 
