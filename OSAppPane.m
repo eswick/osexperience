@@ -20,7 +20,6 @@
 		return nil;
 	}
 
-	
 
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.clipsToBounds = true;
@@ -34,6 +33,7 @@
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
 	overlayView.alpha = 0.1;
 	overlayView.backgroundColor = [UIColor grayColor];
+	overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
 	OSTouchForwarder *touchForwarder = [[OSTouchForwarder alloc] initWithApplication:self.application];
     [overlayView addGestureRecognizer:touchForwarder];
@@ -41,7 +41,6 @@
 	[self addSubview:overlayView];
 
 
-	
 
 	return self;
 }

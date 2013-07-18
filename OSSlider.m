@@ -11,6 +11,8 @@
 @synthesize startingOffset = _startingOffset;
 @synthesize currentPageIndex = _currentPageIndex;
 @synthesize currentPane = _currentPane;
+@synthesize currentOrientation = _currentOrientation;
+@synthesize pageIndexPlaceholder = _pageIndexPlaceholder;
 
 
 + (id)sharedInstance
@@ -51,6 +53,43 @@
 }
 
 
+-(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
+	int appViewDegrees;
+
+	switch(orientation){
+		case UIInterfaceOrientationPortrait:
+			appViewDegrees = 0;
+			break;
+		case UIInterfaceOrientationPortraitUpsideDown:
+			appViewDegrees = 180;
+			break;
+		case UIInterfaceOrientationLandscapeLeft:
+			appViewDegrees = 90;
+			break;
+		case UIInterfaceOrientationLandscapeRight:
+			appViewDegrees = 270;
+			break;
+	}
+
+ 	for(OSPane *pane in self.panes){
+
+ 		if([pane isKindOfClass:[OSAppPane class]]){
+ 			UIView *appView = [(OSAppPane*)pane appView];
+			appView.transform = CGAffineTransformMakeRotation(DegreesToRadians(appViewDegrees));
+			CGRect frame = [appView frame];
+			frame.origin = CGPointMake(0, 0);
+			[appView setFrame:frame];
+ 		}
+ 	}
+
+
+ 	[self alignPanes];
+ 	self.contentOffset = CGPointMake(self.pageIndexPlaceholder * self.bounds.size.width, 0);
+
+ 	[self updateDockPosition];
+
+}
+
 -(void)addPane:(OSPane*)pane{
 	[self.panes addObject:pane];
 
@@ -62,6 +101,16 @@
 	[pane setOriginX: (pane.frame.size.width + marginSize) * (self.panes.count - 1)];
 
 	[self addSubview:pane];
+
+	[self alignPanes];
+}
+
+-(void)alignPanes{
+	self.contentSize = CGSizeMake([self.panes count] * self.bounds.size.width, self.bounds.size.height);
+
+	for(OSPane *pane in self.panes){
+		pane.frame = CGRectMake([self.panes indexOfObject:pane] * self.bounds.size.width, 0, self.bounds.size.width - marginSize, self.bounds.size.height);
+	}
 }
 
 
@@ -72,6 +121,12 @@
 
 
 -(void)updateDockPosition{
+
+	BOOL isPortrait = self.isPortrait;
+
+
+
+
 	OSPane *intrudingPane;
 	CGRect currentPaneRect = CGRectIntersection([self convertRect:self.currentPane.frame toView:UIApplication.sharedApplication.keyWindow], self.frame);
 	CGRect intrudingPaneRect;
@@ -86,13 +141,19 @@
 		
 	}
 
-	if(!intrudingPane)
+	if(!intrudingPane && self.currentPane.showsDock){
+		[[OSViewController sharedInstance] setDockPercentage:0.0];
 		return;
+	}else if(!intrudingPane && !self.currentPane.showsDock){
+		[[OSViewController sharedInstance] setDockPercentage:1.0];
+		return;
+	}
 
 	intrudingPaneRect = CGRectIntersection([self convertRect:intrudingPane.frame toView:UIApplication.sharedApplication.keyWindow], self.frame);
 
-	float currentPanePercentage = (currentPaneRect.size.width * 100) / (self.frame.size.width - marginSize);
-	float intrudingPanePercentage = (intrudingPaneRect.size.width * 100) / (self.frame.size.width - marginSize);
+
+	float currentPanePercentage = ((isPortrait ? currentPaneRect.size.width : currentPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height) - marginSize);
+	float intrudingPanePercentage = ((isPortrait ? intrudingPaneRect.size.width : intrudingPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height) - marginSize);
 
 
 	float shownPercentage = 0;
@@ -105,17 +166,22 @@
 
 	shownPercentage = shownPercentage * 0.01;
 
-	CGRect dockFrame = [[[OSViewController sharedInstance] dock] frame];
+	
 
-	float dockShownY = [[OSViewController sharedInstance] view].frame.size.height - dockFrame.size.height;
+	[[OSViewController sharedInstance] setDockPercentage:shownPercentage];
+}
 
-	dockFrame.origin.y = dockShownY + (shownPercentage * dockFrame.size.height);
-
-	[[[OSViewController sharedInstance] dock] setFrame:dockFrame];
+-(BOOL)isPortrait{
+	if([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait || [[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortraitUpsideDown){
+        return true;
+    }
+    return false;
 }
 
 -(int)currentPageIndex{
-	return nearbyint(self.contentOffset.x / self.frame.size.width);
+
+	return nearbyint(self.contentOffset.x / self.bounds.size.width);
+	//return nearbyint(self.contentOffset.x / (self.isPortrait ? self.bounds.size.width : self.bounds.size.height));
 }
 
 -(OSPane*)currentPane{

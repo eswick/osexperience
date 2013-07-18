@@ -17,8 +17,6 @@
 @property (nonatomic, retain) UIView *contentView;
 
 
-
-
 -(void)prepareForDisplay;
 
 

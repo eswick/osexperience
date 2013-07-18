@@ -46,11 +46,8 @@
 
 
 -(void)prepareForDisplay{
+	[self bringSubviewToFront:self.wallpaperView];
 	[self addSubview:self.contentView];
 }
-
-
-
-
 
 @end

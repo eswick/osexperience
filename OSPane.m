@@ -10,7 +10,15 @@
 
 
 -(id)initWithName:(NSString*)name thumbnail:(UIImage*)thumbnail{
-	if(![super initWithFrame:[[UIScreen mainScreen] bounds]]){
+	CGRect frame = [[UIScreen mainScreen] bounds];
+	if(![self isPortrait]){
+		float widthPlaceholder = frame.size.width;
+		frame.size.width = frame.size.height;
+		frame.size.height = widthPlaceholder;
+	}
+
+
+	if(![super initWithFrame:frame]){
 		return nil;
 	}
 
@@ -24,6 +32,13 @@
 
 -(BOOL)showsDock{
 	return false;
+}
+
+-(BOOL)isPortrait{
+	if([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait || [[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortraitUpsideDown){
+        return true;
+    }
+    return false;
 }
 
 

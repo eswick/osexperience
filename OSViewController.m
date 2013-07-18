@@ -25,6 +25,31 @@
 
 
 
+- (void)setDockPercentage:(float)percentage{
+
+    if(self.launchpadActive && !self.launchpadIsAnimating)
+        return;
+
+    BOOL isPortrait = false;
+
+    if([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait || [[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortraitUpsideDown){
+        isPortrait = true;
+    }
+
+
+
+    CGRect dockFrame = self.dock.frame;
+
+    float dockShownY = (isPortrait ? self.view.frame.size.height : self.view.frame.size.width) - dockFrame.size.height;
+
+    dockFrame.origin.y = dockShownY + (percentage * dockFrame.size.height);
+
+
+
+    [self.dock setFrame:dockFrame];
+}
+
+
 
 -(void)loadView{
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -113,7 +138,9 @@
 }
 
 - (void)deactivateWithIconView:(SBIconView*)iconView{
-	[self animateIconLaunch:iconView];
+    if(![iconView isInDock])
+	   [self animateIconLaunch:iconView];
+
 	[self setLaunchpadActive:false animated:true];
 }
 
@@ -125,6 +152,9 @@
 	if(activated){
 		[self.iconContentView prepareForDisplay];
 
+        if([[objc_getClass("SBIconController") sharedInstance] isShowingSearch])
+            [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:true];
+
 		if(animated){
 
 			if(self.launchpadIsAnimating)
@@ -133,55 +163,60 @@
 			self.iconContentView.alpha = 0.0f;
         	self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
 
-        	[UIView animateWithDuration:0.25
-                              delay:0.0
-                            options: UIViewAnimationCurveLinear
-                         animations:^{
-                             self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
-                             self.iconContentView.alpha = 1.0f;
-                         }
-                         completion:^(BOOL finished){
-                         self.launchpadIsAnimating = false;
-                         self.launchpadActive = true;
-                         [[[objc_getClass("SBIconController") sharedInstance] contentView] addSubview:[[OSViewController sharedInstance] dock]];
+            self.launchpadIsAnimating = true;
+            self.launchpadActive = true;
+
+        	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveLinear animations:^{
+
+                [self setDockPercentage:0.0];
+                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
+                self.iconContentView.alpha = 1.0f;
+
+            } completion:^(BOOL finished){
+                self.launchpadIsAnimating = false;
+                [[[objc_getClass("SBIconController") sharedInstance] contentView] addSubview:[[OSViewController sharedInstance] dock]];
             }];
 
 
     	}else{
+            [self setDockPercentage:0.0];
     		self.iconContentView.alpha = 1.0f;
     		self.launchpadActive = true;
             [[[objc_getClass("SBIconController") sharedInstance] contentView] addSubview:[[OSViewController sharedInstance] dock]];
+
+   
     	}
 
 	}else{
+        [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:false];
 
 
 		if(animated){
 
 			if(self.launchpadIsAnimating)
 				return;
+            self.launchpadIsAnimating = true;
+            self.launchpadActive = false;
 
             [[[OSViewController sharedInstance] view] addSubview:[[OSViewController sharedInstance] dock]];
 
 			self.iconContentView.alpha = 1.0f;
         	self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
 
-        	[UIView animateWithDuration:0.25
-                              delay:0.0
-                            options: UIViewAnimationCurveLinear
-                         animations:^{
-                             self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
-                             self.iconContentView.alpha = 0.0f;
-                         }
-                         completion:^(BOOL finished){
-                         self.launchpadIsAnimating = false;
-                         self.launchpadActive = false;
+        	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveLinear animations:^{
+                [[OSSlider sharedInstance] updateDockPosition];
+                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
+                self.iconContentView.alpha = 0.0f;
+            } completion:^(BOOL finished){
+                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
+                self.launchpadIsAnimating = false;
             }];
 
 
     	}else{
     		self.iconContentView.alpha = 0.0f;
     		self.launchpadActive = false;
+            [[OSSlider sharedInstance] updateDockPosition];
             [[[OSViewController sharedInstance] view] addSubview:[[OSViewController sharedInstance] dock]];
     	}
 
@@ -195,7 +230,7 @@
 
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration{
-  
+
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation{

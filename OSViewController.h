@@ -28,5 +28,6 @@
 - (void)deactivateWithIconView:(SBIconView*)icon;
 - (void)animateIconLaunch:(SBIconView*)iconView;
 - (void)menuButtonPressed;
+- (void)setDockPercentage:(float)percentage;
 
 @end

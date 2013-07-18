@@ -5,22 +5,30 @@
 #import <GraphicsServices/GraphicsServices.h>
 #import <UIKit/UIKit.h>
 #import "launchpad/UIImage+StackBlur.h"
+#import <mach/mach_time.h>
 
 
 
 
-@interface SBUIController(OSExtensions)
-
--(id)osView;
--(void)setOSView:(id)arg1;
-
-@end
 
 
 
+
+
+
+%group SpringBoard //Springboard hooks
 
 
 %hook SBUIController
+
+
+- (BOOL)activateSwitcher{
+	return true;
+}
+
+
+
+
 
 static char osViewKey;
 
@@ -58,9 +66,6 @@ static char osViewKey;
 
 	[self setOSView:viewController.view];
 
-	NSLog(@"View: %@", NSStringFromCGRect(viewController.view.frame));
-
-
 	return self;
 }
 
@@ -88,85 +93,113 @@ static char osViewKey;
 			break;
 	}
 
-	[UIView beginAnimations:@"rotate" context:nil];
-	[UIView setAnimationDuration:arg3];
+	
+	
+	[[OSSlider sharedInstance] setPageIndexPlaceholder:[[OSSlider sharedInstance] currentPageIndex]];
 
-	UIView *osView = [self osView];
-	osView.transform = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
-	[osView setFrame:[[UIScreen mainScreen] bounds]];
+	[UIView animateWithDuration:arg3
+                          delay:0.0
+                        options: UIViewAnimationCurveEaseOut
+                     animations:^{
 
-	[UIView commitAnimations];
+						UIView *osView = [self osView];
+						osView.transform = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
+						[osView setFrame:[[UIScreen mainScreen] bounds]];
+
+
+                     } 
+                     completion:^(BOOL finished){
+                     }];
+
+	[[OSSlider sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
+
 
 	[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
 	[[objc_getClass("SBIconController") sharedInstance] willAnimateRotationToInterfaceOrientation:arg2 duration:arg3];
 }
 
 
-- (void)handleFluidVerticalSystemGesture:(id)arg1{
-
-}
-
-- (void)handleFluidHorizontalSystemGesture:(id)arg1{
-	//%orig;
-}
+%end
 
 
-- (void)_switchAppGestureCancelled{}
-- (void)_switchAppGestureEndedWithCompletionType:(int)arg1 cumulativePercentage:(float)arg2{}
-- (void)_switchAppGestureChanged:(float)arg1{}
-- (void)_switchAppGestureBegan:(float)arg1{}
+%hook SBPanGestureRecognizer
 
-
-- (BOOL)shouldSendTouchesToSystemGestures{
+-(BOOL)sendsTouchesCancelledToApplication{
 	return true;
+}
+
+-(BOOL)shouldReceiveTouches{
+	if([self isKindOfClass:[%c(SBOffscreenSwipeGestureRecognizer) class]])
+		return true;
+	else
+		return false;
+
+
 }
 
 %end
 
 
+
+
+
+
+
+%hook SpringBoard
+
+
+-(void)sendEvent:(id)arg1{
+	GSEventRef event = [arg1 _gsEvent];
+
+	if(GSEventGetType(event) == kGSEventDeviceOrientationChanged){
+		for(OSAppPane *appPane in [[OSSlider sharedInstance] panes]){
+			if(![appPane isKindOfClass:[OSAppPane class]])
+				continue;
+
+			[[appPane application] rotateToInterfaceOrientation:GSEventDeviceOrientation(event)];
+		}
+	}
+
+	%orig;
+}
+
+
+%end
 
 
 
 //Background process handling
 
 
-%hook BKWorkspaceServerManager
 
-
-
--(id)init{
-	self = %orig;
-
-
-	CPDistributedMessagingCenter *messagingCenter;
-	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
-	[messagingCenter runServerOnCurrentThread];
-	[messagingCenter registerForMessageName:@"activate" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
-
-	return self;
-}
-
-
-%new
-- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
-	if(![name isEqualToString:@"activate"]){
-		return nil;
-	}
-
-	BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
-
-	BKWorkspaceServer *server = [self workspaceForApplication:application];
-	
-	[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
-	
-	return nil;
-}
-
-
-%end
 
 
 %hook SBApplication
+
+
+%new
+-(void)rotateToInterfaceOrientation:(int)orientation{
+
+	uint8_t orientationEvent[sizeof(GSEventRecord) + sizeof(GSDeviceOrientationInfo)];
+
+	struct GSOrientationEvent {
+        GSEventRecord record;
+        GSDeviceOrientationInfo orientationInfo;
+    } * event = (struct GSOrientationEvent*) &orientationEvent;
+    
+	event->record.type = kGSEventDeviceOrientationChanged;
+	event->record.timestamp = mach_absolute_time();
+	event->record.senderPID = getpid();
+	event->record.infoSize = sizeof(GSDeviceOrientationInfo);
+	event->orientationInfo.orientation = orientation;
+	
+	
+	GSSendEvent((GSEventRecord*)event, (mach_port_t)[self eventPort]);
+	
+	
+	
+	
+}
 
 
 - (void)didDeactivateForEventsOnly:(BOOL)arg1{
@@ -185,7 +218,6 @@ static char osViewKey;
 
 - (void)didLaunch:(BKSApplicationProcessInfo*)arg1{
 	%orig;
-	NSLog(@"%@", arg1);
 	if([arg1 suspended]){
 		return;
 	}
@@ -210,9 +242,38 @@ static char osViewKey;
 
 	if(!found){
 		OSAppPane *appPane = [[OSAppPane alloc] initWithDisplayIdentifier:[self bundleIdentifier]];
+
+		int appViewDegrees;
+
+		switch([UIApp statusBarOrientation]){
+			case UIInterfaceOrientationPortrait:
+				appViewDegrees = 0;
+				break;
+			case UIInterfaceOrientationPortraitUpsideDown:
+				appViewDegrees = 180;
+				break;
+			case UIInterfaceOrientationLandscapeLeft:
+				appViewDegrees = 90;
+				break;
+			case UIInterfaceOrientationLandscapeRight:
+				appViewDegrees = 270;
+				break;
+		}
+
+		UIView *appView = [appPane appView];
+		appView.transform = CGAffineTransformMakeRotation(DegreesToRadians(appViewDegrees));
+		CGRect frame = [appView frame];
+		frame.origin = CGPointMake(0, 0);
+		[appView setFrame:frame];
+
+
 		[[OSSlider sharedInstance] addPane:appPane];
 		[self activate];
 	}
+
+
+
+
 }
 
 - (void)activate{
@@ -255,6 +316,8 @@ static char osViewKey;
 
 %end
 
+
+
 %hook SBIconController
 
 
@@ -265,8 +328,18 @@ static char osViewKey;
 	for(OSAppPane *pane in [[OSSlider sharedInstance] subviews]){
 		if(![pane isKindOfClass:[OSAppPane class]])
 			continue;
+
 		if(pane.application == arg1.application){
-			[[OSSlider sharedInstance] setContentOffset:CGPointMake(pane.frame.origin.x, 0) animated:true];
+
+			[UIView animateWithDuration:1.0 delay:0.25 options: UIViewAnimationCurveEaseOut animations:^{//Animate to activating app
+				CGRect bounds = [[OSSlider sharedInstance] bounds];
+                bounds.origin.x = pane.frame.origin.x;
+                [[OSSlider sharedInstance] setBounds:bounds];
+                [[OSSlider sharedInstance] updateDockPosition];
+            }completion:^(BOOL finished){
+         
+            }];
+
 		}
 	}
 
@@ -293,6 +366,36 @@ static char osViewKey;
 %end
 
 
+//App launch animations
+%hook SBAppToAppTransitionView
+
+
+-(id)initWithFrame:(CGRect)arg1{
+	self = %orig;
+	[self setHidden:true];
+	return self;
+}
+
+
+%end
+
+
+%hook SBUIAnimationZoomUpApp
+
+- (void)animationDidStop:(id)arg1 finished:(id)arg2 context:(void *)arg3{
+	%orig;
+}
+
+
+- (void)_startAnimation{
+	[self animationDidStop:@"AnimateResumption" finished:[NSNumber numberWithInt:1] context:0x0];
+	[self _cleanupAnimation];
+}
+
+%end
+
+
+//Multitasking things
 %hook BKSWorkspace
 
 - (id)topApplication{
@@ -300,6 +403,57 @@ static char osViewKey;
 }
 
 %end
+
+%end
+
+
+
+
+
+
+//Backboard hooks
+
+
+%group Backboard
+
+%hook BKWorkspaceServerManager
+
+
+
+-(id)init{
+	self = %orig;
+
+
+	CPDistributedMessagingCenter *messagingCenter;
+	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+	[messagingCenter runServerOnCurrentThread];
+	[messagingCenter registerForMessageName:@"activate" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+
+	return self;
+}
+
+
+%new
+- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
+	if(![name isEqualToString:@"activate"]){
+		return nil;
+	}
+
+	BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
+
+	BKWorkspaceServer *server = [self workspaceForApplication:application];
+	
+	[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
+	
+	return nil;
+}
+
+
+%end
+
+
+
+
 
 
 %hook BKProcess
@@ -335,4 +489,17 @@ static char osViewKey;
 
 %end
 
+%end
 
+
+
+__attribute__((constructor))
+static void initialize() {
+	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"])
+		%init(Backboard);
+	
+
+	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])
+		%init(SpringBoard);
+	
+}

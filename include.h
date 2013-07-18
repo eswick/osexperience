@@ -14,6 +14,9 @@
 
 
 
+
+
+
 @interface BKApplication : NSObject{
 
 }
@@ -68,10 +71,11 @@
 - (id)displayName;
 - (id)contextHostViewForRequester:(id)arg1 enableAndOrderFront:(BOOL)arg2;
 - (id)bundleIdentifier;
-- (void)activate; //New
+- (void)activate; //New (Added functionality back; Original function simply returns.)
 - (BOOL)activationFlag:(unsigned int)arg1;
 - (void)addToSlider; //New
 - (unsigned int)eventPort;
+- (void)rotateToInterfaceOrientation:(int)orientation;//New
 
 
 @end
@@ -127,6 +131,8 @@
 - (id)dock;
 - (id)contentView;
 - (BOOL)hasOpenFolder;
+- (void)_showSearchKeyboardIfNecessary:(BOOL)arg1;
+- (BOOL)isShowingSearch;
 
 @end
 
@@ -139,6 +145,8 @@
 @interface SBUIAnimationZoomUpApp
 
 - (void)_noteAnimationDidFinish:(BOOL)arg1;
+- (void)animationDidStop:(id)arg1 finished:(id)arg2 context:(void *)arg3;
+- (void)_cleanupAnimation;
 
 @end 
 
@@ -163,6 +171,7 @@
 
 
 
+
 @interface SBIcon : NSObject
 
 
@@ -178,9 +187,10 @@
 
 @interface SBIconView : UIImageView
 
--(SBIcon*)icon;
--(id)iconImageView;
--(BOOL)isGrabbed;
+- (SBIcon*)icon;
+- (id)iconImageView;
+- (BOOL)isGrabbed;
+- (BOOL)isInDock;
 
 
 @end
@@ -258,6 +268,8 @@
 
 +(id)sharedInstance;
 
+-(id)osView;//New
+-(void)setOSView:(id)arg1;//New
 
 -(id)wallpaperView;
 -(id)rootView;
