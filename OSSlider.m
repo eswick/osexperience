@@ -7,7 +7,6 @@
 
 
 @implementation OSSlider
-@synthesize panes = _panes;
 @synthesize startingOffset = _startingOffset;
 @synthesize currentPageIndex = _currentPageIndex;
 @synthesize currentPane = _currentPane;
@@ -44,9 +43,6 @@
 	self.showsHorizontalScrollIndicator = false;
 
 
-
-	self.panes = [NSMutableArray arrayWithCapacity:0];
-
 	[self setDelegate:self];
 
 	return self;
@@ -71,7 +67,7 @@
 			break;
 	}
 
- 	for(OSPane *pane in self.panes){
+ 	for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
 
  		if([pane isKindOfClass:[OSAppPane class]]){
  			UIView *appView = [(OSAppPane*)pane appView];
@@ -91,14 +87,13 @@
 }
 
 -(void)addPane:(OSPane*)pane{
-	[self.panes addObject:pane];
 
 	CGSize contentSize = self.contentSize;
-	contentSize.width = (marginSize + pane.frame.size.width) * self.panes.count;
+	contentSize.width = (marginSize + pane.frame.size.width) * [[OSPaneModel sharedInstance] count];
 
 	[self setContentSize:contentSize];
 
-	[pane setOriginX: (pane.frame.size.width + marginSize) * (self.panes.count - 1)];
+	[pane setOriginX: (pane.frame.size.width + marginSize) * ([[OSPaneModel sharedInstance] count] - 1)];
 
 	[self addSubview:pane];
 
@@ -106,10 +101,15 @@
 }
 
 -(void)alignPanes{
-	self.contentSize = CGSizeMake([self.panes count] * self.bounds.size.width, self.bounds.size.height);
+	self.contentSize = CGSizeMake([[OSPaneModel sharedInstance] count] * self.bounds.size.width, self.bounds.size.height);
 
-	for(OSPane *pane in self.panes){
-		pane.frame = CGRectMake([self.panes indexOfObject:pane] * self.bounds.size.width, 0, self.bounds.size.width - marginSize, self.bounds.size.height);
+	for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+		CGRect bounds = CGRectMake(0, 0, self.bounds.size.width - marginSize, self.bounds.size.height);
+		pane.bounds = bounds;
+
+		[pane setCenter:CGPointMake((self.bounds.size.width * [[OSPaneModel sharedInstance] indexOfPane:pane]) - (marginSize / 2) + (self.bounds.size.width / 2), pane.center.y)];
+		
+		pane.layer.shadowPath = [UIBezierPath bezierPathWithRect:pane.bounds].CGPath;
 	}
 }
 
@@ -133,11 +133,11 @@
 
 	if(self.contentOffset.x >= self.currentPane.frame.origin.x){
 
-		intrudingPane = [self paneAtIndex:self.currentPageIndex + 1];
+		intrudingPane = [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex + 1];
 
 	}else{
 
-		intrudingPane = [self paneAtIndex:self.currentPageIndex - 1];
+		intrudingPane = [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex - 1];
 		
 	}
 
@@ -185,14 +185,15 @@
 }
 
 -(OSPane*)currentPane{
-	return [self paneAtIndex:self.currentPageIndex];
+	return [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex];
 }
 
+/*
 -(OSPane*)paneAtIndex:(int)index{
-	if(index < 0 || index > self.panes.count - 1)
+	if(index < 0 || index > [[OSPaneModel sharedInstance] count] - 1)
 		return nil;
 	return [self.panes objectAtIndex:index];
-}
+}*/
 
 /*-(void)setContentOffset:(CGPoint)arg1{
 	[super setContentOffset:arg1];

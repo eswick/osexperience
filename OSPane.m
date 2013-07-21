@@ -25,6 +25,12 @@
 	self.name = name;
 	self.thumbnail = thumbnail;
 
+	self.layer.masksToBounds = false;
+	self.layer.shadowOffset = CGSizeMake(0, 0);
+	self.layer.shadowRadius = 10;
+	self.layer.shadowOpacity = 0.5;
+	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+
 	return self;
 
 }

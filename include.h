@@ -150,12 +150,13 @@
 
 @end 
 
-@interface SBApplicationIcon
+@interface SBApplicationIcon : NSObject
 
 
 -(void)launch;
 -(void)launchFromViewSwitcher;
 -(SBApplication*)application;
+- (id)initWithApplication:(id)arg1;
 
 @end
 
@@ -266,14 +267,18 @@
 
 }
 
-+(id)sharedInstance;
++ (id)sharedInstance;
++ (id)zoomViewForContextHostView:(id)arg1 application:(id)arg2 includeStatusBar:(BOOL)arg3 includeBanner:(BOOL)arg4;
 
--(id)osView;//New
--(void)setOSView:(id)arg1;//New
+- (id)osView;//New
+- (void)setOSView:(id)arg1;//New
 
--(id)wallpaperView;
--(id)rootView;
+- (id)wallpaperView;
+- (id)rootView;
 - (void)activateApplicationAnimated:(id)arg1;
+- (id)systemGestureSnapshotWithIOSurfaceSnapshotOfApp:(id)arg1 includeStatusBar:(BOOL)arg2;
+- (id)systemGestureSnapshotForApp:(id)arg1 includeStatusBar:(BOOL)arg2 decodeImage:(BOOL)arg3;
+
 
 @end
 

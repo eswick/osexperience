@@ -23,9 +23,15 @@
 
 
 - (BOOL)activateSwitcher{
+
+	if([[OSViewController sharedInstance] missionControlIsActive])
+		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
+	else
+		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
+	
+
 	return true;
 }
-
 
 
 
@@ -65,6 +71,8 @@ static char osViewKey;
 	[viewController.view setFrame:[[UIScreen mainScreen] bounds]];
 
 	[self setOSView:viewController.view];
+
+
 
 	return self;
 }
@@ -106,20 +114,23 @@ static char osViewKey;
 						osView.transform = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
 						[osView setFrame:[[UIScreen mainScreen] bounds]];
 
+						[[objc_getClass("SBIconController") sharedInstance] willAnimateRotationToInterfaceOrientation:arg2 duration:arg3];
 
                      } 
                      completion:^(BOOL finished){
                      }];
 
 	[[OSSlider sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
+	[[OSThumbnailView sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 
 
 	[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
-	[[objc_getClass("SBIconController") sharedInstance] willAnimateRotationToInterfaceOrientation:arg2 duration:arg3];
 }
 
 
 %end
+
+
 
 
 %hook SBPanGestureRecognizer
@@ -142,9 +153,6 @@ static char osViewKey;
 
 
 
-
-
-
 %hook SpringBoard
 
 
@@ -152,7 +160,7 @@ static char osViewKey;
 	GSEventRef event = [arg1 _gsEvent];
 
 	if(GSEventGetType(event) == kGSEventDeviceOrientationChanged){
-		for(OSAppPane *appPane in [[OSSlider sharedInstance] panes]){
+		for(OSAppPane *appPane in [[OSPaneModel sharedInstance] panes]){
 			if(![appPane isKindOfClass:[OSAppPane class]])
 				continue;
 
@@ -162,7 +170,6 @@ static char osViewKey;
 
 	%orig;
 }
-
 
 %end
 
@@ -231,7 +238,7 @@ static char osViewKey;
 -(void)addToSlider{
 	BOOL found = false;
 
-	for(OSAppPane *pane in [[OSSlider sharedInstance] subviews]){
+	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
 		if(![pane isKindOfClass:[OSAppPane class]]){
 			continue;
 		}
@@ -267,7 +274,7 @@ static char osViewKey;
 		[appView setFrame:frame];
 
 
-		[[OSSlider sharedInstance] addPane:appPane];
+		[[OSPaneModel sharedInstance] addPaneToBack:appPane];
 		[self activate];
 		[appPane release];
 	}
@@ -349,7 +356,7 @@ static char osViewKey;
 
 
 -(void)iconTapped:(SBIconView*)arg1{
-    if(![[OSViewController sharedInstance] launchpadActive]){
+    if(![[OSViewController sharedInstance] launchpadIsActive]){
         %orig;
         return;
     }
@@ -357,7 +364,7 @@ static char osViewKey;
     if([[arg1 icon] isFolderIcon] || [[arg1 icon] isNewsstandIcon]){
         [[arg1 icon] launch];
     }else{
-        [[OSViewController sharedInstance] deactivateWithIconView:arg1];
+        [[OSViewController sharedInstance] deactivateLaunchpadWithIconView:arg1];
         %orig;
     }
 

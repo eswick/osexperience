@@ -1,0 +1,9 @@
+Package: com.eswick.osexperience
+Name: OS Experience
+Depends: mobilesubstrate
+Version: 0.8.0
+Architecture: iphoneos-arm
+Description: Unlocks the full potential of your device. A file manager, a multitasking switcher, and a window manager all in one tweak.
+Maintainer: Evan Swick
+Author: Evan Swick
+Section: Tweaks

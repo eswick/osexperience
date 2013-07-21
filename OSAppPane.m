@@ -22,7 +22,7 @@
 
 
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	self.clipsToBounds = true;
+	//self.clipsToBounds = true;
 
 
 	self.appView = [self.application contextHostViewForRequester:@"WindowManager" enableAndOrderFront:true];
