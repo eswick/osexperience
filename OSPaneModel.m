@@ -34,8 +34,12 @@
 }
 
 
-- (void)addPane:(OSPane*)pane atIndex:(unsigned int)index{
+- (void)insertPane:(OSPane*)pane atIndex:(unsigned int)index{
+	if([self.panes containsObject:pane])
+		[self.panes removeObject:pane];
+
 	[self.panes insertObject:pane atIndex:index];
+	[[OSSlider sharedInstance] alignPanes];
 }
 
 

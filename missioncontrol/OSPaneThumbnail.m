@@ -7,6 +7,8 @@
 @synthesize pane = _pane;
 @synthesize label = _label;
 @synthesize icon = _icon;
+@synthesize grabPoint = _grabPoint;
+@synthesize placeholder = _placeholder;
 
 
 - (id)initWithPane:(OSPane*)pane{
@@ -23,7 +25,8 @@
 	if(![super initWithFrame:frame])
 		return nil;
 
-	self.backgroundColor = [UIColor whiteColor];
+	//self.backgroundColor = [UIColor whiteColor];
+	self.userInteractionEnabled = true;
 
 	self.layer.masksToBounds = NO;
 	self.layer.shadowOffset = CGSizeMake(0, 0);
@@ -59,11 +62,13 @@
 	self.label.textColor = [UIColor whiteColor];
 	self.label.textAlignment = NSTextAlignmentCenter;
 	self.label.shadowColor = [UIColor blackColor];
-	//self.label.layer.shouldRasterize = true;
+	self.label.layer.shouldRasterize = true;
 	self.label.font = [UIFont boldSystemFontOfSize:15];
 	self.label.adjustsFontSizeToFitWidth = false;
 
 	[self addSubview:self.label];
+
+	
 
 	return self;
 
@@ -76,20 +81,15 @@
 	[super dealloc];
 }
 
-- (void)updateLabel{
 
+- (void)layoutSubviews{
+
+	self.icon.center = CGPointMake(self.bounds.size.width / 2, self.frame.size.height - 18);
 
 	CGPoint labelOrigin = [[OSThumbnailView sharedInstance] convertPoint:CGPointMake(0, [[OSThumbnailView sharedInstance] frame].size.height) toView:self];
-
 	CGPoint labelCenter;
 	labelCenter.x = self.frame.size.width / 2;
-
-	if([[OSThumbnailView sharedInstance] isPortrait]){
-		labelCenter.y = ((labelOrigin.y - self.frame.size.height) / 2) + self.frame.size.height;
-	}else{
-		labelCenter.y = (labelOrigin.y - self.frame.size.width) + self.frame.size.height - 12;
-	}
-
+	labelCenter.y = ((labelOrigin.y - self.frame.size.height) / 2) + self.frame.size.height;
 	self.label.center = labelCenter;
 }
 
@@ -102,10 +102,9 @@
 		frame.size.height = width;
 	}
 
-
-	self.frame = CGRectApplyAffineTransform(frame, CGAffineTransformScale(CGAffineTransformIdentity, 0.15, 0.15));
-
-	self.icon.center = CGPointMake(self.center.x, self.frame.size.height - 18);
+	frame = CGRectApplyAffineTransform(frame, CGAffineTransformScale(CGAffineTransformIdentity, 0.15, 0.15));
+	frame.origin = self.frame.origin;
+	self.frame = frame;
 }
 
 

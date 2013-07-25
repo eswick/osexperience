@@ -12,6 +12,8 @@
 @synthesize currentPane = _currentPane;
 @synthesize currentOrientation = _currentOrientation;
 @synthesize pageIndexPlaceholder = _pageIndexPlaceholder;
+@synthesize switcherUpGesture = _switcherUpGesture;
+@synthesize switcherDownGesture = _switcherDownGesture;
 
 
 + (id)sharedInstance
@@ -42,11 +44,35 @@
 	self.panGestureRecognizer.cancelsTouchesInView = false;
 	self.showsHorizontalScrollIndicator = false;
 
+	self.switcherUpGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpSwitcherGesture:)];
+	self.switcherUpGesture.direction = UISwipeGestureRecognizerDirectionUp;
+	self.switcherUpGesture.numberOfTouchesRequired = 4;
+	[self addGestureRecognizer:self.switcherUpGesture];
+
+	self.switcherDownGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleDownSwitcherGesture:)];
+	self.switcherDownGesture.direction = UISwipeGestureRecognizerDirectionDown;
+	self.switcherDownGesture.numberOfTouchesRequired = 4;
+	[self addGestureRecognizer:self.switcherDownGesture];
+
+
+	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherUpGesture];
+	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherDownGesture];
+
 
 	[self setDelegate:self];
 
 	return self;
 }
+
+
+-(void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+	[[OSViewController sharedInstance] setMissionControlActive:true animated:true]; 
+}
+
+-(void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+	[[OSViewController sharedInstance] setMissionControlActive:false animated:true]; 
+}
+
 
 
 -(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
@@ -152,8 +178,8 @@
 	intrudingPaneRect = CGRectIntersection([self convertRect:intrudingPane.frame toView:UIApplication.sharedApplication.keyWindow], self.frame);
 
 
-	float currentPanePercentage = ((isPortrait ? currentPaneRect.size.width : currentPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height) - marginSize);
-	float intrudingPanePercentage = ((isPortrait ? intrudingPaneRect.size.width : intrudingPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height) - marginSize);
+	float currentPanePercentage = ((isPortrait ? currentPaneRect.size.width : currentPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height) /*- marginSize*/);
+	float intrudingPanePercentage = ((isPortrait ? intrudingPaneRect.size.width : intrudingPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height)/* - marginSize*/);
 
 
 	float shownPercentage = 0;
@@ -165,8 +191,6 @@
 		shownPercentage += intrudingPanePercentage;
 
 	shownPercentage = shownPercentage * 0.01;
-
-	
 
 	[[OSViewController sharedInstance] setDockPercentage:shownPercentage];
 }
@@ -188,17 +212,10 @@
 	return [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex];
 }
 
-/*
--(OSPane*)paneAtIndex:(int)index{
-	if(index < 0 || index > [[OSPaneModel sharedInstance] count] - 1)
-		return nil;
-	return [self.panes objectAtIndex:index];
-}*/
-
-/*-(void)setContentOffset:(CGPoint)arg1{
-	[super setContentOffset:arg1];
-	NSLog(@"Set content offset!");
-}*/
+- (void)scrollToPane:(OSPane*)pane animated:(BOOL)animated{
+	if(!animated)
+		self.contentOffset = CGPointMake([[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width, 0);
+}
 
 
 @end

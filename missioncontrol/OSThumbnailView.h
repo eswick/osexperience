@@ -3,12 +3,14 @@
 #import "OSPaneThumbnail.h"
 #import "../OSPaneModel.h"
 #import "../OSPane.h"
+#import "../explorer/CGPointExtension.h"
+
 
 #define thumbnailMarginSize 20
 #define wrapperCenter 20
 
 
-@class OSThumbnailWrapper, OSPaneThumbnail, OSPane, OSPaneModel;
+@class OSThumbnailWrapper;
 
 @interface OSThumbnailView : UIView{
 	OSThumbnailWrapper *_wrapperView;
@@ -20,8 +22,7 @@
 
 - (BOOL)isPortrait;
 - (void)addPane:(OSPane*)pane;
-- (void)alignPanes;
-- (void)alignWrapper;
-
+- (void)alignSubviews;
+- (BOOL)isPortrait:(UIInterfaceOrientation)orientation;
 
 @end

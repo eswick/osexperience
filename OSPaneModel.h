@@ -15,7 +15,7 @@
 
 
 - (unsigned int)count;
-- (void)addPane:(OSPane*)pane atIndex:(unsigned int)index;
+- (void)insertPane:(OSPane*)pane atIndex:(unsigned int)index;
 - (void)addPaneToFront:(OSPane*)pane;
 - (void)addPaneToBack:(OSPane*)pane;
 - (void)removePane:(OSPane*)pane;

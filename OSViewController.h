@@ -5,6 +5,7 @@
 #import "include.h"
 #import "launchpad/OSIconContentView.h"
 #import "missioncontrol/OSThumbnailView.h"
+#import "OSPinchGestureRecognizer.h"
 
 
 @class OSSlider, OSIconContentView;
@@ -18,6 +19,8 @@
 	BOOL _missionControlActive;
 	BOOL _missionControlAnimating;
 	UIView *_switcherBackgroundView;
+	OSPinchGestureRecognizer *_pinchOutGesture;
+	OSPinchGestureRecognizer *_pinchInGesture;
 }
 
 @property (nonatomic, retain) OSSlider *slider;
@@ -28,6 +31,8 @@
 @property (nonatomic, readwrite, getter=missionControlIsActive) BOOL missionControlActive;
 @property (nonatomic, readwrite, getter=missionControlIsAnimating) BOOL missionControlAnimating;
 @property (nonatomic, retain) UIView *switcherBackgroundView;
+@property (nonatomic, retain) OSPinchGestureRecognizer *pinchOutGesture;
+@property (nonatomic, retain) OSPinchGestureRecognizer *pinchInGesture;
 
 
 

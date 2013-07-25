@@ -76,7 +76,7 @@ int iconSize = 72;
         self.selectionDragView.hidden = false;
         self.selectionDragViewStartPoint = [gesture locationInView:self];
 
-    }else if([gesture state] == UIGestureRecognizerStateEnded){
+    }else if([gesture state] == UIGestureRecognizerStateEnded || [gesture state] == UIGestureRecognizerStateCancelled){
 
         [UIView animateWithDuration:0.25
             delay:0.0

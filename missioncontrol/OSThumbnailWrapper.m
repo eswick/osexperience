@@ -11,7 +11,10 @@
 		frame = CGRectUnion(frame, view.frame);
 	}
 	[self setFrame:frame];
-	[[OSThumbnailView sharedInstance] alignWrapper];
+	
+	CGPoint center = [[OSThumbnailView sharedInstance] center];
+	center.y -= wrapperCenter;
+	self.center = center;
 }
 
 

@@ -22,6 +22,7 @@
 %hook SBUIController
 
 
+
 - (BOOL)activateSwitcher{
 
 	if([[OSViewController sharedInstance] missionControlIsActive])
@@ -133,6 +134,21 @@ static char osViewKey;
 
 
 
+
+%hook SBScaleGestureRecognizer
+
+
+-(BOOL)sendsTouchesCancelledToApplication{
+	return true;
+}
+
+-(BOOL)shouldReceiveTouches{
+	return false;
+}
+
+%end
+
+
 %hook SBPanGestureRecognizer
 
 -(BOOL)sendsTouchesCancelledToApplication{
@@ -149,7 +165,6 @@ static char osViewKey;
 }
 
 %end
-
 
 
 
@@ -174,8 +189,6 @@ static char osViewKey;
 %end
 
 
-
-//Background process handling
 
 
 
