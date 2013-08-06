@@ -61,9 +61,7 @@
 		[[OSThumbnailView sharedInstance] removePane:pane animated:false];
 
 	[[OSSlider sharedInstance] removePane:pane];
-
 	[self.panes removeObject:pane];
-
 	[[OSSlider sharedInstance] alignPanes];
 }
 

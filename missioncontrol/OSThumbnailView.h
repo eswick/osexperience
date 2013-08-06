@@ -25,5 +25,6 @@
 - (void)alignSubviews;
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation;
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated;
+- (void)updateSelectedThumbnail;
 
 @end

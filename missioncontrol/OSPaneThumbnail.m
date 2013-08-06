@@ -9,6 +9,9 @@
 @synthesize icon = _icon;
 @synthesize grabPoint = _grabPoint;
 @synthesize placeholder = _placeholder;
+@synthesize selected = _selected;
+@synthesize selectionView = _selectionView;
+@synthesize imageView = _imageView;
 
 
 - (id)initWithPane:(OSPane*)pane{
@@ -28,11 +31,15 @@
 	//self.backgroundColor = [UIColor whiteColor];
 	self.userInteractionEnabled = true;
 
-	self.layer.masksToBounds = NO;
-	self.layer.shadowOffset = CGSizeMake(0, 0);
-	self.layer.shadowRadius = 5;
-	self.layer.shadowOpacity = 0.5;
-	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+
+	self.imageView = [[UIImageView alloc] initWithFrame:self.frame];
+	self.imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	self.imageView.layer.masksToBounds = NO;
+	self.imageView.layer.shadowOffset = CGSizeMake(0, 0);
+	self.imageView.layer.shadowRadius = 5;
+	self.imageView.layer.shadowOpacity = 0.5;
+	self.imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.imageView.bounds].CGPath;
+	[self addSubview:self.imageView];
 
 
 	self.pane = pane;
@@ -72,12 +79,28 @@
 
 	[self addSubview:self.label];
 
+
+	frame = self.frame;
+	frame.size.width += 2;
+	frame.size.height += 2;
+	self.selectionView = [[UIView alloc] initWithFrame:frame];
+	self.selectionView.center = self.center;
+	self.selectionView.layer.borderColor = [UIColor whiteColor].CGColor;
+	self.selectionView.layer.borderWidth = 1.0f;
+
+	[self addSubview:self.selectionView];
+	[self sendSubviewToBack:self.selectionView];
+
+
 	return self;
 
 }
 
 - (void)dealloc{
 	[self.label release];
+	[self.imageView release];
+	[self.selectionView release];
+
 	if(self.icon)
 		[self.icon release];
 
@@ -85,6 +108,15 @@
 	[super dealloc];
 }
 
+- (void)setSelected:(BOOL)selected{
+	_selected = selected;
+
+	if(selected){
+		self.selectionView.hidden = false;
+	}else{
+		self.selectionView.hidden = true;
+	}
+}
 
 - (void)layoutSubviews{
 
@@ -115,22 +147,23 @@
 - (void)updateImage{
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
+		UIImage *image;
+
 		if([self.pane isKindOfClass:[OSAppPane class]]){
 			UIView *zoomView = [[objc_getClass("SBUIController") sharedInstance] systemGestureSnapshotForApp:[(OSAppPane*)self.pane application] includeStatusBar:true decodeImage:true];
-
 			UIGraphicsBeginImageContextWithOptions(zoomView.bounds.size, zoomView.opaque, 0.5);
     		[zoomView.layer renderInContext:UIGraphicsGetCurrentContext()];
-    		[self setImage:UIGraphicsGetImageFromCurrentImageContext()];
-    		UIGraphicsEndImageContext();
+  			image = UIGraphicsGetImageFromCurrentImageContext();
+		}else{
+			UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.pane.opaque, 0.0);
+			CGContextConcatCTM(UIGraphicsGetCurrentContext(), CGAffineTransformMakeScale(0.15, 0.15));
+    		[self.pane.layer renderInContext:UIGraphicsGetCurrentContext()];
+    		image = UIGraphicsGetImageFromCurrentImageContext();
+    	}
 
-			return;
-		}
-
-		UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.pane.opaque, 0.0);
-		CGContextConcatCTM(UIGraphicsGetCurrentContext(), CGAffineTransformMakeScale(0.15, 0.15));
-    	[self.pane.layer renderInContext:UIGraphicsGetCurrentContext()];
-    	[self setImage:UIGraphicsGetImageFromCurrentImageContext()];
-    	UIGraphicsEndImageContext();
+    	dispatch_async(dispatch_get_main_queue(), ^{
+    		[self.imageView setImage:image];
+    	});
 	});
 }
 

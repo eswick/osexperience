@@ -162,6 +162,10 @@
 	[self updateDockPosition];
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+	[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
+}
+
 
 
 -(void)updateDockPosition{
@@ -232,12 +236,14 @@
 	if(!animated){
 		self.contentOffset = CGPointMake([[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width, 0);
 		[self updateDockPosition];
+		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 	}else{
 		[UIView animateWithDuration:1.0 delay:0.25 options: UIViewAnimationCurveEaseOut animations:^{
 			CGRect bounds = [self bounds];
         	bounds.origin.x = [[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width;
         	[self setBounds:bounds];
         	[self updateDockPosition];
+        	[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 
         }completion:^(BOOL finished){
          

@@ -48,6 +48,14 @@
 	return self;
 }
 
+- (void)updateSelectedThumbnail{
+  for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+    if(thumbnail.pane == [[OSSlider sharedInstance] currentPane])
+      thumbnail.selected = true;
+    else
+      thumbnail.selected = false;
+  }
+}
 
 -(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
 	CGRect frame = [[UIScreen mainScreen] bounds];
@@ -91,6 +99,7 @@
   [thumbnail addGestureRecognizer:panGesture];
 	[self.wrapperView addSubview:thumbnail];
 	[self alignSubviews];
+  [self updateSelectedThumbnail];
   
   [panGesture release];
   [thumbnail release];
