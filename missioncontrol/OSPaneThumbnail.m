@@ -41,7 +41,11 @@
 
 	if([self.pane isKindOfClass:[OSAppPane class]]){
 		self.icon = [[UIImageView alloc] init];
-		self.icon.image = [[[objc_getClass("SBApplicationIcon") alloc] initWithApplication:[(OSAppPane*)self.pane application]] generateIconImage:2];
+		
+		UIImage *icon = [[[objc_getClass("SBApplicationIcon") alloc] initWithApplication:[(OSAppPane*)self.pane application]] generateIconImage:2];
+		self.icon.image = icon;
+		[icon release];
+
 		float size = [[OSThumbnailView sharedInstance] isPortrait] ? self.frame.size.width : self.frame.size.height;
 		self.icon.frame = CGRectMake(0, 0, size / 2, size / 2);
 		self.icon.center = CGPointMake(self.center.x, self.frame.size.height - 18);
@@ -68,8 +72,6 @@
 
 	[self addSubview:self.label];
 
-	
-
 	return self;
 
 }
@@ -78,6 +80,8 @@
 	[self.label release];
 	if(self.icon)
 		[self.icon release];
+
+
 	[super dealloc];
 }
 
@@ -114,7 +118,7 @@
 		if([self.pane isKindOfClass:[OSAppPane class]]){
 			UIView *zoomView = [[objc_getClass("SBUIController") sharedInstance] systemGestureSnapshotForApp:[(OSAppPane*)self.pane application] includeStatusBar:true decodeImage:true];
 
-			UIGraphicsBeginImageContextWithOptions(zoomView.bounds.size, zoomView.opaque, 0.0);
+			UIGraphicsBeginImageContextWithOptions(zoomView.bounds.size, zoomView.opaque, 0.5);
     		[zoomView.layer renderInContext:UIGraphicsGetCurrentContext()];
     		[self setImage:UIGraphicsGetImageFromCurrentImageContext()];
     		UIGraphicsEndImageContext();
@@ -122,7 +126,8 @@
 			return;
 		}
 
-		UIGraphicsBeginImageContextWithOptions(self.pane.bounds.size, self.pane.opaque, 0.0);
+		UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.pane.opaque, 0.0);
+		CGContextConcatCTM(UIGraphicsGetCurrentContext(), CGAffineTransformMakeScale(0.15, 0.15));
     	[self.pane.layer renderInContext:UIGraphicsGetCurrentContext()];
     	[self setImage:UIGraphicsGetImageFromCurrentImageContext()];
     	UIGraphicsEndImageContext();

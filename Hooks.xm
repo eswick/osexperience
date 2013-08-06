@@ -19,6 +19,16 @@
 %group SpringBoard //Springboard hooks
 
 
+%hook SBWallpaperView
+
+- (BOOL)_shouldShowGradientOverWallpaper{
+	return false;
+}
+
+%end
+
+
+
 %hook SBUIController
 
 
@@ -35,44 +45,15 @@
 }
 
 
-
-
-static char osViewKey;
-
--(BOOL)clickedMenuButton{
-    [[OSViewController sharedInstance] menuButtonPressed];
-   
-    return true;
-}
-
-
-%new
--(id)osView{
-	return objc_getAssociatedObject(self, &osViewKey);
-}
-
-
-%new
-- (void)setOSView:(id)arg1{
-    objc_setAssociatedObject(self, &osViewKey, arg1, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-
-
 -(id)init{
 	self = %orig;
 
 	[[self rootView] removeFromSuperview];
 
-
 	OSViewController *viewController = [OSViewController sharedInstance];
 
-	//[UIApp.keyWindow addSubview:viewController.view];
 	[UIApp.keyWindow setRootViewController:viewController];
 	[viewController.view setFrame:[[UIScreen mainScreen] bounds]];
-
-	[self setOSView:viewController.view];
-
 
 
 	return self;
@@ -106,26 +87,24 @@ static char osViewKey;
 	
 	[[OSSlider sharedInstance] setPageIndexPlaceholder:[[OSSlider sharedInstance] currentPageIndex]];
 
-	[UIView animateWithDuration:arg3
-                          delay:0.0
-                        options: UIViewAnimationCurveEaseOut
-                     animations:^{
 
-						UIView *osView = [self osView];
-						osView.transform = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
-						[osView setFrame:[[UIScreen mainScreen] bounds]];
+	[UIView animateWithDuration:arg3 delay:0.0 options: UIViewAnimationCurveEaseOut animations:^{
+		UIView *osView = [[OSViewController sharedInstance] view];
+		osView.transform = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
+		[osView setFrame:[[UIScreen mainScreen] bounds]];
+		[[objc_getClass("SBIconController") sharedInstance] willAnimateRotationToInterfaceOrientation:arg2 duration:arg3];
+	}completion:^(BOOL finished){
 
-						[[objc_getClass("SBIconController") sharedInstance] willAnimateRotationToInterfaceOrientation:arg2 duration:arg3];
-
-                     } 
-                     completion:^(BOOL finished){
-                     }];
+    }];
 
 	[[OSSlider sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 	[[OSThumbnailView sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 
 
 	[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
+
+
+	[[[[OSViewController sharedInstance] iconContentView] wallpaperView] setOrientation:arg2 duration:arg3];
 }
 
 
@@ -174,6 +153,7 @@ static char osViewKey;
 -(void)sendEvent:(id)arg1{
 	GSEventRef event = [arg1 _gsEvent];
 
+
 	if(GSEventGetType(event) == kGSEventDeviceOrientationChanged){
 		for(OSAppPane *appPane in [[OSPaneModel sharedInstance] panes]){
 			if(![appPane isKindOfClass:[OSAppPane class]])
@@ -186,6 +166,7 @@ static char osViewKey;
 	%orig;
 }
 
+
 %end
 
 
@@ -195,6 +176,26 @@ static char osViewKey;
 
 
 %hook SBApplication
+
+-(void)didExitWithInfo:(id)arg1 type:(int)arg2{
+
+	OSAppPane *appPane;
+
+	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
+		if(![pane isKindOfClass:[OSAppPane class]])
+			continue;
+
+		if(pane.application == self)
+			appPane = pane;
+	}
+
+	if(appPane)
+		[[OSPaneModel sharedInstance] removePane:appPane];
+
+
+    %orig;
+}
+
 
 
 %new
@@ -351,16 +352,7 @@ static char osViewKey;
 			continue;
 
 		if(pane.application == arg1.application){
-
-			[UIView animateWithDuration:1.0 delay:0.25 options: UIViewAnimationCurveEaseOut animations:^{//Animate to activating app
-				CGRect bounds = [[OSSlider sharedInstance] bounds];
-                bounds.origin.x = pane.frame.origin.x;
-                [[OSSlider sharedInstance] setBounds:bounds];
-                [[OSSlider sharedInstance] updateDockPosition];
-            }completion:^(BOOL finished){
-         
-            }];
-
+			[[OSSlider sharedInstance] scrollToPane:pane animated:true];
 		}
 	}
 

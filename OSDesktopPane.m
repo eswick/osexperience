@@ -19,8 +19,11 @@
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	
 
-	self.wallpaperView = [[OSWallpaperView alloc] init];
+	//self.wallpaperView = [[OSWallpaperView alloc] init];
+	self.wallpaperView = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIDevice currentDevice] orientation] variant:1];
+	[self.wallpaperView setGradientAlpha:0.0];
 	[self addSubview:self.wallpaperView];
+
 
 	self.gridView = [[OSFileGridView alloc] initWithDirectory:@"/var/mobile/Desktop" frame:[[UIScreen mainScreen] applicationFrame]];
 	[self addSubview:self.gridView];

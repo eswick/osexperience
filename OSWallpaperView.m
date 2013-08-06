@@ -11,10 +11,10 @@
 
     if(image == nil){
 
-        NSData *wallpaperFile = [NSData dataWithContentsOfFile:@"/var/mobile/Library/SpringBoard/LockBackground.cpbitmap"];
-        CGImageRef wallpaper = CGImageFromCPBitmap((unsigned char*)[wallpaperFile bytes], [wallpaperFile length]);
-        image = [UIImage imageWithCGImage:wallpaper];
-        CFRelease(wallpaper);
+        //NSData *wallpaperFile = [NSData dataWithContentsOfFile:@"/var/mobile/Library/SpringBoard/LockBackground.cpbitmap"];
+        //CGImageRef wallpaper = CGImageFromCPBitmap((unsigned char*)[wallpaperFile bytes], [wallpaperFile length]);
+        //image = [UIImage imageWithCGImage:wallpaper];
+        //CFRelease(wallpaper);
     }
 
     return image;

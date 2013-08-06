@@ -9,12 +9,12 @@
 
 
 @interface OSIconContentView : UIView{
-	UIImageView *_wallpaperView;
+	SBWallpaperView *_wallpaperView;
 	UIView *_contentView;
 }
 
 
-@property (nonatomic, retain) UIImageView *wallpaperView;
+@property (nonatomic, retain) SBWallpaperView *wallpaperView;
 @property (nonatomic, retain) UIView *contentView;
 
 

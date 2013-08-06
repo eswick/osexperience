@@ -3,6 +3,7 @@
 #import "../OSPane.h"
 #import "OSThumbnailView.h"
 #import "../OSAppPane.h"
+#import "../include.h"
 
 @class OSThumbnailPlaceholder;
 

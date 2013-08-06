@@ -30,6 +30,8 @@
 	self.layer.shadowRadius = 10;
 	self.layer.shadowOpacity = 0.5;
 	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+	
+	
 
 	return self;
 

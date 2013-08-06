@@ -101,6 +101,8 @@
 			CGRect frame = [appView frame];
 			frame.origin = CGPointMake(0, 0);
 			[appView setFrame:frame];
+ 		}else if([pane isKindOfClass:[OSDesktopPane class]]){
+ 			[[(OSDesktopPane*)pane wallpaperView] setOrientation:orientation duration:duration];
  		}
  	}
 
@@ -124,6 +126,22 @@
 	[self addSubview:pane];
 
 	[self alignPanes];
+}
+
+
+- (void)removePane:(OSPane*)pane{
+	OSPane *selectedPane = [self currentPane];
+
+	if(selectedPane == pane){
+		[self scrollToPane:[[OSPaneModel sharedInstance] paneAtIndex:0] animated:true];
+		[pane removeFromSuperview];
+		[self alignPanes];
+		return;
+	}
+
+	[self scrollToPane:selectedPane animated:false];
+	[pane removeFromSuperview];
+
 }
 
 -(void)alignPanes{
@@ -203,9 +221,7 @@
 }
 
 -(int)currentPageIndex{
-
 	return nearbyint(self.contentOffset.x / self.bounds.size.width);
-	//return nearbyint(self.contentOffset.x / (self.isPortrait ? self.bounds.size.width : self.bounds.size.height));
 }
 
 -(OSPane*)currentPane{
@@ -213,9 +229,37 @@
 }
 
 - (void)scrollToPane:(OSPane*)pane animated:(BOOL)animated{
-	if(!animated)
+	if(!animated){
 		self.contentOffset = CGPointMake([[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width, 0);
+		[self updateDockPosition];
+	}else{
+		[UIView animateWithDuration:1.0 delay:0.25 options: UIViewAnimationCurveEaseOut animations:^{
+			CGRect bounds = [self bounds];
+        	bounds.origin.x = [[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width;
+        	[self setBounds:bounds];
+        	[self updateDockPosition];
+
+        }completion:^(BOOL finished){
+         
+        }];
+	}
 }
 
 
 @end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

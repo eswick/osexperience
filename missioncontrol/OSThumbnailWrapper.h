@@ -3,10 +3,12 @@
 
 
 @interface OSThumbnailWrapper : UIView{
-
+	BOOL _shouldAnimate;
 }
+@property (nonatomic, readwrite) BOOL shouldAnimate;
 
 
+- (void)layoutSubviewsAnimated;
 
 
 @end

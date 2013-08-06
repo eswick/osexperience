@@ -54,7 +54,17 @@
 }
 
 - (void)removePane:(OSPane*)pane{
+
+	if([[OSViewController sharedInstance] missionControlIsActive])
+		[[OSThumbnailView sharedInstance] removePane:pane animated:true];
+	else
+		[[OSThumbnailView sharedInstance] removePane:pane animated:false];
+
+	[[OSSlider sharedInstance] removePane:pane];
+
 	[self.panes removeObject:pane];
+
+	[[OSSlider sharedInstance] alignPanes];
 }
 
 - (unsigned int)indexOfPane:(OSPane*)pane{

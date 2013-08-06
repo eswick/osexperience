@@ -44,4 +44,5 @@
 - (void)setDockPercentage:(float)percentage;
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated;
 
+
 @end

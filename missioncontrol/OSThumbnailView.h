@@ -24,5 +24,6 @@
 - (void)addPane:(OSPane*)pane;
 - (void)alignSubviews;
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation;
+- (void)removePane:(OSPane*)pane animated:(BOOL)animated;
 
 @end

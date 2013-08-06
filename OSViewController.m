@@ -58,14 +58,11 @@
     }
 
 
-
     CGRect dockFrame = self.dock.frame;
 
     float dockShownY = (isPortrait ? self.view.frame.size.height : self.view.frame.size.width) - dockFrame.size.height;
 
     dockFrame.origin.y = dockShownY + (percentage * dockFrame.size.height);
-
-
 
     [self.dock setFrame:dockFrame];
 }
@@ -74,6 +71,7 @@
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated{
 
     if(active){
+
         [[UIApplication sharedApplication] setStatusBarHidden:true animated:true];
 
         self.switcherBackgroundView.hidden = false;
@@ -90,7 +88,7 @@
                 [self setDockPercentage:0.0];
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
-                    pane.userInteractionEnabled = false;
+                    //pane.userInteractionEnabled = false;
                 }
 
             } completion:^(BOOL finished){
@@ -173,11 +171,8 @@
 	[self.view addSubview:self.slider];
 
 	OSDesktopPane *desktopPane = [[OSDesktopPane alloc] init];
-  // OSDesktopPane *desktopPaneTwo = [[OSDesktopPane alloc] init];
     [[OSPaneModel sharedInstance] addPaneToBack:desktopPane];
-    //[[OSPaneModel sharedInstance] addPaneToBack:desktopPaneTwo];
     [desktopPane release];
-    //[desktopPaneTwo release];
 
 
 
@@ -354,6 +349,10 @@
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
 	return true;
 }
+
+
+
+
 
 -(void)dealloc{
     [self.view release];

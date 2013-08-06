@@ -6,12 +6,12 @@
 
 
 @interface OSDesktopPane : OSPane{
-	OSWallpaperView *_wallpaperView;
+	SBWallpaperView *_wallpaperView;
 	OSFileGridView *_gridView;
 	UIStatusBar *_statusBar;
 }
 
-@property (nonatomic, retain) OSWallpaperView *wallpaperView;
+@property (nonatomic, retain) SBWallpaperView *wallpaperView;
 @property (nonatomic, retain) OSFileGridView *gridView;
 @property (nonatomic, retain) UIStatusBar *statusBar;
 

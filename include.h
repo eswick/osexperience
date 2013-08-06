@@ -1,6 +1,7 @@
 #define UIApp [UIApplication sharedApplication]
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 
+#import <QuartzCore/QuartzCore.h>
 
 
 @interface BKProcess{
@@ -12,10 +13,13 @@
 
 @end
 
+@interface SBWallpaperView : UIImageView
 
+- (void)setOrientation:(int)arg1 duration:(double)arg2;
+- (void)setGradientAlpha:(float)arg1;
+- (id)initWithOrientation:(int)arg1 variant:(int)arg2;
 
-
-
+@end
 
 @interface BKApplication : NSObject{
 
@@ -34,7 +38,7 @@
 @end
 
 
-@interface UIEvent(OSAdditions)
+@interface UIEvent(STFUACAdditions)
 
 -(struct __GSEvent*)_gsEvent;
 
@@ -90,20 +94,6 @@
 @end
 
 
-@interface UITouch(FixAdditions)
-
-
-- (void)_loadStateFromTouch:(id)arg1;
-
-@end
-
-@interface UITouchesEvent(FixAdditions)
-
-
--(void)_addTouch:(id)touch forDelayedDelivery:(BOOL)delayedDelivery;
--(void)_removeTouch:(id)touch;
-
-@end
 
 
 
@@ -247,7 +237,7 @@
 
 @end
 
-@interface UIApplication(OSAdditions)
+@interface UIApplication(STFUACAdditions)
 -(id)displayIdentifier;
 
 
@@ -255,7 +245,7 @@
 
 
 
-@interface UIWindow(OSAdditions)
+@interface UIWindow(STFUACAdditions)
 
 -(unsigned int)_contextId;
 
@@ -269,9 +259,6 @@
 
 + (id)sharedInstance;
 + (id)zoomViewForContextHostView:(id)arg1 application:(id)arg2 includeStatusBar:(BOOL)arg3 includeBanner:(BOOL)arg4;
-
-- (id)osView;//New
-- (void)setOSView:(id)arg1;//New
 
 - (id)wallpaperView;
 - (id)rootView;
