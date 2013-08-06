@@ -80,12 +80,12 @@
 	[self addSubview:self.label];
 
 
-	frame = self.frame;
+	frame = self.imageView.frame;
 	frame.size.width += 2;
 	frame.size.height += 2;
 	frame.origin.x = -1;
 	frame.origin.y = -1;
-	
+
 	self.selectionView.frame = frame;
 	self.selectionView = [[UIView alloc] initWithFrame:frame];
 	self.selectionView.layer.borderColor = [UIColor whiteColor].CGColor;
@@ -132,7 +132,7 @@
 	self.label.center = labelCenter;
 
 
-	CGRect frame = self.frame;
+	CGRect frame = self.imageView.frame;
 	frame.size.width += 2;
 	frame.size.height += 2;
 	frame.origin.x = -1;
