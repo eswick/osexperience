@@ -88,7 +88,7 @@
                 [self setDockPercentage:0.0];
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
-                    //pane.userInteractionEnabled = false;
+                    pane.userInteractionEnabled = false;
                 }
 
             } completion:^(BOOL finished){

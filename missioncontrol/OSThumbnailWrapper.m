@@ -14,9 +14,7 @@
 
 	CGRect frame = CGRectZero;
 	for(UIView *view in self.subviews){
-		//NSLog(@"%@, %@", NSStringFromCGRect(frame), NSStringFromCGRect(view.frame));
 		frame = CGRectUnion(frame, view.frame);
-		//NSLog(@"%@", NSStringFromCGRect(frame));
 	}
 	[self setFrame:frame];
 	
