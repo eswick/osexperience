@@ -83,8 +83,11 @@
 	frame = self.frame;
 	frame.size.width += 2;
 	frame.size.height += 2;
+	frame.origin.x = -1;
+	frame.origin.y = -1;
+	
+	self.selectionView.frame = frame;
 	self.selectionView = [[UIView alloc] initWithFrame:frame];
-	self.selectionView.center = self.center;
 	self.selectionView.layer.borderColor = [UIColor whiteColor].CGColor;
 	self.selectionView.layer.borderWidth = 1.0f;
 
@@ -127,6 +130,14 @@
 	labelCenter.x = self.frame.size.width / 2;
 	labelCenter.y = ((labelOrigin.y - self.frame.size.height) / 2) + self.frame.size.height;
 	self.label.center = labelCenter;
+
+
+	CGRect frame = self.frame;
+	frame.size.width += 2;
+	frame.size.height += 2;
+	frame.origin.x = -1;
+	frame.origin.y = -1;
+	self.selectionView.frame = frame;
 }
 
 - (void)updateSize{
@@ -141,6 +152,8 @@
 	frame = CGRectApplyAffineTransform(frame, CGAffineTransformScale(CGAffineTransformIdentity, 0.15, 0.15));
 	frame.origin = self.frame.origin;
 	self.frame = frame;
+
+	self.imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.imageView.bounds].CGPath;
 }
 
 
