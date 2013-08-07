@@ -105,7 +105,7 @@
                 [self.selectionBackdrop setHidden:false];
                 [UIView animateWithDuration:duration
                         delay:0.0
-                        options: UIViewAnimationCurveEaseOut
+                        options: UIViewAnimationOptionCurveEaseOut
                         animations:^{
                                 [self.selectionBackdrop setAlpha:endAlpha];
                         } 

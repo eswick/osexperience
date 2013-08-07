@@ -28,7 +28,7 @@
 
 
 
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 
 		CGRect frame = CGRectZero;
 

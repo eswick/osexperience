@@ -71,7 +71,7 @@
 
 
 - (OSPane*)paneAtIndex:(unsigned int)index{
-	if(index < 0 || index > self.panes.count - 1)
+	if(index > self.panes.count - 1)
 		return nil;
 	return [self.panes objectAtIndex:index];
 }

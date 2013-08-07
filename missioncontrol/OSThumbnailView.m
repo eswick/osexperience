@@ -131,7 +131,7 @@
 
     self.wrapperView.shouldAnimate = true;
 
-    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 
       thumbnail.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0, 0);
 
@@ -140,7 +140,7 @@
       [thumbnail removeFromSuperview];
 
 
-      [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+      [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         [placeholder removeFromSuperview];
         [self alignSubviews];
       }completion:^(BOOL finished){
@@ -174,7 +174,7 @@
        		[[OSPaneModel sharedInstance] insertPane:[(OSPaneThumbnail*)[gesture view] pane] atIndex:[[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane]];
        		[[OSSlider sharedInstance] scrollToPane:selectedPane animated:false];
 
-       		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+       		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             [self alignSubviews];
           }completion:^(BOOL finished){
             
@@ -186,7 +186,7 @@
        		[[OSPaneModel sharedInstance] insertPane:[(OSPaneThumbnail*)[gesture view] pane] atIndex:[[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane]];
        		[[OSSlider sharedInstance] scrollToPane:selectedPane animated:false];
             
-          [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+          [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
             [self alignSubviews];
           }completion:^(BOOL finished){
             
@@ -236,7 +236,7 @@
       [self.wrapperView addSubview:gesture.view];
       [[(OSPaneThumbnail*)[gesture view] placeholder] removeFromSuperview];
 
-      [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationCurveLinear animations:^{
+      [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
         gesture.view.alpha = 1.0;
         [self alignSubviews];
       }completion:^(BOOL finished){

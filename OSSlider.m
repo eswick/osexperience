@@ -238,7 +238,7 @@
 		[self updateDockPosition];
 		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 	}else{
-		[UIView animateWithDuration:1.0 delay:0.25 options: UIViewAnimationCurveEaseOut animations:^{
+		[UIView animateWithDuration:1.0 delay:0.25 options: UIViewAnimationOptionCurveEaseInOut animations:^{
 			CGRect bounds = [self bounds];
         	bounds.origin.x = [[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width;
         	[self setBounds:bounds];

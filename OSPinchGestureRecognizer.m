@@ -64,7 +64,7 @@
     }
 
    
-    float cumulativeDistance;
+    float cumulativeDistance = 0.0f;
 
     for(UITouch *touch in [event allTouches]){
 

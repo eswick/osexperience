@@ -78,15 +78,11 @@ int iconSize = 72;
 
     }else if([gesture state] == UIGestureRecognizerStateEnded || [gesture state] == UIGestureRecognizerStateCancelled){
 
-        [UIView animateWithDuration:0.25
-            delay:0.0
-            options: UIViewAnimationCurveEaseOut
-            animations:^{
-                self.selectionDragView.alpha = 0;
-            } 
-            completion:^(BOOL finished){
-                self.selectionDragView.hidden = true;
-                [self.selectionDragView setFrame:CGRectMake(0, 0, 0, 0)];
+        [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseOut animations:^{
+            self.selectionDragView.alpha = 0;
+        }completion:^(BOOL finished){
+            self.selectionDragView.hidden = true;
+            [self.selectionDragView setFrame:CGRectMake(0, 0, 0, 0)];
         }];
 
     }
@@ -245,15 +241,12 @@ int iconSize = 72;
  
 
 
-        [UIView animateWithDuration:0.25
-            delay:0.0
-            options: UIViewAnimationCurveEaseOut
-            animations:^{
-                fileView.alpha = 1;
-                fileView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
-                [fileView setFrame:CGRectMake(x, y, fileView.frame.size.width, fileView.frame.size.height)];
-            } 
-            completion:^(BOOL finished){
+        [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseOut animations:^{
+            fileView.alpha = 1;
+            fileView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
+            [fileView setFrame:CGRectMake(x, y, fileView.frame.size.width, fileView.frame.size.height)];
+        }completion:^(BOOL finished){
+            
         }];
 
      }
@@ -280,7 +273,7 @@ int iconSize = 72;
             [fileView setDragOffset:CGPointSub(fileView.center, [gesture locationInView:self])];
 
 
-            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveEaseOut animations:^{
+            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseOut animations:^{
                     fileView.center = CGPointAdd([fileView dragOffset], [gesture locationInView:self]);
                     fileView.alpha = 0.9;
                     fileView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.1, 1.1);

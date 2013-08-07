@@ -84,7 +84,7 @@
             self.missionControlAnimating = true;
             self.missionControlActive = true;
 
-            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveLinear animations:^{
+            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self setDockPercentage:0.0];
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
@@ -119,7 +119,7 @@
             self.missionControlAnimating = true;
             self.missionControlActive = false;
 
-            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveLinear animations:^{
+            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0, 1.0);
                     pane.userInteractionEnabled = true;
@@ -248,7 +248,7 @@
 	[self.view addSubview:launchZoomView];
 
 
-	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveLinear animations:^{
+	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
         launchZoomView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 2.0f, 2.0f);
         launchZoomView.alpha = 0.0f;
     }completion:^(BOOL finished){
@@ -289,7 +289,7 @@
             self.launchpadAnimating = true;
             self.launchpadActive = true;
 
-        	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveLinear animations:^{
+        	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
 
                 [self setDockPercentage:0.0];
                 self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
@@ -326,7 +326,7 @@
 			self.iconContentView.alpha = 1.0f;
         	self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
 
-        	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationCurveLinear animations:^{
+        	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [[OSSlider sharedInstance] updateDockPosition];
                 self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
                 self.iconContentView.alpha = 0.0f;

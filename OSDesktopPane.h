@@ -1,3 +1,4 @@
+#import <objc/runtime.h>
 #import <UIKit/UIKit.h>
 #import "OSPane.h"
 #import "OSWallpaperView.h"
