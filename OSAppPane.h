@@ -10,10 +10,12 @@
 @interface OSAppPane : OSPane{
 	SBApplication *_application;
 	SBHostWrapperView *_appView;
+	UIToolbar *_windowBar;
 }
 
 @property (nonatomic, retain) SBApplication *application;
 @property (nonatomic, retain) SBHostWrapperView *appView;
+@property (nonatomic, retain) UIToolbar *windowBar;
 
 -(id)initWithDisplayIdentifier:(NSString*)displayIdentifier;
 

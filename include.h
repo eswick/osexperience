@@ -21,6 +21,13 @@
 
 @end
 
+
+@interface UIBarButtonItem (STFUACAdditions)
+
+- (UIView*)view;
+
+@end
+
 @interface BKApplication : NSObject{
 
 }
