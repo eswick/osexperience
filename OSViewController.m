@@ -71,7 +71,9 @@
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated{
 
     if(active){
-
+        for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+            [thumbnail updateImage];
+        }
         [[UIApplication sharedApplication] setStatusBarHidden:true animated:true];
 
         self.switcherBackgroundView.hidden = false;

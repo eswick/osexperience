@@ -160,11 +160,11 @@
 - (void)updateImage{
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
-		UIImage *image;
+		UIImage *image = nil;
 
 		if([self.pane isKindOfClass:[OSAppPane class]]){
-			UIView *zoomView = [[objc_getClass("SBUIController") sharedInstance] systemGestureSnapshotForApp:[(OSAppPane*)self.pane application] includeStatusBar:true decodeImage:true];
-			UIGraphicsBeginImageContextWithOptions(zoomView.bounds.size, zoomView.opaque, 0.5);
+			UIView *zoomView = [[objc_getClass("SBUIController") sharedInstance] systemGestureSnapshotWithIOSurfaceSnapshotOfApp:[(OSAppPane*)self.pane application] includeStatusBar:true];
+			UIGraphicsBeginImageContextWithOptions(zoomView.bounds.size, zoomView.opaque, [UIScreen mainScreen].scale);
     		[zoomView.layer renderInContext:UIGraphicsGetCurrentContext()];
   			image = UIGraphicsGetImageFromCurrentImageContext();
 		}else{
@@ -174,6 +174,8 @@
     		image = UIGraphicsGetImageFromCurrentImageContext();
     	}
 
+    	UIGraphicsEndImageContext();
+    	
     	dispatch_async(dispatch_get_main_queue(), ^{
     		[self.imageView setImage:image];
     	});
