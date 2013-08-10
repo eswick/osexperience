@@ -8,6 +8,7 @@
 @synthesize application = _application;
 @synthesize appView = _appView;
 @synthesize windowBar = _windowBar;
+@synthesize windowBarOpen = _windowBarOpen;
 
 
 
@@ -45,17 +46,19 @@
 	[touchForwarder release];
 
 	self.windowBar = [[UIToolbar alloc] init];
-	self.windowBar.frame = CGRectMake(0, 0, self.frame.size.width, 44);
+	self.windowBar.frame = CGRectMake(0, -44, self.frame.size.width, 44);
+	self.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	self.windowBar.hidden = true;
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 
 
 	UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(stopButtonPressed)];
-	UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	UIBarButtonItem *title = [[UIBarButtonItem alloc] initWithTitle:self.name style:UIBarButtonItemStylePlain target:nil action:nil];
 
 	[items addObject:closeButton];
+	[items addObject:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]];
 	[items addObject:title];
-	[items addObject:spacer];
+	[items addObject:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]];
 
 
 
@@ -66,7 +69,8 @@
 	title.view.userInteractionEnabled = false;
 	[title release];
 	[closeButton release];
-	[spacer release];
+
+	self.windowBarOpen = false;
 
 	return self;
 }

@@ -66,10 +66,42 @@
 
 
 -(void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
+		if([(OSAppPane*)[self currentPane] windowBarIsOpen]){
+			CGRect frame = [[(OSAppPane*)self.currentPane windowBar] frame];
+			frame.origin.y = -frame.size.height;
+		
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+				[[(OSAppPane*)self.currentPane windowBar] setFrame:frame];
+			}completion:^(BOOL finished){
+				[[(OSAppPane*)self.currentPane windowBar] setHidden:true];
+			}];
+		
+			[(OSAppPane*)self.currentPane setWindowBarOpen:false];
+			return;
+		}
+	}
 	[[OSViewController sharedInstance] setMissionControlActive:true animated:true]; 
 }
 
 -(void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+	if([[self currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] missionControlIsActive]){
+		if(![(OSAppPane*)[self currentPane] windowBarIsOpen]){
+
+			[[(OSAppPane*)self.currentPane windowBar] setHidden:false];
+			CGRect frame = [[(OSAppPane*)self.currentPane windowBar] frame];
+			frame.origin.y = 0;
+		
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+				[[(OSAppPane*)self.currentPane windowBar] setFrame:frame];
+			}completion:^(BOOL finished){
+			}];
+		
+			[(OSAppPane*)self.currentPane setWindowBarOpen:true];
+			return;
+		}
+	}
+
 	[[OSViewController sharedInstance] setMissionControlActive:false animated:true]; 
 }
 

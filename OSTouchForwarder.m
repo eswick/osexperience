@@ -42,6 +42,10 @@
 	return true;
 }
 
+- (BOOL)canPreventGestureRecognizer:(UIGestureRecognizer *)preventedGestureRecognizer{
+	return false;
+}
+
 
 -(void)sendEvent:(UIEvent *)event{
 	GSEventRef gsEvent = [event _gsEvent];
