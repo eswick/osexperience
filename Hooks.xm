@@ -156,6 +156,16 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 		}
 	}
 
+	if(GSEventGetType(event) == kGSEventKeyUp || GSEventGetType(event) == kGSEventKeyDown){
+		if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
+		
+			const GSEventRecord* record = _GSEventGetGSEventRecord(event);
+
+			GSSendEvent(record, (mach_port_t)[[(OSAppPane*)[[OSSlider sharedInstance] currentPane] application] eventPort]);
+			return;
+		}
+	}
+
 	%orig;
 }
 
@@ -211,6 +221,8 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 	GSSendEvent((GSEventRecord*)event, (mach_port_t)[self eventPort]);
 
 }
+
+
 
 -(void)didSuspend{
 	
@@ -489,6 +501,9 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 	return nil;
 }
 
+- (unsigned int)currentEventPort{
+	return [self portForBundleIdentifier:@"com.apple.springboard"];
+}
 
 %end
 

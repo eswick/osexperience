@@ -233,7 +233,8 @@
 -(id)workspaceForApplication:(id)application;
 -(id)currentWorkspace;
 - (void)_receiveSuspend:(id)arg1;
-
+- (unsigned int)portForBundleIdentifier:(id)arg1;
+- (unsigned int)currentEventPort;
 
 
 @end
