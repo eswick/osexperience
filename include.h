@@ -4,11 +4,15 @@
 #import <QuartzCore/QuartzCore.h>
 
 
+
 @interface BKProcess{
 
 }
 
--(void)killWithSignal:(int)arg1;
+- (void)killWithSignal:(int)arg1;
+- (BOOL)_suspend;
+- (BOOL)performOriginals;//New
+- (void)setPerformOriginals:(BOOL)arg1;//New
 
 
 @end
@@ -22,21 +26,39 @@
 @end
 
 
+
+@interface BKSSystemServices : NSObject
+
+- (id)proxy:(id)arg1 detailedSignatureForSelector:(SEL)arg2;
+- (void)terminateApplicationGroup:(int)arg1 forReason:(int)arg2 andReport:(BOOL)arg3 withDescription:(id)arg4;
+- (void)terminateApplication:(id)arg1 forReason:(int)arg2 andReport:(BOOL)arg3 withDescription:(id)arg4;
+- (void)dealloc;
+- (id)init;
+
+@end
+
 @interface UIBarButtonItem (STFUACAdditions)
 
 - (UIView*)view;
 
 @end
 
-@interface BKApplication : NSObject{
 
-}
+
+@interface BKApplication : NSObject
 
 -(int)suspendType;
 -(void)setSuspendType:(int)arg1;
+- (BKProcess*)process;
+- (BOOL)performOriginals;//New
+- (void)setPerformOriginals:(BOOL)arg1;//New
+- (void)_deactivate:(id)arg1;
+- (NSString*)bundleIdentifier;
 //- (id)initWithBundleIdentifier:(id)arg1 queue:(dispatch_queue_s*)arg2;
 
 @end
+
+
 
 @interface SBFakeStatusBarView : UIView
 
@@ -87,6 +109,7 @@
 - (void)addToSlider; //New
 - (unsigned int)eventPort;
 - (void)rotateToInterfaceOrientation:(int)orientation;//New
+- (void)suspend; //new
 
 
 @end
@@ -209,6 +232,9 @@
 -(id)applicationForBundleIdentifier:(NSString*)bundleIdentifier;
 -(id)workspaceForApplication:(id)application;
 -(id)currentWorkspace;
+- (void)_receiveSuspend:(id)arg1;
+
+
 
 @end
 
@@ -217,6 +243,8 @@
 
 -(void)activate:(id)arg1 withActivation:(id)arg2 withDeactivation:(id)arg3 token:(id)arg4;
 - (BOOL)_activate:(id)arg1 activationSettings:(id)arg2 deactivationSettings:(id)arg3 token:(id)arg4;
+
+- (void)suspend:(id)arg1;
 
 @end
 

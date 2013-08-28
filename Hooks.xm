@@ -8,13 +8,7 @@
 #import <mach/mach_time.h>
 
 
-
-
-
-
-
-
-
+extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
 
 %group SpringBoard //Springboard hooks
 
@@ -109,7 +103,6 @@
 
 
 %end
-
 
 
 
@@ -216,18 +209,36 @@
 	
 	
 	GSSendEvent((GSEventRecord*)event, (mach_port_t)[self eventPort]);
-	
-	
-	
-	
-}
-
-
-- (void)didDeactivateForEventsOnly:(BOOL)arg1{
 
 }
 
 -(void)didSuspend{
+	
+	OSAppPane *appPane;
+
+	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
+		if(![pane isKindOfClass:[OSAppPane class]])
+			continue;
+
+		if(pane.application == self)
+			appPane = pane;
+	}
+
+	if(appPane)
+		[[OSPaneModel sharedInstance] removePane:appPane];
+
+
+
+	CPDistributedMessagingCenter *messagingCenter;
+	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+
+	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", @"performOriginals", nil];
+	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], [NSNumber numberWithBool:false], nil];
+	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+	[messagingCenter sendMessageAndReceiveReplyName:@"setApplicationPerformOriginals" userInfo:dictionary];
+
+
 	%orig;
 }
 
@@ -310,6 +321,26 @@
 }
 
 
+
+%new
+- (void)suspend{
+
+    
+	CPDistributedMessagingCenter *messagingCenter;
+	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+
+	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", @"performOriginals", nil];
+	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], [NSNumber numberWithBool:true], nil];
+	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+	[messagingCenter sendMessageAndReceiveReplyName:@"setApplicationPerformOriginals" userInfo:dictionary];
+
+
+	BKSTerminateApplicationForReasonAndReportWithDescription([self bundleIdentifier], 3, 0, 0);
+
+}
+
+
 %end
 
 
@@ -356,7 +387,6 @@
 		}
 	}
 
-
 }
 
 
@@ -395,11 +425,6 @@
 
 %hook SBUIAnimationZoomUpApp
 
-- (void)animationDidStop:(id)arg1 finished:(id)arg2 context:(void *)arg3{
-	%orig;
-}
-
-
 - (void)_startAnimation{
 	[self animationDidStop:@"AnimateResumption" finished:[NSNumber numberWithInt:1] context:0x0];
 	[self _cleanupAnimation];
@@ -422,8 +447,6 @@
 
 
 
-
-
 //Backboard hooks
 
 
@@ -441,6 +464,7 @@
 	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
 	[messagingCenter runServerOnCurrentThread];
 	[messagingCenter registerForMessageName:@"activate" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+	[messagingCenter registerForMessageName:@"setApplicationPerformOriginals" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
 
 	return self;
 }
@@ -448,16 +472,20 @@
 
 %new
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
-	if(![name isEqualToString:@"activate"]){
-		return nil;
+	if([name isEqualToString:@"activate"]){
+	
+		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
+
+		BKWorkspaceServer *server = [self workspaceForApplication:application];
+	
+		[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
+	
+	}else if([name isEqualToString:@"setApplicationPerformOriginals"]){
+		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
+		[application setPerformOriginals:[[userinfo objectForKey:@"performOriginals"] boolValue]];
+		
 	}
 
-	BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
-
-	BKWorkspaceServer *server = [self workspaceForApplication:application];
-	
-	[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
-	
 	return nil;
 }
 
@@ -468,36 +496,33 @@
 
 
 
+%hook BKApplication
 
-%hook BKProcess
+static char originalsKey;
 
-- (BOOL)_taskSuspend{
-	return true;
+%new
+- (void)setPerformOriginals:(BOOL)performOriginals{
+	objc_setAssociatedObject(self, &originalsKey, [NSNumber numberWithBool:performOriginals], OBJC_ASSOCIATION_RETAIN);
 }
 
-- (void)setFrontmost:(BOOL)arg1{
-	if(!arg1){
-		[self killWithSignal:0]; //Not completley sure if this is needed or not...
-		return;
+%new
+- (BOOL)performOriginals{
+	return [objc_getAssociatedObject(self, &originalsKey) boolValue];
+}
+
+
+-(void)_deactivate:(id)arg1{
+	if([self performOriginals]){
+		%orig;
 	}
-	%orig;
 }
-
-- (BOOL)_suspend{
-	return true;
-}
-
 
 %end
 
+%hook BKSWorkspace
 
-
-%hook BKApplication
-
--(void)_deactivate:(id)arg1{
-	if([self suspendType] == 0){
-		[self setSuspendType:1];
-	}
+- (id)topApplication{
+	return nil;
 }
 
 %end
