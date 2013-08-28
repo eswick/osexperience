@@ -202,13 +202,11 @@
 
 -(void)updateDockPosition{
 
-	BOOL isPortrait = self.isPortrait;
-
-
-
-
 	OSPane *intrudingPane;
-	CGRect currentPaneRect = CGRectIntersection([self convertRect:self.currentPane.frame toView:UIApplication.sharedApplication.keyWindow], self.frame);
+
+
+	CGRect currentPaneRect = CGRectIntersection(self.currentPane.frame, self.bounds);
+
 	CGRect intrudingPaneRect;
 
 	if(self.contentOffset.x >= self.currentPane.frame.origin.x){
@@ -229,13 +227,11 @@
 		return;
 	}
 
-	intrudingPaneRect = CGRectIntersection([self convertRect:intrudingPane.frame toView:UIApplication.sharedApplication.keyWindow], self.frame);
+	intrudingPaneRect = CGRectIntersection(intrudingPane.frame, self.bounds);
 
-
-	float currentPanePercentage = ((isPortrait ? currentPaneRect.size.width : currentPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height) /*- marginSize*/);
-	float intrudingPanePercentage = ((isPortrait ? intrudingPaneRect.size.width : intrudingPaneRect.size.height) * 100) / ((isPortrait ? self.frame.size.width : self.frame.size.height)/* - marginSize*/);
-
-
+	float currentPanePercentage = (currentPaneRect.size.width * 100) / self.frame.size.width;
+	float intrudingPanePercentage = (intrudingPaneRect.size.width * 100) / self.frame.size.width;
+	
 	float shownPercentage = 0;
 
 	if(!self.currentPane.showsDock)

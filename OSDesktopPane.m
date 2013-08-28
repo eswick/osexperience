@@ -27,7 +27,7 @@
 	self.gridView = [[OSFileGridView alloc] initWithDirectory:@"/var/mobile/Desktop" frame:[[UIScreen mainScreen] applicationFrame]];
 	[self addSubview:self.gridView];
 
-	self.wallpaperView.clipsToBounds = true;
+	//self.wallpaperView.clipsToBounds = true;
 	//self.gridView.clipsToBounds = true;
 
 	
