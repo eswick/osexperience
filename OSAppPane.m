@@ -80,15 +80,7 @@
 	[super dealloc];
 }
 
-
-void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
-void BKSHIDServicesSetBacklightFactorWithFadeDuration(float factor, int duration);
-
 - (void)stopButtonPressed{
-
-    //BKSTerminateApplicationForReasonAndReportWithDescription([self.application displayIdentifier], 5, 1, @"User killed application.");
-    //BKSHIDServicesSetBacklightFactorWithFadeDuration(0.5, 0);
-
 	[self.application suspend];
 }
 
