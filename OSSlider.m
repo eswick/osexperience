@@ -68,16 +68,7 @@
 -(void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
 		if([(OSAppPane*)[self currentPane] windowBarIsOpen]){
-			CGRect frame = [[(OSAppPane*)self.currentPane windowBar] frame];
-			frame.origin.y = -frame.size.height;
-		
-			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-				[[(OSAppPane*)self.currentPane windowBar] setFrame:frame];
-			}completion:^(BOOL finished){
-				[[(OSAppPane*)self.currentPane windowBar] setHidden:true];
-			}];
-		
-			[(OSAppPane*)self.currentPane setWindowBarOpen:false];
+			[(OSAppPane*)[self currentPane] setWindowBarVisible];
 			return;
 		}
 	}
@@ -87,18 +78,7 @@
 -(void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[self currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] missionControlIsActive]){
 		if(![(OSAppPane*)[self currentPane] windowBarIsOpen]){
-
-			[[(OSAppPane*)self.currentPane windowBar] setHidden:false];
-			CGRect frame = [[(OSAppPane*)self.currentPane windowBar] frame];
-			frame.origin.y = 0;
-		
-			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-				[[(OSAppPane*)self.currentPane windowBar] setFrame:frame];
-			}completion:^(BOOL finished){
-			}];
-		
-			[(OSAppPane*)self.currentPane setWindowBarOpen:true];
-			return;
+			[(OSAppPane*)[self currentPane] setWindowBarHidden];
 		}
 	}
 
@@ -203,7 +183,6 @@
 -(void)updateDockPosition{
 
 	OSPane *intrudingPane;
-
 
 	CGRect currentPaneRect = CGRectIntersection(self.currentPane.frame, self.bounds);
 

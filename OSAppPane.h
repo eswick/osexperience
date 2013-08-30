@@ -19,6 +19,8 @@
 @property (nonatomic, retain) UIToolbar *windowBar;
 @property (nonatomic, readwrite, getter=windowBarIsOpen) BOOL windowBarOpen;
 
--(id)initWithDisplayIdentifier:(NSString*)displayIdentifier;
+- (id)initWithDisplayIdentifier:(NSString*)displayIdentifier;
+- (void)setWindowBarVisible;
+- (void)setWindowBarHidden;
 
 @end

@@ -75,6 +75,33 @@
 	return self;
 }
 
+- (void)setWindowBarVisible{
+	CGRect frame = [[self windowBar] frame];
+	frame.origin.y = -frame.size.height;
+		
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+		[[self windowBar] setFrame:frame];
+	}completion:^(BOOL finished){
+		[[self windowBar] setHidden:true];
+	}];
+		
+	[self setWindowBarOpen:false];
+	return;
+}
+
+- (void)setWindowBarHidden{
+	[[self windowBar] setHidden:false];
+	CGRect frame = [[self windowBar] frame];
+	frame.origin.y = 0;
+		
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+		[[self windowBar] setFrame:frame];
+	}completion:^(BOOL finished){
+	}];
+		
+	[self setWindowBarOpen:true];
+}
+
 - (void)dealloc{
 	[self.windowBar release];
 	[super dealloc];
