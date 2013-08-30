@@ -9,6 +9,7 @@
 @synthesize appView = _appView;
 @synthesize windowBar = _windowBar;
 @synthesize windowBarOpen = _windowBarOpen;
+@synthesize windowBarShadowView = _windowBarShadowView;
 
 
 
@@ -72,15 +73,25 @@
 
 	self.windowBarOpen = false;
 
+
+	self.windowBarShadowView = [[UIView alloc] initWithFrame:self.frame];
+	self.windowBarShadowView.backgroundColor = [UIColor blackColor];
+	self.windowBarShadowView.alpha = 0.0;
+	self.windowBarShadowView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	[self addSubview:self.windowBarShadowView];
+	[self bringSubviewToFront:self.windowBar];
+
 	return self;
 }
 
-- (void)setWindowBarVisible{
+- (void)setWindowBarHidden{
 	CGRect frame = [[self windowBar] frame];
 	frame.origin.y = -frame.size.height;
 		
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
 		[[self windowBar] setFrame:frame];
+		self.windowBarShadowView.alpha = 0.0;
+
 	}completion:^(BOOL finished){
 		[[self windowBar] setHidden:true];
 	}];
@@ -89,13 +100,14 @@
 	return;
 }
 
-- (void)setWindowBarHidden{
+- (void)setWindowBarVisible{
 	[[self windowBar] setHidden:false];
 	CGRect frame = [[self windowBar] frame];
 	frame.origin.y = 0;
 		
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
 		[[self windowBar] setFrame:frame];
+		self.windowBarShadowView.alpha = 0.5;
 	}completion:^(BOOL finished){
 	}];
 		

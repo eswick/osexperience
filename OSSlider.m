@@ -68,7 +68,7 @@
 -(void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
 		if([(OSAppPane*)[self currentPane] windowBarIsOpen]){
-			[(OSAppPane*)[self currentPane] setWindowBarVisible];
+			[(OSAppPane*)[self currentPane] setWindowBarHidden];
 			return;
 		}
 	}
@@ -78,7 +78,7 @@
 -(void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[self currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] missionControlIsActive]){
 		if(![(OSAppPane*)[self currentPane] windowBarIsOpen]){
-			[(OSAppPane*)[self currentPane] setWindowBarHidden];
+			[(OSAppPane*)[self currentPane] setWindowBarVisible];
 		}
 	}
 

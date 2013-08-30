@@ -12,12 +12,14 @@
 	SBHostWrapperView *_appView;
 	UIToolbar *_windowBar;
 	BOOL _windowBarOpen;
+	UIView *_windowBarShadowView;
 }
 
 @property (nonatomic, retain) SBApplication *application;
 @property (nonatomic, retain) SBHostWrapperView *appView;
 @property (nonatomic, retain) UIToolbar *windowBar;
 @property (nonatomic, readwrite, getter=windowBarIsOpen) BOOL windowBarOpen;
+@property (nonatomic, retain) UIView *windowBarShadowView;
 
 - (id)initWithDisplayIdentifier:(NSString*)displayIdentifier;
 - (void)setWindowBarVisible;
