@@ -78,10 +78,20 @@
 	self.windowBarShadowView.backgroundColor = [UIColor blackColor];
 	self.windowBarShadowView.alpha = 0.0;
 	self.windowBarShadowView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+	UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap:)];
+	[self.windowBarShadowView addGestureRecognizer:tapRecognizer];
+	[tapRecognizer release];
+
 	[self addSubview:self.windowBarShadowView];
 	[self bringSubviewToFront:self.windowBar];
 
+
 	return self;
+}
+
+- (void)handleSingleTap:(UITapGestureRecognizer*)gesture{
+	[self setWindowBarHidden];
 }
 
 - (void)setWindowBarHidden{
@@ -116,6 +126,7 @@
 
 - (void)dealloc{
 	[self.windowBar release];
+	[self.windowBarShadowView release];
 	[super dealloc];
 }
 
