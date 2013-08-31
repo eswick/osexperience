@@ -73,7 +73,6 @@
 
 	self.windowBarOpen = false;
 
-
 	self.windowBarShadowView = [[UIView alloc] initWithFrame:self.frame];
 	self.windowBarShadowView.backgroundColor = [UIColor blackColor];
 	self.windowBarShadowView.alpha = 0.0;

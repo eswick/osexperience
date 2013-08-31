@@ -52,8 +52,7 @@
 	self.switcherDownGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleDownSwitcherGesture:)];
 	self.switcherDownGesture.direction = UISwipeGestureRecognizerDirectionDown;
 	self.switcherDownGesture.numberOfTouchesRequired = 4;
-	[self addGestureRecognizer:self.switcherDownGesture];
-
+	[self addGestureRecognizer:self.switcherDownGesture];	
 
 	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherUpGesture];
 	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherDownGesture];
@@ -145,9 +144,14 @@
 	OSPane *selectedPane = [self currentPane];
 
 	if(selectedPane == pane){
-		[self scrollToPane:[[OSPaneModel sharedInstance] paneAtIndex:0] animated:true];
-		[pane removeFromSuperview];
-		[self alignPanes];
+		for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
+			if(![desktopPane isKindOfClass:[OSDesktopPane class]])
+				continue;
+			[self scrollToPane:desktopPane animated:false];
+			[pane removeFromSuperview];
+			[self alignPanes];
+			break;
+		}
 		return;
 	}
 
