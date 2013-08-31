@@ -141,23 +141,7 @@
 
 
 - (void)removePane:(OSPane*)pane{
-	OSPane *selectedPane = [self currentPane];
-
-	if(selectedPane == pane){
-		for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
-			if(![desktopPane isKindOfClass:[OSDesktopPane class]])
-				continue;
-			[self scrollToPane:desktopPane animated:false];
-			[pane removeFromSuperview];
-			[self alignPanes];
-			break;
-		}
-		return;
-	}
-
-	[self scrollToPane:selectedPane animated:false];
-	[pane removeFromSuperview];
-
+		[pane removeFromSuperview];
 }
 
 -(void)alignPanes{

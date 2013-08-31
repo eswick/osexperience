@@ -21,6 +21,7 @@
 - (void)removePane:(OSPane*)pane;
 - (unsigned int)indexOfPane:(OSPane*)pane;
 - (OSPane*)paneAtIndex:(unsigned int)index;
+- (OSDesktopPane*)firstDesktopPane;
 
 
 @end

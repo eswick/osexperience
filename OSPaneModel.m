@@ -53,6 +53,15 @@
 	[[OSThumbnailView sharedInstance] addPane:pane];
 }
 
+- (OSDesktopPane*)firstDesktopPane{
+	for(OSDesktopPane *desktopPane in self.panes){
+		if(![desktopPane isKindOfClass:[OSDesktopPane class]])
+				continue;
+		return desktopPane;
+	}
+	return nil;
+}
+
 - (void)removePane:(OSPane*)pane{
 
 	if([[OSViewController sharedInstance] missionControlIsActive])
@@ -60,9 +69,17 @@
 	else
 		[[OSThumbnailView sharedInstance] removePane:pane animated:false];
 
+	OSPane *sliderSelectedPane = [[OSSlider sharedInstance] currentPane];
 	[[OSSlider sharedInstance] removePane:pane];
+
 	[self.panes removeObject:pane];
+
 	[[OSSlider sharedInstance] alignPanes];
+	if([sliderSelectedPane isKindOfClass:[OSAppPane class]]){
+		[[OSSlider sharedInstance] scrollToPane:self.firstDesktopPane animated:false];
+		[[OSSlider sharedInstance] updateDockPosition];
+	}
+
 	[[OSThumbnailView sharedInstance] alignSubviews];
 }
 
