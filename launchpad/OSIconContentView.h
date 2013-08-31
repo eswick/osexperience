@@ -11,11 +11,13 @@
 @interface OSIconContentView : UIView{
 	SBWallpaperView *_wallpaperView;
 	UIView *_contentView;
+	SBFakeStatusBarView *_statusBar;
 }
 
 
 @property (nonatomic, retain) SBWallpaperView *wallpaperView;
 @property (nonatomic, retain) UIView *contentView;
+@property (nonatomic, retain) SBFakeStatusBarView *statusBar;
 
 
 -(void)prepareForDisplay;

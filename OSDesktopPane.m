@@ -45,6 +45,7 @@
 
 
 -(void)dealloc{
+	[self.statusBar release];
 	[self.wallpaperView release];
 	[self.gridView release];
 	[self.statusBar release];
