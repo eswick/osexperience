@@ -28,7 +28,6 @@
 	if(![super initWithFrame:frame])
 		return nil;
 
-	//self.backgroundColor = [UIColor whiteColor];
 	self.userInteractionEnabled = true;
 
 

@@ -25,13 +25,9 @@
 
 
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	//self.clipsToBounds = true;
-
 
 	self.appView = [self.application contextHostViewForRequester:@"WindowManager" enableAndOrderFront:true];
 	[self addSubview:self.appView];
-
-
 
 	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
 	overlayView.alpha = 0.1;

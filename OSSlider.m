@@ -141,7 +141,7 @@
 
 
 - (void)removePane:(OSPane*)pane{
-		[pane removeFromSuperview];
+	[pane removeFromSuperview];
 }
 
 -(void)alignPanes{
