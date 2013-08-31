@@ -1,4 +1,4 @@
-#define UIApp [UIApplication sharedApplication]
+#define UIApp (SpringBoard*)[UIApplication sharedApplication]
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 
 #import <QuartzCore/QuartzCore.h>
@@ -43,6 +43,12 @@
 
 @end
 
+@interface SpringBoard : UIApplication
+
+- (UIWindow*)statusBarWindow;
+- (UIWindow*)keyWindow;
+
+@end
 
 
 @interface BKApplication : NSObject
@@ -62,7 +68,7 @@
 
 @interface SBFakeStatusBarView : UIView
 
-
+- (void)requestStyle:(int)arg1;
 
 @end
 
@@ -301,7 +307,8 @@
 - (void)activateApplicationAnimated:(id)arg1;
 - (id)systemGestureSnapshotWithIOSurfaceSnapshotOfApp:(id)arg1 includeStatusBar:(BOOL)arg2;
 - (id)systemGestureSnapshotForApp:(id)arg1 includeStatusBar:(BOOL)arg2 decodeImage:(BOOL)arg3;
-
+- (void)createFakeSpringBoardStatusBar;
+- (id)_fakeSpringBoardStatusBar;
 
 @end
 

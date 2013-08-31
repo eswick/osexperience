@@ -46,13 +46,13 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 	OSViewController *viewController = [OSViewController sharedInstance];
 
-	[UIApp.keyWindow setRootViewController:viewController];
+
+	[[UIApp keyWindow] setRootViewController:viewController];
 	[viewController.view setFrame:[[UIScreen mainScreen] bounds]];
 
 
 	return self;
 }
-
 
 
 
@@ -373,8 +373,20 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 %hook SBAwayController
 
 -(void)lock{
-    [[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
+	[[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
     %orig;
+}
+
+- (void)setLocked:(BOOL)arg1{
+	if(!arg1){
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{	
+			[[UIApp statusBarWindow] setAlpha:0.0];
+		}completion:^(BOOL finished){
+		}];
+	}else{
+		[[UIApp statusBarWindow] setAlpha:1.0];
+	}
+	%orig;
 }
 
 %end

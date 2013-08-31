@@ -24,11 +24,20 @@
 
 	self.gridView = [[OSFileGridView alloc] initWithDirectory:@"/var/mobile/Desktop" frame:[[UIScreen mainScreen] applicationFrame]];
 	[self addSubview:self.gridView];
+
+
+	CGRect statusBarFrame = CGRectZero;
+	statusBarFrame.size.width = self.bounds.size.width;
+	statusBarFrame.size.height = 20;
+
+	self.statusBar = [[objc_getClass("SBFakeStatusBarView") alloc] initWithFrame:statusBarFrame];
+	self.statusBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+	[self.statusBar requestStyle:1];
+	[self addSubview:self.statusBar];
 	
 	return self;
 
 }
-
 
 -(BOOL)showsDock{
 	return true;

@@ -2,7 +2,7 @@
 #import "OSSlider.h"
 #import "missioncontrol/OSThumbnailView.h"
 
-@class OSSlider;
+@class OSSlider, OSDesktopPane;
 
 @interface OSPaneModel : NSObject{
 	NSMutableArray *_panes;

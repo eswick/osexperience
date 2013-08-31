@@ -9,9 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "OSFileView.h"
 #import "CGPointExtension.h"
-
-
-#define UIApp [UIApplication sharedApplication]
+#import "../include.h"
 
 @interface OSFileGridView : UIView {
 	UIView *_selectionDragView;
