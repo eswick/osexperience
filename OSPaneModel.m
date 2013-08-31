@@ -63,6 +63,7 @@
 	[[OSSlider sharedInstance] removePane:pane];
 	[self.panes removeObject:pane];
 	[[OSSlider sharedInstance] alignPanes];
+	[[OSThumbnailView sharedInstance] alignSubviews];
 }
 
 - (unsigned int)indexOfPane:(OSPane*)pane{

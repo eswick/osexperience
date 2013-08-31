@@ -142,7 +142,6 @@
 
       [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
         [placeholder removeFromSuperview];
-        [self alignSubviews];
       }completion:^(BOOL finished){
         self.wrapperView.shouldAnimate = false;
       }];
