@@ -51,11 +51,13 @@
 
 	UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(stopButtonPressed)];
 	UIBarButtonItem *title = [[UIBarButtonItem alloc] initWithTitle:self.name style:UIBarButtonItemStylePlain target:nil action:nil];
+	UIBarButtonItem *contractButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/168-1.png"] style:UIBarButtonItemStylePlain target:nil action:nil];
 
 	[items addObject:closeButton];
 	[items addObject:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]];
 	[items addObject:title];
 	[items addObject:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]];
+	[items addObject:contractButton];
 
 
 
@@ -66,6 +68,7 @@
 	title.view.userInteractionEnabled = false;
 	[title release];
 	[closeButton release];
+	[contractButton release];
 
 	self.windowBarOpen = false;
 
