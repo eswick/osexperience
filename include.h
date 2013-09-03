@@ -116,6 +116,7 @@
 - (unsigned int)eventPort;
 - (void)rotateToInterfaceOrientation:(int)orientation;//New
 - (void)suspend; //new
+- (int)statusBarOrientation;
 
 
 @end

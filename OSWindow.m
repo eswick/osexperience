@@ -13,6 +13,11 @@
 	if(![super initWithFrame:arg1])
 		return nil;
 
+	self.layer.masksToBounds = false;
+	self.layer.shadowOffset = CGSizeMake(0, 0);
+	self.layer.shadowRadius = 10;
+	self.layer.shadowOpacity = 0.5;
+	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 
 
 	self.windowBar = [[UIToolbar alloc] init];
@@ -51,6 +56,9 @@
 	return self;
 }
 
+- (void)layoutSubviews{
+	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+}
 
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture{
 	[self.delegate window:self didRecievePanGesture:gesture];
@@ -61,18 +69,18 @@
 }
 
 - (void)expandButtonPressed{
-	
+
 }
 
 - (void)handleResizePanGesture:(UIPanGestureRecognizer*)gesture{
 	if([gesture state] == UIGestureRecognizerStateBegan){
 		self.resizeAnchor = CGPointMake(self.frame.origin.x, self.frame.origin.y + self.frame.size.height);
 	}else if([gesture state] == UIGestureRecognizerStateChanged){
-		self.frame = CGRectFromCGPoints(self.resizeAnchor, [gesture locationInView:[self superview]]);
+		self.frame = [self CGRectFromCGPoints:self.resizeAnchor p2:[gesture locationInView:[self superview]]];;
 	}
 }
 
-static CGRect CGRectFromCGPoints(CGPoint p1, CGPoint p2){
+- (CGRect) CGRectFromCGPoints:(CGPoint)p1 p2:(CGPoint)p2{
 	return CGRectMake(MIN(p1.x, p2.x), MIN(p1.y, p2.y), fabs(p1.x - p2.x), fabs(p1.y - p2.y));
 }
 
