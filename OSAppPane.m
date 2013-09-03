@@ -51,7 +51,7 @@
 
 	UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(stopButtonPressed)];
 	UIBarButtonItem *title = [[UIBarButtonItem alloc] initWithTitle:self.name style:UIBarButtonItemStylePlain target:nil action:nil];
-	UIBarButtonItem *contractButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/168-1.png"] style:UIBarButtonItemStylePlain target:nil action:nil];
+	UIBarButtonItem *contractButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/168-1.png"] style:UIBarButtonItemStylePlain target:self action:@selector(contractButtonPressed)];
 
 	[items addObject:closeButton];
 	[items addObject:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]];
@@ -131,6 +131,23 @@
 - (void)stopButtonPressed{
 	[self.application suspend];
 }
+
+- (void)contractButtonPressed{
+
+	OSAppWindow *window = [[OSAppWindow alloc] initWithApplication:self.application];
+	[[[OSPaneModel sharedInstance] firstDesktopPane] addSubview:window];
+
+	[[OSPaneModel sharedInstance] removePane:self];
+	[window release];
+}
+
+
+
+
+
+
+
+
 
 
 

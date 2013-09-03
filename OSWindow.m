@@ -13,7 +13,7 @@
 
 
 	self.windowBar = [[UIToolbar alloc] init];
-	self.windowBar.frame = CGRectMake(0, 0, self.frame.size.width, 44);
+	self.windowBar.frame = CGRectMake(0, 0, self.frame.size.width, 40);
 	self.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
 	NSMutableArray *items = [[NSMutableArray alloc] init];
@@ -33,6 +33,7 @@
 	[self addSubview:self.windowBar];
 
 	titleLabel.view.userInteractionEnabled = false;
+
 	[title release];
 	[closeButton release];
 
@@ -42,7 +43,6 @@
 
 
 - (void)stopButtonPressed{
-
 
 }
 
