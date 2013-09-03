@@ -23,7 +23,6 @@
 	self.appView.frame = frame;
 	[self addSubview:self.appView];
 
-
 	return self;
 }
 
