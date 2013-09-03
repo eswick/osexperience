@@ -4,9 +4,10 @@
 #import "OSWallpaperView.h"
 #import "explorer/OSFileGridView.h"
 #import "include.h"
+#import "OSWindow.h"
 
 
-@interface OSDesktopPane : OSPane{
+@interface OSDesktopPane : OSPane <OSWindowDelegate> {
 	SBWallpaperView *_wallpaperView;
 	OSFileGridView *_gridView;
 	SBFakeStatusBarView *_statusBar;

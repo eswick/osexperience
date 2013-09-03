@@ -4,6 +4,8 @@
 
 @implementation OSWindow
 @synthesize windowBar = _windowBar;
+@synthesize delegate = _delegate;
+@synthesize grabPoint = _grabPoint;
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{
@@ -32,7 +34,9 @@
 	[items release];
 	[self addSubview:self.windowBar];
 
-	titleLabel.view.userInteractionEnabled = false;
+	UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
+	[titleLabel.view addGestureRecognizer:panRecognizer];
+	[panRecognizer release];
 
 	[title release];
 	[closeButton release];
@@ -41,6 +45,9 @@
 }
 
 
+- (void)handlePanGesture:(UIPanGestureRecognizer*)gesture{
+	[self.delegate window:self didRecievePanGesture:gesture];
+}
 
 - (void)stopButtonPressed{
 

@@ -117,6 +117,7 @@
 		[[self windowBar] setFrame:frame];
 		self.windowBarShadowView.alpha = 0.5;
 	}completion:^(BOOL finished){
+
 	}];
 		
 	[self setWindowBarOpen:true];
@@ -136,6 +137,7 @@
 
 	OSAppWindow *window = [[OSAppWindow alloc] initWithApplication:self.application];
 	[[[OSPaneModel sharedInstance] firstDesktopPane] addSubview:window];
+	[window setDelegate:[[OSPaneModel sharedInstance] firstDesktopPane]];
 
 	[[OSPaneModel sharedInstance] removePane:self];
 	[window release];

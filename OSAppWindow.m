@@ -19,12 +19,20 @@
 
 	CGRect frame = self.appView.frame;
 	frame.origin.y += self.windowBar.bounds.size.height;
-	
-	self.appView.frame = frame;
 
+	self.appView.frame = frame;
 	[self addSubview:self.appView];
 
+
 	return self;
+}
+
+- (void)layoutSubviews{
+	self.appView.transform = CGAffineTransformScale(CGAffineTransformIdentity, self.bounds.size.width / self.appView.bounds.size.width, self.bounds.size.height / self.appView.bounds.size.height);
+	CGRect frame = self.appView.frame;
+	frame.origin = CGPointZero;
+	frame.origin.y += self.windowBar.bounds.size.height;
+	self.appView.frame = frame;
 }
 
 

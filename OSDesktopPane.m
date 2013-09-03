@@ -44,6 +44,18 @@
 }
 
 
+
+- (void)window:(OSWindow*)window didRecievePanGesture:(UIPanGestureRecognizer*)gesture{
+	if([gesture state] == UIGestureRecognizerStateBegan){
+		[window setGrabPoint:[gesture locationInView:window]];
+	}else if([gesture state] == UIGestureRecognizerStateChanged){
+		CGRect frame = window.frame;
+		frame.origin = CGPointSub([gesture locationInView:self], [window grabPoint]);
+		window.frame = frame;
+	}
+}
+
+
 -(void)dealloc{
 	[self.statusBar release];
 	[self.wallpaperView release];
