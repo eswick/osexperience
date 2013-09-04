@@ -56,6 +56,11 @@
 	return self;
 }
 
+- (void)dealloc{
+	[self.windowBar release];
+	[super dealloc];
+}
+
 - (void)layoutSubviews{
 	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 }
