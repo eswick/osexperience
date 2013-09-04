@@ -26,6 +26,24 @@
 	return self;
 }
 
+- (void)handleResizePanGesture:(UIPanGestureRecognizer*)gesture{
+
+	if([gesture state] == UIGestureRecognizerStateBegan){
+		self.resizeAnchor = CGPointMake(self.frame.origin.x, self.frame.origin.y + self.frame.size.height);
+	}else if([gesture state] == UIGestureRecognizerStateChanged){
+		CGRect frame = [self CGRectFromCGPoints:self.resizeAnchor p2:[gesture locationInView:[self superview]]];
+
+		if UIDeviceOrientationIsPortrait([self.application statusBarOrientation]){
+			frame.size.width = (UIScreen.mainScreen.bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.height;
+		}else{
+			frame.size.width = (UIScreen.mainScreen.bounds.size.height * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.width;
+		}
+
+		self.frame = frame;
+	}
+
+}
+
 - (void)layoutSubviews{
 	[super layoutSubviews];
 

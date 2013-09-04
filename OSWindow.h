@@ -26,7 +26,7 @@
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title;
 - (void)stopButtonPressed;
-
+- (CGRect) CGRectFromCGPoints:(CGPoint)p1 p2:(CGPoint)p2;
 
 @end
 
