@@ -117,6 +117,7 @@
 - (void)rotateToInterfaceOrientation:(int)orientation;//New
 - (void)suspend; //new
 - (int)statusBarOrientation;
+- (BOOL)isRunning;
 
 
 @end

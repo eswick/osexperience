@@ -397,7 +397,9 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
-	[arg1 launchFromViewSwitcher];
+
+	if(![[arg1 application] isRunning])
+		[arg1 launchFromViewSwitcher];
 
 
 	for(OSAppPane *pane in [[OSSlider sharedInstance] subviews]){
