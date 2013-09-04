@@ -33,6 +33,11 @@
 	}else if([gesture state] == UIGestureRecognizerStateChanged){
 		CGRect frame = [self CGRectFromCGPoints:self.resizeAnchor p2:[gesture locationInView:[self superview]]];
 
+		if(frame.size.height < 200){
+			frame.size.height = 200;
+			frame.origin = self.frame.origin;
+		}
+
 		if UIDeviceOrientationIsPortrait([self.application statusBarOrientation]){
 			frame.size.width = (UIScreen.mainScreen.bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.height;
 		}else{
