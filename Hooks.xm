@@ -180,7 +180,9 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 -(void)didExitWithInfo:(id)arg1 type:(int)arg2{
 
-	OSAppPane *appPane;
+	NSLog(@"Did exit with info.");
+
+	OSAppPane *appPane = nil;
 
 	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
 		if(![pane isKindOfClass:[OSAppPane class]])
@@ -190,14 +192,63 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 			appPane = pane;
 	}
 
-	if(appPane)
+
+	if(appPane){
 		[[OSPaneModel sharedInstance] removePane:appPane];
+	}else{
+
+		for(OSDesktopPane *desktop in [[OSPaneModel sharedInstance] panes]){
+			if(![desktop isKindOfClass:[OSDesktopPane class]])
+				continue;
+
+			for(OSAppWindow *window in desktop.subviews){
+				if(![window isKindOfClass:[OSAppWindow class]])
+					continue;
+				if(window.application == self){
+					[window removeFromSuperview];
+				}
+			}
+
+		}
+	}
+
 
 
     %orig;
 }
 
 
+-(void)didSuspend{
+	
+	NSLog(@"Did suspend.");
+
+	OSAppPane *appPane = nil;
+
+	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
+		if(![pane isKindOfClass:[OSAppPane class]])
+			continue;
+
+		if(pane.application == self)
+			appPane = pane;
+	}
+
+	if(appPane){
+		[[OSPaneModel sharedInstance] removePane:appPane];
+	}
+
+
+	CPDistributedMessagingCenter *messagingCenter;
+	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+
+	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", @"performOriginals", nil];
+	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], [NSNumber numberWithBool:false], nil];
+	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+	[messagingCenter sendMessageAndReceiveReplyName:@"setApplicationPerformOriginals" userInfo:dictionary];
+
+
+	%orig;
+}
 
 %new
 -(void)rotateToInterfaceOrientation:(int)orientation{
@@ -218,38 +269,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 	
 	GSSendEvent((GSEventRecord*)event, (mach_port_t)[self eventPort]);
 
-}
-
-
-
--(void)didSuspend{
-	
-	OSAppPane *appPane;
-
-	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
-		if(![pane isKindOfClass:[OSAppPane class]])
-			continue;
-
-		if(pane.application == self)
-			appPane = pane;
-	}
-
-	if(appPane)
-		[[OSPaneModel sharedInstance] removePane:appPane];
-
-
-
-	CPDistributedMessagingCenter *messagingCenter;
-	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
-
-	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", @"performOriginals", nil];
-	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], [NSNumber numberWithBool:false], nil];
-	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
-
-	[messagingCenter sendMessageAndReceiveReplyName:@"setApplicationPerformOriginals" userInfo:dictionary];
-
-
-	%orig;
 }
 
 -(void)willActivate{

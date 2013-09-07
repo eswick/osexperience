@@ -8,7 +8,7 @@
 	NSMutableArray *_panes;
 }
 
-@property (nonatomic, retain) NSMutableArray *panes;
+@property (atomic, retain) NSMutableArray *panes;
 
 
 + (id)sharedInstance;

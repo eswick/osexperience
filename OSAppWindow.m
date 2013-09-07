@@ -84,7 +84,9 @@
 	self.appView.frame = frame;
 }
 
-
+- (void)stopButtonPressed{
+	[self.application suspend];
+}
 
 
 @end
