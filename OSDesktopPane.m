@@ -48,6 +48,7 @@
 - (void)window:(OSWindow*)window didRecievePanGesture:(UIPanGestureRecognizer*)gesture{
 	if([gesture state] == UIGestureRecognizerStateBegan){
 		[window setGrabPoint:[gesture locationInView:window]];
+		[self bringSubviewToFront:window];
 	}else if([gesture state] == UIGestureRecognizerStateChanged){
 		CGRect frame = window.frame;
 		frame.origin = CGPointSub([gesture locationInView:self], [window grabPoint]);

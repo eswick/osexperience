@@ -180,8 +180,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 -(void)didExitWithInfo:(id)arg1 type:(int)arg2{
 
-	NSLog(@"Did exit with info.");
-
 	OSAppPane *appPane = nil;
 
 	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
@@ -220,8 +218,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 -(void)didSuspend{
 	
-	NSLog(@"Did suspend.");
-
 	OSAppPane *appPane = nil;
 
 	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
