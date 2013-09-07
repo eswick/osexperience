@@ -1,4 +1,5 @@
 #import "OSAppWindow.h"
+#import "OSPaneModel.h"
 
 
 @implementation OSAppWindow
@@ -58,6 +59,17 @@
 		self.frame = frame;
 	}
 
+}
+
+- (void)expandButtonPressed{
+	[self.application addToSlider];
+	for(OSAppPane *appPane in [[OSPaneModel sharedInstance] panes]){
+		if(![appPane isKindOfClass:[OSAppPane class]])
+			continue;
+		if(appPane.application == self.application)
+			[[OSSlider sharedInstance] scrollToPane:appPane animated:true];
+	}
+	[self removeFromSuperview];
 }
 
 - (void)layoutSubviews{

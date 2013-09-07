@@ -327,7 +327,7 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 		[[OSPaneModel sharedInstance] addPaneToBack:appPane];
 		[self activate];
 		[appPane release];
-	}
+}
 
 
 
