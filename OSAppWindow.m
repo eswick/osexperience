@@ -7,9 +7,20 @@
 
 
 - (id)initWithApplication:(SBApplication*)application{
-	if(![super initWithFrame:CGRectMake(100, 100, 512, 384) title:application.displayName])
+	CGRect windowFrame = CGRectApplyAffineTransform([[UIScreen mainScreen] bounds], CGAffineTransformMakeScale(0.5, 0.5));
+
+	if(UIInterfaceOrientationIsLandscape([application statusBarOrientation])){
+		float width = windowFrame.size.width;
+		windowFrame.size.width = windowFrame.size.height;
+		windowFrame.size.height = width;
+	}
+
+
+	if(![super initWithFrame:windowFrame title:application.displayName])
 		return nil;
 
+	windowFrame.size.height += self.windowBar.bounds.size.height;
+	self.frame = windowFrame;
 
 	self.application = application;
 
