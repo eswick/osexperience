@@ -29,29 +29,47 @@
 	UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(stopButtonPressed)];
 	UIBarButtonItem *titleLabel = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStylePlain target:nil action:nil];
 	UIBarButtonItem *expandButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/167-1.png"] style:UIBarButtonItemStylePlain target:self action:@selector(expandButtonPressed)];
+	UIBarButtonItem *flexibleSpace1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+	UIBarButtonItem *flexibleSpace2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
 	[items addObject:closeButton];
-	[items addObject:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]];
+	[items addObject:flexibleSpace1];
 	[items addObject:titleLabel];
-	[items addObject:[[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil] autorelease]];
+	[items addObject:flexibleSpace2];
 	[items addObject:expandButton];
 
 
 	[self.windowBar setItems:items animated:false];
-	[items release];
 	[self addSubview:self.windowBar];
+
 
 	UIPanGestureRecognizer *panRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
 	[titleLabel.view addGestureRecognizer:panRecognizer];
+
+	UIView *gestureBackdrop = [[UIView alloc] initWithFrame:self.windowBar.frame];
+	gestureBackdrop.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	gestureBackdrop.backgroundColor = [UIColor whiteColor];
+	gestureBackdrop.alpha = 0.05;
+	[self.windowBar addSubview:gestureBackdrop];
+	[self.windowBar sendSubviewToBack:gestureBackdrop];
+	[self.windowBar sendSubviewToBack:titleLabel.view];
+	[self.windowBar sendSubviewToBack:self.windowBar._backgroundView];
+
+	[gestureBackdrop addGestureRecognizer:panRecognizer];
+
 	[panRecognizer release];
 
 	UIPanGestureRecognizer *resizePanRecognizer = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleResizePanGesture:)];
 	[expandButton.view addGestureRecognizer:resizePanRecognizer];
 	[resizePanRecognizer release];
 
+
 	[title release];
 	[closeButton release];
 	[expandButton release];
+	[flexibleSpace1 release];
+	[flexibleSpace2 release];
+	[items release];
 
 	return self;
 }

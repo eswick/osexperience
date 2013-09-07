@@ -25,7 +25,13 @@
 
 @end
 
+@interface UIToolbar (STFUACAdditions)
 
+
+- (UIView*)_backgroundView;
+
+
+@end
 
 @interface BKSSystemServices : NSObject
 
