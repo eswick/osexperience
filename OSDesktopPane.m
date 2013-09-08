@@ -58,6 +58,13 @@
 	}
 }
 
+- (void)window:(OSWindow*)window didRecieveResizePanGesture:(UIPanGestureRecognizer*)gesture{
+	if([gesture state] == UIGestureRecognizerStateBegan){
+		window.resizeAnchor = CGPointMake(window.frame.origin.x, window.frame.origin.y + window.frame.size.height);
+	}else if([gesture state] == UIGestureRecognizerStateChanged){
+		window.frame = [window CGRectFromCGPoints:window.resizeAnchor p2:[gesture locationInView:self]];
+	}
+}
 
 -(void)dealloc{
 	[self.statusBar release];

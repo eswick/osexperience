@@ -8,6 +8,7 @@
 @protocol OSWindowDelegate
 
 - (void)window:(OSWindow*)window didRecievePanGesture:(UIPanGestureRecognizer*)gesture;
+- (void)window:(OSWindow*)window didRecieveResizePanGesture:(UIPanGestureRecognizer*)gesture;
 
 @end
 

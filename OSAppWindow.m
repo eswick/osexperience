@@ -133,6 +133,7 @@
 		[appPane addSubview:self.appView];
 		[appPane sendSubviewToBack:self.appView];
 		[appPane release];
+		[self.windowBar removeFromSuperview];
 		[self removeFromSuperview];
   	}];
 
