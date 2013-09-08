@@ -62,18 +62,69 @@
 }
 
 - (void)expandButtonPressed{
-	[self.application addToSlider];
-	for(OSAppPane *appPane in [[OSPaneModel sharedInstance] panes]){
-		if(![appPane isKindOfClass:[OSAppPane class]])
-			continue;
-		if(appPane.application == self.application)
-			[[OSSlider sharedInstance] scrollToPane:appPane animated:true];
-	}
-	[self removeFromSuperview];
+	
+	
+	CGAffineTransform appViewTransform = self.appView.transform;
+  	OSAppPane *appPane = [[OSAppPane alloc] initWithDisplayIdentifier:[self.application bundleIdentifier]];
+  	[self addSubview:self.appView];
+  	self.appView.transform = appViewTransform;
+
+  	CGPoint animationViewOrigin = [self convertPoint:self.appView.frame.origin toView:[[OSViewController sharedInstance] view]];
+  	[[[OSViewController sharedInstance] view] addSubview:self.appView];
+
+  	CGRect frame = self.appView.frame;
+  	frame.origin = animationViewOrigin;
+  	self.appView.frame = frame;
+
+  	[[OSPaneModel sharedInstance] addPaneToBack:appPane];
+
+
+  	[UIView animateWithDuration:1.00 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+
+  		int appViewDegrees;
+
+		switch([UIApp statusBarOrientation]){
+			case UIInterfaceOrientationPortrait:
+				appViewDegrees = 0;
+				break;
+			case UIInterfaceOrientationPortraitUpsideDown:
+				appViewDegrees = 180;
+				break;
+			case UIInterfaceOrientationLandscapeLeft:
+				appViewDegrees = 90;
+				break;
+			case UIInterfaceOrientationLandscapeRight:
+				appViewDegrees = 270;
+				break;
+		}
+
+  		self.appView.transform = CGAffineTransformMakeRotation(DegreesToRadians(appViewDegrees));
+		CGRect frame = self.appView.frame;
+		frame.origin = CGPointMake(0, 0);
+		self.appView.frame = frame;
+
+
+		//Scroll OSSlider
+		CGRect bounds = [[OSSlider sharedInstance] bounds];
+        bounds.origin.x = [[OSPaneModel sharedInstance] indexOfPane:appPane] * [[OSSlider sharedInstance] bounds].size.width;
+        [[OSSlider sharedInstance] setBounds:bounds];
+        [[OSSlider sharedInstance] updateDockPosition];
+        [[OSThumbnailView sharedInstance] updateSelectedThumbnail];
+
+  	}completion:^(BOOL finished){
+		[appPane addSubview:self.appView];
+		[appPane sendSubviewToBack:self.appView];
+		[appPane release];
+		[self removeFromSuperview];
+  	}];
+
 }
 
 - (void)layoutSubviews{
 	[super layoutSubviews];
+
+	if(![self.subviews containsObject:self.appView])
+		return;
 
 	int appViewDegrees;
 
