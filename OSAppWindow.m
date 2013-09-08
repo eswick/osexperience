@@ -26,7 +26,7 @@
 		self.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height / 2);
 	else
 		self.center = CGPointMake([[UIScreen mainScreen] bounds].size.height / 2, [[UIScreen mainScreen] bounds].size.width / 2);
-	
+
 	self.application = application;
 
 
@@ -83,6 +83,13 @@
   	[[OSPaneModel sharedInstance] addPaneToBack:appPane];
 
 
+  	frame = self.windowBar.frame;
+  	frame.origin = [self convertPoint:self.windowBar.frame.origin toView:[[OSViewController sharedInstance] view]];
+  	self.windowBar.frame = frame;
+  	[[[OSViewController sharedInstance] view] addSubview:self.windowBar];
+
+  	self.hidden = true;
+
   	[UIView animateWithDuration:1.00 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 
   		int appViewDegrees;
@@ -107,6 +114,12 @@
 		frame.origin = CGPointMake(0, 0);
 		self.appView.frame = frame;
 
+		frame = self.windowBar.frame;
+		frame.size.width = self.appView.frame.size.width;
+		frame.origin.x = 0;
+		frame.origin.y = -self.windowBar.frame.size.height;
+		self.windowBar.frame = frame;
+		[self.windowBar layoutSubviews];
 
 		//Scroll OSSlider
 		CGRect bounds = [[OSSlider sharedInstance] bounds];
