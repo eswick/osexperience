@@ -86,6 +86,7 @@
   	frame = self.windowBar.frame;
   	frame.origin = [self convertPoint:self.windowBar.frame.origin toView:[[OSViewController sharedInstance] view]];
   	self.windowBar.frame = frame;
+  	[self.windowBar layoutSubviews];
   	[[[OSViewController sharedInstance] view] addSubview:self.windowBar];
 
   	self.hidden = true;
