@@ -97,7 +97,6 @@
 
 - (void)handleResizePanGesture:(UIPanGestureRecognizer*)gesture{
 	[self.delegate window:self didRecieveResizePanGesture:gesture];
-
 }
 
 - (CGRect) CGRectFromCGPoints:(CGPoint)p1 p2:(CGPoint)p2{
