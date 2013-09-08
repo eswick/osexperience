@@ -16,13 +16,17 @@
 		windowFrame.size.height = width;
 	}
 
-
 	if(![super initWithFrame:windowFrame title:application.displayName])
 		return nil;
 
 	windowFrame.size.height += self.windowBar.bounds.size.height;
 	self.frame = windowFrame;
 
+	if(UIInterfaceOrientationIsPortrait([UIApp statusBarOrientation]))
+		self.center = CGPointMake([[UIScreen mainScreen] bounds].size.width / 2, [[UIScreen mainScreen] bounds].size.height / 2);
+	else
+		self.center = CGPointMake([[UIScreen mainScreen] bounds].size.height / 2, [[UIScreen mainScreen] bounds].size.width / 2);
+	
 	self.application = application;
 
 

@@ -133,14 +133,118 @@
 	[self.application suspend];
 }
 
+
+
+
 - (void)contractButtonPressed{
 
+	CGAffineTransform appViewTransform = self.appView.transform;
+
+
 	OSAppWindow *window = [[OSAppWindow alloc] initWithApplication:self.application];
+	window.hidden = true;
 	[[[OSPaneModel sharedInstance] firstDesktopPane] addSubview:window];
 	[window setDelegate:[[OSPaneModel sharedInstance] firstDesktopPane]];
 
-	[[OSPaneModel sharedInstance] removePane:self];
-	[window release];
+
+
+	[self addSubview:self.appView];
+	self.appView.transform = appViewTransform;
+	CGRect frame = self.appView.frame;
+	frame.origin = CGPointZero;
+	self.appView.frame = frame;
+
+
+	CGPoint animationViewOrigin = [self convertPoint:self.appView.frame.origin toView:[[OSViewController sharedInstance] view]];
+	[[[OSViewController sharedInstance] view] addSubview:self.appView];
+
+
+	self.windowBar.autoresizingMask = UIViewAutoresizingNone;
+	window.windowBar.autoresizingMask = UIViewAutoresizingNone;
+
+	window.windowBar.frame = self.windowBar.frame;
+  	[window.windowBar layoutSubviews];
+
+	[[[OSViewController sharedInstance] view] addSubview:window.windowBar];
+	[[[OSViewController sharedInstance] view] addSubview:self.windowBar];
+
+
+
+
+	frame = self.appView.frame;
+  	frame.origin = animationViewOrigin;
+  	self.appView.frame = frame;
+
+  	[UIView animateWithDuration:1.00 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+
+		int appViewDegrees;
+
+		switch([self.application statusBarOrientation]){
+			case UIInterfaceOrientationPortrait:
+				appViewDegrees = 0;
+				break;
+			case UIInterfaceOrientationPortraitUpsideDown:
+				appViewDegrees = 180;
+				break;
+			case UIInterfaceOrientationLandscapeLeft:
+				appViewDegrees = 90;
+				break;
+			case UIInterfaceOrientationLandscapeRight:
+				appViewDegrees = 270;
+				break;
+		}
+
+
+  		self.appView.transform = CGAffineTransformMakeRotation(DegreesToRadians(appViewDegrees));
+
+  		if UIDeviceOrientationIsLandscape([self.application statusBarOrientation]){
+			self.appView.transform = CGAffineTransformScale(self.appView.transform, (window.bounds.size.height - window.windowBar.bounds.size.height) / window.appView.bounds.size.width, window.bounds.size.width / window.appView.bounds.size.height);
+		}else{
+			self.appView.transform = CGAffineTransformScale(window.appView.transform, window.bounds.size.width / window.appView.bounds.size.width, (window.bounds.size.height - window.windowBar.bounds.size.height) / window.appView.bounds.size.height);
+		}
+
+		CGPoint origin = [self convertPoint:CGPointMake(window.frame.origin.x, window.frame.origin.y + window.windowBar.bounds.size.height) toView:[[OSViewController sharedInstance] view]];
+		
+		CGRect appFrame = self.appView.frame;
+		appFrame.origin = origin;
+		self.appView.frame = appFrame;
+
+		
+		window.windowBar.frame = CGRectMake(window.frame.origin.x, window.frame.origin.y, window.bounds.size.width, window.windowBar.bounds.size.height);
+
+		self.windowBar.frame = window.windowBar.frame;
+		self.windowBar.alpha = 0;
+
+		[self.windowBar layoutSubviews];
+		[window.windowBar layoutSubviews];
+
+		//Scroll OSSlider
+		CGRect bounds = [[OSSlider sharedInstance] bounds];
+        bounds.origin.x = [[OSPaneModel sharedInstance] indexOfPane:[[OSPaneModel sharedInstance] firstDesktopPane]] * [[OSSlider sharedInstance] bounds].size.width;
+        [[OSSlider sharedInstance] setBounds:bounds];
+        [[OSSlider sharedInstance] updateDockPosition];
+        [[OSThumbnailView sharedInstance] updateSelectedThumbnail];
+
+  	}completion:^(BOOL finished){
+
+  		CGRect appFrame = self.appView.frame;
+  		appFrame.origin = CGPointMake(0, window.windowBar.bounds.size.height);
+  		self.appView.frame = appFrame;
+
+  		window.hidden = false;
+  		[window addSubview:self.appView];
+  		window.windowBar.frame = CGRectMake(0, 0, window.windowBar.bounds.size.width, window.windowBar.bounds.size.height);
+  		[window addSubview:window.windowBar];
+
+  		[self.windowBar removeFromSuperview];
+
+		window.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+
+		[[OSPaneModel sharedInstance] removePane:self];
+		[window release];
+  	}];
+
+
 }
 
 
