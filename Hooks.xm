@@ -161,6 +161,14 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 			const GSEventRecord* record = _GSEventGetGSEventRecord(event);
 			GSSendEvent(record, (mach_port_t)[[(OSAppPane*)[[OSSlider sharedInstance] currentPane] application] eventPort]);
 			return;
+		}else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
+			OSDesktopPane *pane = (OSDesktopPane*)[[OSSlider sharedInstance] currentPane];
+			if([pane activeWindow]){
+				if([[pane activeWindow] isKindOfClass:[OSAppWindow class]]){
+					const GSEventRecord* record = _GSEventGetGSEventRecord(event);
+					GSSendEvent(record, (mach_port_t)[[(OSAppWindow*)[pane activeWindow] application] eventPort]);
+				}
+			}
 		}
 	}
 

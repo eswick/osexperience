@@ -7,6 +7,7 @@
 @synthesize wallpaperView = _wallpaperView;
 @synthesize gridView = _gridView;
 @synthesize statusBar = _statusBar;
+@synthesize activeWindow = _activeWindow;
 
 
 
@@ -43,12 +44,17 @@
 	return true;
 }
 
-
+- (OSWindow*)activeWindow{
+	if(![self.subviews containsObject:_activeWindow])
+		return nil;
+	return _activeWindow;
+}
 
 - (void)window:(OSWindow*)window didRecievePanGesture:(UIPanGestureRecognizer*)gesture{
 	if([gesture state] == UIGestureRecognizerStateBegan){
 		[window setGrabPoint:[gesture locationInView:window]];
 		[self bringSubviewToFront:window];
+		[self setActiveWindow:window];
 	}else if([gesture state] == UIGestureRecognizerStateChanged){
 		CGRect frame = window.frame;
 		frame.origin = CGPointSub([gesture locationInView:self], [window grabPoint]);

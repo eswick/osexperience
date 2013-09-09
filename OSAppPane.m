@@ -240,6 +240,7 @@
 
 		window.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
+		[[[OSPaneModel sharedInstance] firstDesktopPane] setActiveWindow:window];
 		[[OSPaneModel sharedInstance] removePane:self];
 		[window release];
   	}];

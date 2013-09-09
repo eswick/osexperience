@@ -11,11 +11,13 @@
 	SBWallpaperView *_wallpaperView;
 	OSFileGridView *_gridView;
 	SBFakeStatusBarView *_statusBar;
+	OSWindow *_activeWindow;
 }
 
 @property (nonatomic, retain) SBWallpaperView *wallpaperView;
 @property (nonatomic, retain) OSFileGridView *gridView;
 @property (nonatomic, retain) SBFakeStatusBarView *statusBar;
+@property (nonatomic, assign) OSWindow *activeWindow;
 
 
 
