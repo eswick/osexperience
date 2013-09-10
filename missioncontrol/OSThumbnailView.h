@@ -14,9 +14,11 @@
 
 @interface OSThumbnailView : UIView{
 	OSThumbnailWrapper *_wrapperView;
+	UIView *_addDesktopButton;
 }
 
 @property (nonatomic, retain) OSThumbnailWrapper *wrapperView;
+@property (nonatomic, retain) UIView *addDesktopButton;
 
 + (id)sharedInstance;
 

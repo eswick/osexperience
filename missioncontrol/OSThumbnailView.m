@@ -6,6 +6,7 @@
 
 @implementation OSThumbnailView
 @synthesize wrapperView = _wrapperView;
+@synthesize addDesktopButton = _addDesktopButton;
 
 
 + (id)sharedInstance{
@@ -44,8 +45,57 @@
 	[self addSubview:self.wrapperView];
 
 
+	
+
+ 	frame = [[UIScreen mainScreen] bounds];
+
+ 	frame.origin.x = frame.size.width;
+
+	if(![self isPortrait]){
+		float width = frame.size.width;
+		frame.size.width = frame.size.height;
+		frame.size.height = width;
+		frame.origin.x = frame.size.height;
+	}
+
+	frame = CGRectApplyAffineTransform(frame, CGAffineTransformScale(CGAffineTransformIdentity, 0.15, 0.15));
+
+	self.addDesktopButton = [[UIView alloc] initWithFrame:frame];
+
+	self.addDesktopButton.backgroundColor = [UIColor greenColor];
+	CGPoint center = self.addDesktopButton.center;
+	center.y = self.center.y;
+	[self.addDesktopButton setCenter:center];
+	[self addSubview:self.addDesktopButton];
+
 
 	return self;
+}
+
+- (void)layoutSubviews{
+	CGRect frame = [[UIScreen mainScreen] bounds];
+
+ 	
+
+	if(![self isPortrait]){
+		float width = frame.size.width;
+		frame.size.width = frame.size.height;
+		frame.size.height = width;
+	}
+
+	frame = CGRectApplyAffineTransform(frame, CGAffineTransformScale(CGAffineTransformIdentity, 0.15, 0.15));
+
+	CGPoint center = [self center];
+	center.y -= wrapperCenter;
+
+	frame.origin.x = [[UIScreen mainScreen] bounds].size.width - (frame.size.width / 2);
+	if(![self isPortrait])
+		frame.origin.x = [[UIScreen mainScreen] bounds].size.height - (frame.size.width / 2);
+	frame.origin.y = center.y - (frame.size.height / 2);
+	
+	
+
+	[self.addDesktopButton setFrame:frame];
 }
 
 - (void)updateSelectedThumbnail{
@@ -101,7 +151,7 @@
 	[self.wrapperView addSubview:thumbnail];
 	[self alignSubviews];
 	[self updateSelectedThumbnail];
-	
+
 	[panGesture release];
 	[thumbnail release];
 }
@@ -109,7 +159,7 @@
 
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated{
 	OSPaneThumbnail *thumbnail;
-	
+
 	for(OSPaneThumbnail *view in self.wrapperView.subviews){
 		if(view.pane == pane)
 			thumbnail = view;
@@ -118,7 +168,7 @@
 	if(!thumbnail)
 		return;
 
-	
+
 	if(animated){
 
 		OSThumbnailPlaceholder *placeholder = [thumbnail placeholder];
@@ -177,19 +227,19 @@
 				[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 					[self alignSubviews];
 				}completion:^(BOOL finished){
-					
+
 				}];
-				
+
 			}else if([[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane] < [[OSPaneModel sharedInstance] indexOfPane:[(OSPaneThumbnail*)[gesture view] pane]] && pointInWrapper.x < thumbnail.frame.origin.x){
-				
+
 				OSPane *selectedPane = [[OSSlider sharedInstance] currentPane];
 				[[OSPaneModel sharedInstance] insertPane:[(OSPaneThumbnail*)[gesture view] pane] atIndex:[[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane]];
 				[[OSSlider sharedInstance] scrollToPane:selectedPane animated:false];
-				
+
 				[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 					[self alignSubviews];
 				}completion:^(BOOL finished){
-					
+
 				}];
 			}
 		}
@@ -214,9 +264,9 @@
 		}
 
 		[self.wrapperView addSubview:placeholder];
-		
+
 		[self addSubview:[gesture view]];
-		
+
 		CGRect frame = [[gesture view] frame];
 		CGPoint result = CGPointSub([gesture locationInView:self], [(OSPaneThumbnail*)[gesture view] grabPoint]);
 		frame.origin.x = result.x;
@@ -240,7 +290,7 @@
 			gesture.view.alpha = 1.0;
 			[self alignSubviews];
 		}completion:^(BOOL finished){
-			
+
 		}];
 
 
@@ -249,11 +299,6 @@
 
 
 }
-
-
-
-
-
 
 
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation{
