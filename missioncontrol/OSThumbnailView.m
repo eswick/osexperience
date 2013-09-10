@@ -9,14 +9,14 @@
 
 
 + (id)sharedInstance{
-    static OSThumbnailView *_view;
+	static OSThumbnailView *_view;
 
-    if (_view == nil)
-    {
-        _view = [[self alloc] init];
-    }
+	if (_view == nil)
+	{
+		_view = [[self alloc] init];
+	}
 
-    return _view;
+	return _view;
 }
 
 
@@ -49,13 +49,14 @@
 }
 
 - (void)updateSelectedThumbnail{
-  for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
-    if(thumbnail.pane == [[OSSlider sharedInstance] currentPane])
-      thumbnail.selected = true;
-    else
-      thumbnail.selected = false;
-  }
+	for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+		if(thumbnail.pane == [[OSSlider sharedInstance] currentPane])
+			thumbnail.selected = true;
+		else
+			thumbnail.selected = false;
+	}
 }
+
 
 -(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
 	CGRect frame = [[UIScreen mainScreen] bounds];
@@ -80,7 +81,7 @@
 		[thumbnail updateSize];
 		thumbnail.layer.shadowPath = [UIBezierPath bezierPathWithRect:thumbnail.bounds].CGPath;
 		thumbnail.frame = CGRectMake((thumbnail.frame.size.width + thumbnailMarginSize) * [[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane], 0, thumbnail.frame.size.width, thumbnail.frame.size.height);
-  }
+	}
 
 	CGPoint center = self.center;
 	center.y -= wrapperCenter;
@@ -95,62 +96,62 @@
 	OSPaneThumbnail *thumbnail = [[OSPaneThumbnail alloc] initWithPane:pane];
 
 	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailPanGesture:)];
-  panGesture.maximumNumberOfTouches = 1;
-  [thumbnail addGestureRecognizer:panGesture];
+	panGesture.maximumNumberOfTouches = 1;
+	[thumbnail addGestureRecognizer:panGesture];
 	[self.wrapperView addSubview:thumbnail];
 	[self alignSubviews];
-  [self updateSelectedThumbnail];
-  
-  [panGesture release];
-  [thumbnail release];
+	[self updateSelectedThumbnail];
+	
+	[panGesture release];
+	[thumbnail release];
 }
 
 
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated{
-  OSPaneThumbnail *thumbnail;
-  
-  for(OSPaneThumbnail *view in self.wrapperView.subviews){
-    if(view.pane == pane)
-      thumbnail = view;
-  }
+	OSPaneThumbnail *thumbnail;
+	
+	for(OSPaneThumbnail *view in self.wrapperView.subviews){
+		if(view.pane == pane)
+			thumbnail = view;
+	}
 
-  if(!thumbnail)
-    return;
+	if(!thumbnail)
+		return;
 
-  
-  if(animated){
+	
+	if(animated){
 
-    OSThumbnailPlaceholder *placeholder = [thumbnail placeholder];
-    if(!placeholder){
-      placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[thumbnail pane]];
-      [thumbnail setPlaceholder:placeholder];
-      [placeholder release];
-    }
-    placeholder.center = thumbnail.center;
-    [self.wrapperView addSubview:placeholder];
+		OSThumbnailPlaceholder *placeholder = [thumbnail placeholder];
+		if(!placeholder){
+			placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[thumbnail pane]];
+			[thumbnail setPlaceholder:placeholder];
+			[placeholder release];
+		}
+		placeholder.center = thumbnail.center;
+		[self.wrapperView addSubview:placeholder];
 
-    self.wrapperView.shouldAnimate = true;
+		self.wrapperView.shouldAnimate = true;
 
-    [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 
-      thumbnail.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0, 0);
+			thumbnail.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0, 0);
 
-    }completion:^(BOOL finished){
+		}completion:^(BOOL finished){
 
-      [thumbnail removeFromSuperview];
+			[thumbnail removeFromSuperview];
 
 
-      [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-        [placeholder removeFromSuperview];
-      }completion:^(BOOL finished){
-        self.wrapperView.shouldAnimate = false;
-      }];
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
+				[placeholder removeFromSuperview];
+			}completion:^(BOOL finished){
+				self.wrapperView.shouldAnimate = false;
+			}];
 
-    }];
+		}];
 
-  }else{
-    [thumbnail removeFromSuperview];
-  }
+	}else{
+		[thumbnail removeFromSuperview];
+	}
 
 
 }
@@ -158,93 +159,93 @@
 
 -(void)handleThumbnailPanGesture:(UIPanGestureRecognizer *)gesture{
 
-    if([gesture state] == UIGestureRecognizerStateChanged){
+	if([gesture state] == UIGestureRecognizerStateChanged){
 
-    	CGRect frame = [[gesture view] frame];
-    	CGPoint result = CGPointSub([gesture locationInView:self], [(OSPaneThumbnail*)[gesture view] grabPoint]);
-      frame.origin.x = result.x;
-      frame.origin.y = self.wrapperView.frame.origin.y;
-      [[gesture view] setFrame:frame];
-      CGPoint pointInWrapper = [self convertPoint:gesture.view.frame.origin toView:self.wrapperView];
+		CGRect frame = [[gesture view] frame];
+		CGPoint result = CGPointSub([gesture locationInView:self], [(OSPaneThumbnail*)[gesture view] grabPoint]);
+		frame.origin.x = result.x;
+		frame.origin.y = self.wrapperView.frame.origin.y;
+		[[gesture view] setFrame:frame];
+		CGPoint pointInWrapper = [self convertPoint:gesture.view.frame.origin toView:self.wrapperView];
 
-      for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
-        if([[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane] > [[OSPaneModel sharedInstance] indexOfPane:[(OSPaneThumbnail*)[gesture view] pane]] && pointInWrapper.x > thumbnail.frame.origin.x){
-       		OSPane *selectedPane = [[OSSlider sharedInstance] currentPane];
-       		[[OSPaneModel sharedInstance] insertPane:[(OSPaneThumbnail*)[gesture view] pane] atIndex:[[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane]];
-       		[[OSSlider sharedInstance] scrollToPane:selectedPane animated:false];
+		for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+			if([[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane] > [[OSPaneModel sharedInstance] indexOfPane:[(OSPaneThumbnail*)[gesture view] pane]] && pointInWrapper.x > thumbnail.frame.origin.x){
+				OSPane *selectedPane = [[OSSlider sharedInstance] currentPane];
+				[[OSPaneModel sharedInstance] insertPane:[(OSPaneThumbnail*)[gesture view] pane] atIndex:[[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane]];
+				[[OSSlider sharedInstance] scrollToPane:selectedPane animated:false];
 
-       		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            [self alignSubviews];
-          }completion:^(BOOL finished){
-            
-          }];
-       			
-     		}else if([[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane] < [[OSPaneModel sharedInstance] indexOfPane:[(OSPaneThumbnail*)[gesture view] pane]] && pointInWrapper.x < thumbnail.frame.origin.x){
-       			
-     			OSPane *selectedPane = [[OSSlider sharedInstance] currentPane];
-       		[[OSPaneModel sharedInstance] insertPane:[(OSPaneThumbnail*)[gesture view] pane] atIndex:[[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane]];
-       		[[OSSlider sharedInstance] scrollToPane:selectedPane animated:false];
-            
-          [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-            [self alignSubviews];
-          }completion:^(BOOL finished){
-            
-          }];
-       	}
-      }
-
-
-    }else if([gesture state] == UIGestureRecognizerStateBegan){
-
-    	gesture.view.alpha = 0.5;
-
-    	CGPoint grabPoint = [gesture locationInView:[gesture view]];
-    	[(OSPaneThumbnail*)[gesture view] setGrabPoint:grabPoint];
+				[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+					[self alignSubviews];
+				}completion:^(BOOL finished){
+					
+				}];
+				
+			}else if([[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane] < [[OSPaneModel sharedInstance] indexOfPane:[(OSPaneThumbnail*)[gesture view] pane]] && pointInWrapper.x < thumbnail.frame.origin.x){
+				
+				OSPane *selectedPane = [[OSSlider sharedInstance] currentPane];
+				[[OSPaneModel sharedInstance] insertPane:[(OSPaneThumbnail*)[gesture view] pane] atIndex:[[OSPaneModel sharedInstance] indexOfPane:thumbnail.pane]];
+				[[OSSlider sharedInstance] scrollToPane:selectedPane animated:false];
+				
+				[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+					[self alignSubviews];
+				}completion:^(BOOL finished){
+					
+				}];
+			}
+		}
 
 
+	}else if([gesture state] == UIGestureRecognizerStateBegan){
 
+		gesture.view.alpha = 0.5;
 
-    	OSThumbnailPlaceholder *placeholder = [(OSPaneThumbnail*)[gesture view] placeholder];
-
-    	if(!placeholder){
-    		placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[(OSPaneThumbnail*)[gesture view] pane]];
-    		[(OSPaneThumbnail*)[gesture view] setPlaceholder:placeholder];
-    		[placeholder release];
-    	}
-
-    	[self.wrapperView addSubview:placeholder];
-    	
-    	[self addSubview:[gesture view]];
-    	
-    	CGRect frame = [[gesture view] frame];
-    	CGPoint result = CGPointSub([gesture locationInView:self], [(OSPaneThumbnail*)[gesture view] grabPoint]);
-      frame.origin.x = result.x;
-      frame.origin.y = self.wrapperView.frame.origin.y;
-      [[gesture view] setFrame:frame];
-
-      [self alignSubviews];
-      [self.wrapperView layoutSubviews];
-
-    }else if([gesture state] == UIGestureRecognizerStateEnded || [gesture state] == UIGestureRecognizerStateCancelled){
-
-
-      CGRect frame = gesture.view.frame;
-      frame.origin = [self convertPoint:frame.origin toView:self.wrapperView];
-      [gesture.view setFrame:frame];
-
-      [self.wrapperView addSubview:gesture.view];
-      [[(OSPaneThumbnail*)[gesture view] placeholder] removeFromSuperview];
-
-      [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-        gesture.view.alpha = 1.0;
-        [self alignSubviews];
-      }completion:^(BOOL finished){
-        
-      }];
+		CGPoint grabPoint = [gesture locationInView:[gesture view]];
+		[(OSPaneThumbnail*)[gesture view] setGrabPoint:grabPoint];
 
 
 
-    }
+
+		OSThumbnailPlaceholder *placeholder = [(OSPaneThumbnail*)[gesture view] placeholder];
+
+		if(!placeholder){
+			placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[(OSPaneThumbnail*)[gesture view] pane]];
+			[(OSPaneThumbnail*)[gesture view] setPlaceholder:placeholder];
+			[placeholder release];
+		}
+
+		[self.wrapperView addSubview:placeholder];
+		
+		[self addSubview:[gesture view]];
+		
+		CGRect frame = [[gesture view] frame];
+		CGPoint result = CGPointSub([gesture locationInView:self], [(OSPaneThumbnail*)[gesture view] grabPoint]);
+		frame.origin.x = result.x;
+		frame.origin.y = self.wrapperView.frame.origin.y;
+		[[gesture view] setFrame:frame];
+
+		[self alignSubviews];
+		[self.wrapperView layoutSubviews];
+
+	}else if([gesture state] == UIGestureRecognizerStateEnded || [gesture state] == UIGestureRecognizerStateCancelled){
+
+
+		CGRect frame = gesture.view.frame;
+		frame.origin = [self convertPoint:frame.origin toView:self.wrapperView];
+		[gesture.view setFrame:frame];
+
+		[self.wrapperView addSubview:gesture.view];
+		[[(OSPaneThumbnail*)[gesture view] placeholder] removeFromSuperview];
+
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+			gesture.view.alpha = 1.0;
+			[self alignSubviews];
+		}completion:^(BOOL finished){
+			
+		}];
+
+
+
+	}
 
 
 }
@@ -257,16 +258,16 @@
 
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation{
 	if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown){
-        return true;
-    }
-    return false;
+		return true;
+	}
+	return false;
 }
 
 - (BOOL)isPortrait{
 	if([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait || [[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortraitUpsideDown){
-        return true;
-    }
-    return false;
+		return true;
+	}
+	return false;
 }
 
 
