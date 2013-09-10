@@ -4,6 +4,7 @@
 #import "OSThumbnailView.h"
 #import "../OSAppPane.h"
 #import "../include.h"
+#import "../UIImage+Extensions.h"
 
 @class OSThumbnailPlaceholder;
 

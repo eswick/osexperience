@@ -163,9 +163,32 @@
 
 		if([self.pane isKindOfClass:[OSAppPane class]]){
 			UIView *zoomView = [[objc_getClass("SBUIController") sharedInstance] systemGestureSnapshotWithIOSurfaceSnapshotOfApp:[(OSAppPane*)self.pane application] includeStatusBar:true];
-			UIGraphicsBeginImageContextWithOptions(zoomView.bounds.size, zoomView.opaque, [UIScreen mainScreen].scale);
+			
+			CGRect frame = zoomView.bounds;
+			int appViewDegrees;
+
+			switch([UIApp statusBarOrientation]){
+				case UIInterfaceOrientationPortrait:
+					appViewDegrees = 0;
+					break;
+				case UIInterfaceOrientationPortraitUpsideDown:
+					appViewDegrees = 180;
+					break;
+				case UIInterfaceOrientationLandscapeLeft:
+					appViewDegrees = 90;
+					break;
+				case UIInterfaceOrientationLandscapeRight:
+					appViewDegrees = 270;
+					break;
+			}
+
+			UIGraphicsBeginImageContextWithOptions(frame.size, zoomView.opaque, [UIScreen mainScreen].scale);
+
+			//CGContextTranslateCTM(UIGraphicsGetCurrentContext(), tx, ty);
+			//CGContextRotateCTM(UIGraphicsGetCurrentContext(), DegreesToRadians(appViewDegrees));
+
     		[zoomView.layer renderInContext:UIGraphicsGetCurrentContext()];
-  			image = UIGraphicsGetImageFromCurrentImageContext();
+  			image = [UIGraphicsGetImageFromCurrentImageContext() imageRotatedByDegrees:appViewDegrees];
 		}else{
 			UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.pane.opaque, 0.0);
 			CGContextConcatCTM(UIGraphicsGetCurrentContext(), CGAffineTransformMakeScale(0.15, 0.15));
