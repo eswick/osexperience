@@ -183,10 +183,6 @@
 			}
 
 			UIGraphicsBeginImageContextWithOptions(frame.size, zoomView.opaque, [UIScreen mainScreen].scale);
-
-			//CGContextTranslateCTM(UIGraphicsGetCurrentContext(), tx, ty);
-			//CGContextRotateCTM(UIGraphicsGetCurrentContext(), DegreesToRadians(appViewDegrees));
-
     		[zoomView.layer renderInContext:UIGraphicsGetCurrentContext()];
   			image = [UIGraphicsGetImageFromCurrentImageContext() imageRotatedByDegrees:appViewDegrees];
 		}else{
