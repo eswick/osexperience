@@ -20,6 +20,7 @@
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
 	self.wallpaperView = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIApplication sharedApplication] statusBarOrientation] variant:1];
+	self.wallpaperView.clipsToBounds = true;
 	[self.wallpaperView setGradientAlpha:0.0];
 	[self addSubview:self.wallpaperView];
 
