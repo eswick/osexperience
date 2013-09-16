@@ -7,9 +7,11 @@
 
 @interface OSAddDesktopButton : UIView {
 	SBWallpaperView *_wallpaper;
+	UIImageView *_plusIcon;
 }
 
 @property (nonatomic, retain) SBWallpaperView *wallpaper;
+@property (nonatomic, retain) UIImageView *plusIcon;
 
 
 

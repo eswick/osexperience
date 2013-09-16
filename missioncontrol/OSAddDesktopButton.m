@@ -4,6 +4,7 @@
 
 @implementation OSAddDesktopButton
 @synthesize wallpaper = _wallpaper;
+@synthesize plusIcon = _plusIcon;
 
 - (id)init{
 
@@ -25,7 +26,9 @@
 	if(![super initWithFrame:frame])
 		return nil;
 
-	self.backgroundColor = [UIColor greenColor];
+	self.alpha = 0.75;
+
+	//self.backgroundColor = [UIColor greenColor];
 	self.clipsToBounds = false;
 	self.layer.shadowOffset = CGSizeMake(0, 0);
 	self.layer.shadowRadius = 5;
@@ -48,6 +51,21 @@
 
 
 
+	frame = self.frame;
+	frame.size.width = frame.size.width / 2;
+	frame.origin = CGPointZero;
+
+	self.plusIcon = [[UIImageView alloc] initWithFrame:frame];
+
+	self.plusIcon.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/expose-plus.png"];
+	self.plusIcon.contentMode = UIViewContentModeCenter;
+
+	self.plusIcon.layer.shadowOffset = CGSizeMake(0, 0);
+	self.plusIcon.layer.shadowRadius = 0;
+	self.plusIcon.layer.shadowOpacity = 0.5;
+	self.plusIcon.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
+
+	[self addSubview:self.plusIcon];
 
 	return self;
 }
@@ -60,6 +78,13 @@
 	frame = self.wallpaper.frame;
 	frame.origin = CGPointZero;
 	[self.wallpaper setFrame:frame];
+
+
+	frame = self.frame;
+	frame.size.width = frame.size.width / 2;
+	frame.origin = CGPointZero;
+	self.plusIcon.frame = frame;
+	self.plusIcon.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
 }
 
 - (void)dealloc{
