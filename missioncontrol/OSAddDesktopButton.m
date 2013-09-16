@@ -26,12 +26,17 @@
 		return nil;
 
 	self.backgroundColor = [UIColor greenColor];
-	self.clipsToBounds = true;
+	self.clipsToBounds = false;
+	self.layer.shadowOffset = CGSizeMake(0, 0);
+	self.layer.shadowRadius = 5;
+	self.layer.shadowOpacity = 0.5;
+	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 
 
 	self.wallpaper = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIApplication sharedApplication] statusBarOrientation] variant:1];
 	self.wallpaper.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	
+	self.wallpaper.clipsToBounds = true;
+
 	self.wallpaper.frame = self.frame;
 	frame = self.wallpaper.frame;
 	frame.origin = CGPointZero;
@@ -42,7 +47,19 @@
 	[self addSubview:self.wallpaper];
 
 
+
+
 	return self;
+}
+
+- (void)layoutSubviews{
+	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+
+	CGRect frame = CGRectZero;
+	self.wallpaper.frame = self.frame;
+	frame = self.wallpaper.frame;
+	frame.origin = CGPointZero;
+	[self.wallpaper setFrame:frame];
 }
 
 - (void)dealloc{
