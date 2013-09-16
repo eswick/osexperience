@@ -4,6 +4,7 @@
 #import "../OSPaneModel.h"
 #import "../OSPane.h"
 #import "../explorer/CGPointExtension.h"
+#import "OSAddDesktopButton.h"
 
 
 #define thumbnailMarginSize 20
@@ -14,11 +15,11 @@
 
 @interface OSThumbnailView : UIView{
 	OSThumbnailWrapper *_wrapperView;
-	UIView *_addDesktopButton;
+	OSAddDesktopButton *_addDesktopButton;
 }
 
 @property (nonatomic, retain) OSThumbnailWrapper *wrapperView;
-@property (nonatomic, retain) UIView *addDesktopButton;
+@property (nonatomic, retain) OSAddDesktopButton *addDesktopButton;
 
 + (id)sharedInstance;
 

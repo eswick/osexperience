@@ -44,25 +44,8 @@
 	self.wrapperView = [[OSThumbnailWrapper alloc] init];
 	[self addSubview:self.wrapperView];
 
+	self.addDesktopButton = [[OSAddDesktopButton alloc] init];
 
-	
-
- 	frame = [[UIScreen mainScreen] bounds];
-
- 	frame.origin.x = frame.size.width;
-
-	if(![self isPortrait]){
-		float width = frame.size.width;
-		frame.size.width = frame.size.height;
-		frame.size.height = width;
-		frame.origin.x = frame.size.height;
-	}
-
-	frame = CGRectApplyAffineTransform(frame, CGAffineTransformScale(CGAffineTransformIdentity, 0.15, 0.15));
-
-	self.addDesktopButton = [[UIView alloc] initWithFrame:frame];
-
-	self.addDesktopButton.backgroundColor = [UIColor greenColor];
 	CGPoint center = self.addDesktopButton.center;
 	center.y = self.center.y;
 	[self.addDesktopButton setCenter:center];
@@ -91,9 +74,8 @@
 	frame.origin.x = [[UIScreen mainScreen] bounds].size.width - (frame.size.width / 2);
 	if(![self isPortrait])
 		frame.origin.x = [[UIScreen mainScreen] bounds].size.height - (frame.size.width / 2);
+
 	frame.origin.y = center.y - (frame.size.height / 2);
-	
-	
 
 	[self.addDesktopButton setFrame:frame];
 }
@@ -318,6 +300,7 @@
 
 - (void)dealloc{
 	[self.wrapperView release];
+	[self.addDesktopButton release];
 	[super dealloc];
 }
 

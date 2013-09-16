@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "../include.h"
 #import "../OSViewController.h"
-#import "../libcpbitmap.h"
 #import "UIImage+StackBlur.h"
 #import "../OSWallpaperView.h"
 
