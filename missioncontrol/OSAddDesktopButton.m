@@ -5,6 +5,7 @@
 @implementation OSAddDesktopButton
 @synthesize wallpaper = _wallpaper;
 @synthesize plusIcon = _plusIcon;
+@synthesize delegate = _delegate;
 
 - (id)init{
 
@@ -67,7 +68,16 @@
 
 	[self addSubview:self.plusIcon];
 
+
+	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+	[self addGestureRecognizer:tapGesture];
+	[tapGesture release];
+
 	return self;
+}
+
+- (void)handleTap:(UITapGestureRecognizer*)gesture{
+
 }
 
 - (void)layoutSubviews{
