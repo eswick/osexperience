@@ -1,4 +1,5 @@
 #import "OSPaneThumbnail.h"
+#import "OSThumbnailPlaceholder.h"
 
 
 
@@ -93,15 +94,17 @@
 	[self addSubview:self.selectionView];
 	[self sendSubviewToBack:self.selectionView];
 
-
+	self.placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[self pane]];
 	return self;
 
 }
+
 
 - (void)dealloc{
 	[self.label release];
 	[self.imageView release];
 	[self.selectionView release];
+	[self.placeholder release];
 
 	if(self.icon)
 		[self.icon release];

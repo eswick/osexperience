@@ -126,6 +126,7 @@
 
 
 - (void)addPane:(OSPane*)pane{
+	
 	OSPaneThumbnail *thumbnail = [[OSPaneThumbnail alloc] initWithPane:pane];
 
 	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailPanGesture:)];
@@ -155,11 +156,7 @@
 	if(animated){
 
 		OSThumbnailPlaceholder *placeholder = [thumbnail placeholder];
-		if(!placeholder){
-			placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[thumbnail pane]];
-			[thumbnail setPlaceholder:placeholder];
-			[placeholder release];
-		}
+		
 		placeholder.center = thumbnail.center;
 		[self.wrapperView addSubview:placeholder];
 
@@ -240,12 +237,6 @@
 
 		OSThumbnailPlaceholder *placeholder = [(OSPaneThumbnail*)[gesture view] placeholder];
 
-		if(!placeholder){
-			placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[(OSPaneThumbnail*)[gesture view] pane]];
-			[(OSPaneThumbnail*)[gesture view] setPlaceholder:placeholder];
-			[placeholder release];
-		}
-
 		[self.wrapperView addSubview:placeholder];
 
 		[self addSubview:[gesture view]];
@@ -284,7 +275,13 @@
 }
 
 - (void)addDesktopButtonWasTapped:(OSAddDesktopButton*)button{
-	
+	OSDesktopPane *desktop = [[OSDesktopPane alloc] init];
+
+
+
+	[[OSPaneModel sharedInstance] addPaneToBack:desktop];
+
+	[desktop release];
 }
 
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation{

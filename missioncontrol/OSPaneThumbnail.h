@@ -14,7 +14,7 @@
 	UIImageView *_icon;
 	UIImageView *_imageView;
 	CGPoint _grabPoint;
-	id _placeholder;
+	OSThumbnailPlaceholder *_placeholder;
 	BOOL _selected;
 	UIView *_selectionView;
 }
@@ -24,7 +24,7 @@
 @property (nonatomic, retain) UIImageView *icon;
 @property (nonatomic, retain) UIImageView *imageView;
 @property (nonatomic, readwrite) CGPoint grabPoint;
-@property (nonatomic, retain) id placeholder;
+@property (nonatomic, retain) OSThumbnailPlaceholder *placeholder;
 @property (nonatomic, getter=isSelected, readwrite) BOOL selected;
 @property (nonatomic, retain) UIView *selectionView;
 
