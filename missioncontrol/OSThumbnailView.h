@@ -13,7 +13,7 @@
 
 @class OSThumbnailWrapper;
 
-@interface OSThumbnailView : UIView{
+@interface OSThumbnailView : UIView <OSAddDesktopButtonDelegate>{
 	OSThumbnailWrapper *_wrapperView;
 	OSAddDesktopButton *_addDesktopButton;
 }

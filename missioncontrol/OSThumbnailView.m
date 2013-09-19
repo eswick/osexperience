@@ -45,6 +45,7 @@
 	[self addSubview:self.wrapperView];
 
 	self.addDesktopButton = [[OSAddDesktopButton alloc] init];
+	self.addDesktopButton.delegate = self;
 
 	CGPoint center = self.addDesktopButton.center;
 	center.y = self.center.y;
@@ -282,6 +283,9 @@
 
 }
 
+- (void)addDesktopButtonWasTapped:(OSAddDesktopButton*)button{
+	
+}
 
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation{
 	if(orientation == UIInterfaceOrientationPortrait || orientation == UIInterfaceOrientationPortraitUpsideDown){
