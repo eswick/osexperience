@@ -134,6 +134,9 @@
 
 	[pane setOriginX: (pane.frame.size.width + marginSize) * ([[OSPaneModel sharedInstance] count] - 1)];
 
+	if([[OSViewController sharedInstance] missionControlIsActive])
+		pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
+
 	[self addSubview:pane];
 
 	[self alignPanes];
