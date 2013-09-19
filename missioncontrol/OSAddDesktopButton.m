@@ -63,20 +63,30 @@
 
 	self.plusIcon.layer.shadowOffset = CGSizeMake(0, 0);
 	self.plusIcon.layer.shadowRadius = 0;
-	self.plusIcon.layer.shadowOpacity = 0.5;
+	self.plusIcon.layer.shadowOpacity = 0.30;
 	self.plusIcon.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
 
 	[self addSubview:self.plusIcon];
 
 
-	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+	UILongPressGestureRecognizer *tapGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+	tapGesture.minimumPressDuration = 0;
 	[self addGestureRecognizer:tapGesture];
 	[tapGesture release];
 
 	return self;
 }
 
-- (void)handleTap:(UITapGestureRecognizer*)gesture{
+- (void)handleTap:(UILongPressGestureRecognizer*)gesture{
+	if(gesture.state == UIGestureRecognizerStateBegan){
+		self.plusIcon.layer.shadowOpacity = 0.60;
+	}else if(gesture.state == UIGestureRecognizerStateEnded){
+		self.plusIcon.layer.shadowOpacity = 0.30;
+		if([gesture state] == UIGestureRecognizerStateRecognized)
+			[[self delegate] addDesktopButtonWasTapped:self];
+	}else if(gesture.state == UIGestureRecognizerStateChanged){
+		self.plusIcon.layer.shadowOpacity = 0.60;
+	}
 
 }
 
