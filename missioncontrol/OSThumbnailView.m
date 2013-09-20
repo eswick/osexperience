@@ -168,7 +168,7 @@
 		placeholder.center = thumbnail.center;
 		[self.wrapperView addSubview:placeholder];
 
-		self.wrapperView.shouldAnimate = true;
+		self.wrapperView.shouldLayoutSubviews = false;
 
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 
@@ -181,8 +181,9 @@
 
 			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
 				[placeholder removeFromSuperview];
+				[self.wrapperView forceLayoutSubviews];
 			}completion:^(BOOL finished){
-				self.wrapperView.shouldAnimate = false;
+				self.wrapperView.shouldLayoutSubviews = true;
 			}];
 
 		}];
@@ -294,25 +295,27 @@
 			continue;
 		if(thumbnail.pane == desktop){
 			thumbnail.placeholder.center = thumbnail.center;
-
-			//thumbnail.placeholder.backgroundColor = [UIColor greenColor];
 			thumbnail.placeholder.hidden = true;
 
-			self.wrapperView.shouldAnimate = true;
+			self.wrapperView.shouldLayoutSubviews = false;
 
 			[thumbnail removeFromSuperview];
-			//self.wrapperView.shouldAnimate = true;
 			[self.wrapperView addSubview:[thumbnail placeholder]];
 			[self alignSubviews];
-			[self.wrapperView layoutSubviews];
 
 			self.shouldLayoutSubviews = false;
 
 			thumbnail.center = self.addDesktopButton.center;
 			[self addSubview:thumbnail];
 
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+				[self.wrapperView forceLayoutSubviews];
+			}completion:^(BOOL finished){
+
+			}];
+
 			[UIView animateWithDuration:0.75 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-				
+
 				CGPoint center = [self.wrapperView convertPoint:thumbnail.placeholder.center toView:self];
 
 				thumbnail.center = center;
@@ -334,7 +337,7 @@
 					[self forceLayoutSubviews];
 				}completion:^(BOOL finished){
 					self.shouldLayoutSubviews = true;
-					self.wrapperView.shouldAnimate = false;
+					self.wrapperView.shouldLayoutSubviews = true;
 				}];
 			}];
 		}

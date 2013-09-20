@@ -3,55 +3,43 @@
 
 
 @implementation OSThumbnailWrapper
-@synthesize shouldAnimate = _shouldAnimate;
+@synthesize shouldLayoutSubviews = _shouldLayoutSubviews;
 
+
+- (id)init{
+	if(![super init])
+		return nil;
+
+	self.shouldLayoutSubviews = true;
+
+	return self;
+}
 
 - (void)layoutSubviews{
-	if(self.shouldAnimate){
-		[self layoutSubviewsAnimated];
+	if(!self.shouldLayoutSubviews)
 		return;
-	}
-
-	CGRect frame = CGRectZero;
-	for(UIView *view in self.subviews){
-		frame = CGRectUnion(frame, view.frame);
-	}
-	[self setFrame:frame];
-	
-	CGPoint center = [[OSThumbnailView sharedInstance] center];
-	center.y -= wrapperCenter;
-	self.center = center;
+	else
+		[self forceLayoutSubviews];
 }
 
 
-- (void)layoutSubviewsAnimated{
 
+- (void)forceLayoutSubviews{
 
+	CGRect frame = CGRectZero;
 
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+	for(UIView *view in self.subviews){
+		frame = CGRectUnion(frame, view.frame);
+	}
 
-		CGRect frame = CGRectZero;
+	CGPoint center = [[OSThumbnailView sharedInstance] center];
+	center.y -= wrapperCenter;
 
-		for(UIView *view in self.subviews){
-			NSLog(@"Frame: %@, View frame: %@", NSStringFromCGRect(frame), NSStringFromCGRect(view.frame));
-			frame = CGRectUnion(frame, view.frame);
-			NSLog(@"%@", view);
-		}
+	frame.origin.x = center.x - (frame.size.width / 2);
+	frame.origin.y = center.y - (frame.size.height / 2);
 
+	[self setFrame:frame];
 
-		CGPoint center = [[OSThumbnailView sharedInstance] center];
-		center.y -= wrapperCenter;
-
-		frame.origin.x = center.x - (frame.size.width / 2);
-		frame.origin.y = center.y - (frame.size.height / 2);
-
-		[self setFrame:frame];
-
-
-
-	}completion:^(BOOL finished){
-		
-	}];
 }
 
 
