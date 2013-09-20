@@ -298,6 +298,8 @@
 			//thumbnail.placeholder.backgroundColor = [UIColor greenColor];
 			thumbnail.placeholder.hidden = true;
 
+			self.wrapperView.shouldAnimate = true;
+
 			[thumbnail removeFromSuperview];
 			//self.wrapperView.shouldAnimate = true;
 			[self.wrapperView addSubview:[thumbnail placeholder]];
@@ -320,15 +322,19 @@
 			}completion:^(BOOL finished){
 
 				self.addDesktopButton.alpha = 1;
-				
+
 				CGRect frame = self.addDesktopButton.frame;
 				frame.origin.x = self.frame.size.width;
 				[self.addDesktopButton setFrame:frame];
 
+				thumbnail.center = thumbnail.placeholder.center;
+				[self.wrapperView addSubview:thumbnail];
+
 				[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 					[self forceLayoutSubviews];
 				}completion:^(BOOL finished){
-					
+					self.shouldLayoutSubviews = true;
+					self.wrapperView.shouldAnimate = false;
 				}];
 			}];
 		}
