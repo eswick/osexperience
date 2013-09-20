@@ -7,6 +7,7 @@
 @implementation OSThumbnailView
 @synthesize wrapperView = _wrapperView;
 @synthesize addDesktopButton = _addDesktopButton;
+@synthesize shouldLayoutSubviews = _shouldLayoutSubviews;
 
 
 + (id)sharedInstance{
@@ -52,11 +53,18 @@
 	[self.addDesktopButton setCenter:center];
 	[self addSubview:self.addDesktopButton];
 
-
+	self.shouldLayoutSubviews = true;
 	return self;
 }
 
-- (void)layoutSubviews{
+-(void)layoutSubviews{
+	if(!self.shouldLayoutSubviews)
+		return;
+	else
+		[self forceLayoutSubviews];
+}
+
+- (void)forceLayoutSubviews{
 	CGRect frame = [[UIScreen mainScreen] bounds];
 
  	
@@ -126,7 +134,7 @@
 
 
 - (void)addPane:(OSPane*)pane{
-	
+
 	OSPaneThumbnail *thumbnail = [[OSPaneThumbnail alloc] initWithPane:pane];
 
 	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailPanGesture:)];
@@ -278,8 +286,53 @@
 	OSDesktopPane *desktop = [[OSDesktopPane alloc] init];
 
 
-
+	
 	[[OSPaneModel sharedInstance] addPaneToBack:desktop];
+
+	for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+		if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
+			continue;
+		if(thumbnail.pane == desktop){
+			thumbnail.placeholder.center = thumbnail.center;
+
+			//thumbnail.placeholder.backgroundColor = [UIColor greenColor];
+			thumbnail.placeholder.hidden = true;
+
+			[thumbnail removeFromSuperview];
+			//self.wrapperView.shouldAnimate = true;
+			[self.wrapperView addSubview:[thumbnail placeholder]];
+			[self alignSubviews];
+			[self.wrapperView layoutSubviews];
+
+			self.shouldLayoutSubviews = false;
+
+			thumbnail.center = self.addDesktopButton.center;
+			[self addSubview:thumbnail];
+
+			[UIView animateWithDuration:0.75 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+				
+				CGPoint center = [self.wrapperView convertPoint:thumbnail.placeholder.center toView:self];
+
+				thumbnail.center = center;
+				self.addDesktopButton.center = center;
+				self.addDesktopButton.alpha = 0;
+
+			}completion:^(BOOL finished){
+
+				self.addDesktopButton.alpha = 1;
+				
+				CGRect frame = self.addDesktopButton.frame;
+				frame.origin.x = self.frame.size.width;
+				[self.addDesktopButton setFrame:frame];
+
+				[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+					[self forceLayoutSubviews];
+				}completion:^(BOOL finished){
+					
+				}];
+			}];
+		}
+	}
 
 	[desktop release];
 }

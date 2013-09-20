@@ -16,10 +16,12 @@
 @interface OSThumbnailView : UIView <OSAddDesktopButtonDelegate>{
 	OSThumbnailWrapper *_wrapperView;
 	OSAddDesktopButton *_addDesktopButton;
+	BOOL _shouldLayoutSubviews;
 }
 
 @property (nonatomic, retain) OSThumbnailWrapper *wrapperView;
 @property (nonatomic, retain) OSAddDesktopButton *addDesktopButton;
+@property (nonatomic, readwrite) BOOL shouldLayoutSubviews;
 
 + (id)sharedInstance;
 
