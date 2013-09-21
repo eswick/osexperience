@@ -67,8 +67,6 @@
 - (void)forceLayoutSubviews{
 	CGRect frame = [[UIScreen mainScreen] bounds];
 
- 	
-
 	if(![self isPortrait]){
 		float width = frame.size.width;
 		frame.size.width = frame.size.height;
@@ -80,10 +78,13 @@
 	CGPoint center = [self center];
 	center.y -= wrapperCenter;
 
-	frame.origin.x = [[UIScreen mainScreen] bounds].size.width - (frame.size.width / 2);
-	if(![self isPortrait])
-		frame.origin.x = [[UIScreen mainScreen] bounds].size.height - (frame.size.width / 2);
-
+	if([[[OSPaneModel sharedInstance] panes] count] >= 5){
+		frame.origin.x = self.frame.size.width;
+	}else{
+		frame.origin.x = [[UIScreen mainScreen] bounds].size.width - (frame.size.width / 2);
+		if(![self isPortrait])
+			frame.origin.x = [[UIScreen mainScreen] bounds].size.height - (frame.size.width / 2);
+	}
 	frame.origin.y = center.y - (frame.size.height / 2);
 
 	[self.addDesktopButton setFrame:frame];
@@ -176,6 +177,7 @@
 			[thumbnail removeFromSuperview];
 
 			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+				[self forceLayoutSubviews];
 				[self alignSubviews];
 				[self.wrapperView forceLayoutSubviews];
 			}completion:^(BOOL finished){
