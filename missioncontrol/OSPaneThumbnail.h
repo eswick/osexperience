@@ -18,6 +18,7 @@
 	BOOL _selected;
 	UIView *_selectionView;
 	UIButton *_closebox;
+	BOOL _closeboxVisible;
 }
 
 @property (nonatomic, retain) OSPane *pane;
@@ -29,6 +30,7 @@
 @property (nonatomic, getter=isSelected, readwrite) BOOL selected;
 @property (nonatomic, retain) UIView *selectionView;
 @property (nonatomic, retain) UIButton *closebox;
+@property (nonatomic, readwrite) BOOL closeboxVisible;
  
 - (id)initWithPane:(OSPane*)pane;
 - (void)updateImage;

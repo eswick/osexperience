@@ -14,6 +14,7 @@
 @synthesize selectionView = _selectionView;
 @synthesize imageView = _imageView;
 @synthesize closebox = _closebox;
+@synthesize closeboxVisible = _closeboxVisible;
 
 
 - (id)initWithPane:(OSPane*)pane{
@@ -104,13 +105,45 @@
 
 	[self.closebox addTarget:self action:@selector(closeboxTapped) forControlEvents:UIControlEventTouchUpInside];
 
-	if(![self.pane isKindOfClass:[OSDesktopPane class]])
-		self.closebox.hidden = true;
+	[self setCloseboxVisible:false animated:false];
 
 	[self addSubview:self.closebox];
 
 	return self;
 
+}
+
+- (void)setCloseboxVisible:(BOOL)visible animated:(BOOL)animated{
+	if(animated){
+
+		if(visible){
+			self.closebox.alpha = 0;
+			self.closebox.hidden = false;
+			self.closeboxVisible = true;
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+				self.closebox.alpha = 1;
+			}completion:^(BOOL finished){}];
+		}else{
+			self.closebox.alpha = 1;
+			self.closeboxVisible = false;
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+				self.closebox.alpha = 0;
+			}completion:^(BOOL finished){
+				self.closebox.hidden = true;
+			}];
+		}
+
+	}else{
+		if(visible){
+			self.closebox.hidden = false;
+			self.closebox.alpha = 1;
+			self.closeboxVisible = true;
+		}else{
+			self.closebox.hidden = true;
+			self.closebox.alpha = 0;
+			self.closeboxVisible = false;
+		}
+	}
 }
 
 - (void)dealloc{
