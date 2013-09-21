@@ -316,6 +316,7 @@
 
 			thumbnail.center = self.addDesktopButton.center;
 			[self addSubview:thumbnail];
+			[self bringSubviewToFront:self.addDesktopButton];
 
 			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 				[self.wrapperView forceLayoutSubviews];

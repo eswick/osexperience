@@ -6,6 +6,7 @@
 @synthesize wallpaper = _wallpaper;
 @synthesize plusIcon = _plusIcon;
 @synthesize delegate = _delegate;
+@synthesize shadow = _shadow;
 
 - (id)init{
 
@@ -69,6 +70,19 @@
 	[self addSubview:self.plusIcon];
 
 
+
+	frame = self.frame;
+	frame.size.width = frame.size.width / 2;
+	frame.origin.x = self.frame.size.width / 2;
+	self.shadow = [[UIView alloc] initWithFrame:frame];
+
+	self.shadow.layer.shadowOffset = CGSizeMake(0, 0);
+	self.shadow.layer.shadowRadius = 0;
+	self.shadow.layer.shadowOpacity = 0.30;
+	self.shadow.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
+
+	[self addSubview:self.shadow];
+
 	UILongPressGestureRecognizer *tapGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 	tapGesture.minimumPressDuration = 0;
 	[self addGestureRecognizer:tapGesture];
@@ -105,9 +119,16 @@
 	frame.origin = CGPointZero;
 	self.plusIcon.frame = frame;
 	self.plusIcon.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
+
+
+	frame.origin.x = self.frame.size.width / 2;
+	self.shadow.frame = frame;
+	self.shadow.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
 }
 
 - (void)dealloc{
+	[self.shadow release];
+	[self.plusIcon release];
 	[self.wallpaper release];
 	[super dealloc];
 }
