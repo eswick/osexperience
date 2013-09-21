@@ -17,7 +17,7 @@
 	OSThumbnailPlaceholder *_placeholder;
 	BOOL _selected;
 	UIView *_selectionView;
-	UIImageView *_closebox;
+	UIButton *_closebox;
 }
 
 @property (nonatomic, retain) OSPane *pane;
@@ -28,7 +28,7 @@
 @property (nonatomic, retain) OSThumbnailPlaceholder *placeholder;
 @property (nonatomic, getter=isSelected, readwrite) BOOL selected;
 @property (nonatomic, retain) UIView *selectionView;
-@property (nonatomic, retain) UIImageView *closebox;
+@property (nonatomic, retain) UIButton *closebox;
  
 - (id)initWithPane:(OSPane*)pane;
 - (void)updateImage;
