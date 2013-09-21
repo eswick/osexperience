@@ -42,6 +42,22 @@
 
 }
 
-
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event{
+    for(UIView *view in self.subviews){
+    	if([view isKindOfClass:[OSPaneThumbnail class]]){
+    		if(CGRectContainsPoint([(OSPaneThumbnail*)view frame], point) || CGRectContainsPoint([(OSPaneThumbnail*)view convertRect:[[(OSPaneThumbnail*)view closebox] frame] toView:self], point)){
+    			return true;
+    		}
+    	}
+    }
+    return [super pointInside:point withEvent:event];
+}
 
 @end
+
+
+
+
+
+
+

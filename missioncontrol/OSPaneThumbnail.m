@@ -221,6 +221,12 @@
 	});
 }
 
-
+- (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
+    if(CGRectContainsPoint(self.closebox.frame, point)){
+		return self.closebox;
+	}else{
+		return [super hitTest:point withEvent:event];
+	}
+}
 
 @end
