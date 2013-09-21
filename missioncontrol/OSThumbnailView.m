@@ -80,10 +80,12 @@
 
 	if([[[OSPaneModel sharedInstance] panes] count] >= 5){
 		frame.origin.x = self.frame.size.width;
+		self.addDesktopButton.hidden = true;
 	}else{
 		frame.origin.x = [[UIScreen mainScreen] bounds].size.width - (frame.size.width / 2);
 		if(![self isPortrait])
 			frame.origin.x = [[UIScreen mainScreen] bounds].size.height - (frame.size.width / 2);
+		self.addDesktopButton.hidden = false;
 	}
 	frame.origin.y = center.y - (frame.size.height / 2);
 
