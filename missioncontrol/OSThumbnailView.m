@@ -160,32 +160,22 @@
 	if(!thumbnail)
 		return;
 
-
 	if(animated){
-
-		OSThumbnailPlaceholder *placeholder = [thumbnail placeholder];
-		
-		placeholder.center = thumbnail.center;
-		[self.wrapperView addSubview:placeholder];
 
 		self.wrapperView.shouldLayoutSubviews = false;
 
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 			thumbnail.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0, 0);
-
 		}completion:^(BOOL finished){
 
 			[thumbnail removeFromSuperview];
 
-
-			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveLinear animations:^{
-				[placeholder removeFromSuperview];
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+				[self alignSubviews];
 				[self.wrapperView forceLayoutSubviews];
 			}completion:^(BOOL finished){
 				self.wrapperView.shouldLayoutSubviews = true;
 			}];
-
 		}];
 
 	}else{
@@ -242,8 +232,6 @@
 		[(OSPaneThumbnail*)[gesture view] setGrabPoint:grabPoint];
 
 
-
-
 		OSThumbnailPlaceholder *placeholder = [(OSPaneThumbnail*)[gesture view] placeholder];
 
 		[self.wrapperView addSubview:placeholder];
@@ -261,7 +249,6 @@
 
 	}else if([gesture state] == UIGestureRecognizerStateEnded || [gesture state] == UIGestureRecognizerStateCancelled){
 
-
 		CGRect frame = gesture.view.frame;
 		frame.origin = [self convertPoint:frame.origin toView:self.wrapperView];
 		[gesture.view setFrame:frame];
@@ -275,19 +262,12 @@
 		}completion:^(BOOL finished){
 
 		}];
-
-
-
 	}
-
-
 }
 
 - (void)addDesktopButtonWasTapped:(OSAddDesktopButton*)button{
 	OSDesktopPane *desktop = [[OSDesktopPane alloc] init];
 
-
-	
 	[[OSPaneModel sharedInstance] addPaneToBack:desktop];
 
 	for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
@@ -332,6 +312,7 @@
 
 				thumbnail.center = thumbnail.placeholder.center;
 				[self.wrapperView addSubview:thumbnail];
+				[thumbnail.placeholder removeFromSuperview];
 
 				[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 					[self forceLayoutSubviews];

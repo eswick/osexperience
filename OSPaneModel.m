@@ -80,7 +80,6 @@
 		[[OSSlider sharedInstance] updateDockPosition];
 	}
 
-	[[OSThumbnailView sharedInstance] alignSubviews];
 }
 
 - (unsigned int)indexOfPane:(OSPane*)pane{
