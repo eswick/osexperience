@@ -199,7 +199,7 @@
 				if(thumbnail.closeboxVisible == true)
 					[thumbnail setCloseboxVisible:false animated:true];
 			}
-			if([[(OSPaneThumbnail*)gesture.view pane] isKindOfClass:[OSDesktopPane class]] && ![(OSPaneThumbnail*)gesture.view closeboxVisible])
+			if([[(OSPaneThumbnail*)gesture.view pane] isKindOfClass:[OSDesktopPane class]] && ![(OSPaneThumbnail*)gesture.view closeboxVisible] && [[OSPaneModel sharedInstance] desktopPaneCount] > 1)
 				[(OSPaneThumbnail*)[gesture view] setCloseboxVisible:true animated:true];
 	}
 }

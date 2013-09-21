@@ -86,6 +86,16 @@
 	return [self.panes indexOfObject:pane];
 }
 
+- (unsigned int)desktopPaneCount{
+	unsigned int i = 0;
+	for(OSDesktopPane *desktop in self.panes){
+		if(![desktop isKindOfClass:[OSDesktopPane class]])
+			continue;
+		i++;
+	}
+	return i;
+}
+
 
 - (OSPane*)paneAtIndex:(unsigned int)index{
 	if(index > self.panes.count - 1)
