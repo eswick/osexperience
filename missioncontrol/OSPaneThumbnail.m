@@ -98,19 +98,23 @@
 	self.placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[self pane]];
 
 
-	self.closebox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+	self.closebox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 30, 30)];
 	self.closebox.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/closebox.png"];
 	self.closebox.center = (CGPoint){0, 0};
+	self.closebox.userInteractionEnabled = true;
+
+	UITapGestureRecognizer *closeboxTapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closeboxTapped:)];
+	[self.closebox addGestureRecognizer:closeboxTapGesture];
+	[closeboxTapGesture release];
 
 	if(![self.pane isKindOfClass:[OSDesktopPane class]])
 		self.closebox.hidden = true;
-	
+
 	[self addSubview:self.closebox];
 
 	return self;
 
 }
-
 
 - (void)dealloc{
 	[self.label release];
@@ -133,6 +137,12 @@
 		self.selectionView.hidden = false;
 	}else{
 		self.selectionView.hidden = true;
+	}
+}
+
+- (void)closeboxTapped:(UITapGestureRecognizer*)gesture{
+	if(gesture.state == UIGestureRecognizerStateRecognized){
+		[[OSPaneModel sharedInstance] removePane:self.pane];
 	}
 }
 

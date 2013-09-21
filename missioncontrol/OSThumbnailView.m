@@ -140,6 +140,7 @@
 	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailPanGesture:)];
 	panGesture.maximumNumberOfTouches = 1;
 	[thumbnail addGestureRecognizer:panGesture];
+
 	[self.wrapperView addSubview:thumbnail];
 	[self alignSubviews];
 	[self updateSelectedThumbnail];
@@ -147,7 +148,6 @@
 	[panGesture release];
 	[thumbnail release];
 }
-
 
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated{
 	OSPaneThumbnail *thumbnail;
