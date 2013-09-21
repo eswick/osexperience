@@ -13,6 +13,7 @@
 @synthesize selected = _selected;
 @synthesize selectionView = _selectionView;
 @synthesize imageView = _imageView;
+@synthesize closebox = _closebox;
 
 
 - (id)initWithPane:(OSPane*)pane{
@@ -95,6 +96,17 @@
 	[self sendSubviewToBack:self.selectionView];
 
 	self.placeholder = [[OSThumbnailPlaceholder alloc] initWithPane:[self pane]];
+
+
+	self.closebox = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 25, 25)];
+	self.closebox.image = [UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/closebox.png"];
+	self.closebox.center = (CGPoint){0, 0};
+
+	if(![self.pane isKindOfClass:[OSDesktopPane class]])
+		self.closebox.hidden = true;
+	
+	[self addSubview:self.closebox];
+
 	return self;
 
 }
@@ -105,6 +117,7 @@
 	[self.imageView release];
 	[self.selectionView release];
 	[self.placeholder release];
+	[self.closebox release];
 
 	if(self.icon)
 		[self.icon release];
