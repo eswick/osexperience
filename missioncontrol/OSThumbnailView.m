@@ -141,10 +141,14 @@
 	panGesture.maximumNumberOfTouches = 1;
 	[thumbnail addGestureRecognizer:panGesture];
 
+	UILongPressGestureRecognizer *longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailLongPress:)];
+	[thumbnail addGestureRecognizer:longPressRecognizer];
+
 	[self.wrapperView addSubview:thumbnail];
 	[self alignSubviews];
 	[self updateSelectedThumbnail];
 
+	[longPressRecognizer release];
 	[panGesture release];
 	[thumbnail release];
 }
@@ -182,6 +186,20 @@
 		[thumbnail removeFromSuperview];
 	}
 
+
+}
+
+- (void)handleThumbnailLongPress:(UILongPressGestureRecognizer *)gesture{
+
+	if([gesture state] == UIGestureRecognizerStateBegan){
+		for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+			if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
+				continue;
+			if(thumbnail.closeboxVisible == true)
+				[thumbnail setCloseboxVisible:false animated:true];
+		}
+		[(OSPaneThumbnail*)[gesture view] setCloseboxVisible:true animated:true];
+	}
 
 }
 
