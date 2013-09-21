@@ -199,13 +199,19 @@
 				if(thumbnail.closeboxVisible == true)
 					[thumbnail setCloseboxVisible:false animated:true];
 			}
-			if([[(OSPaneThumbnail*)gesture.view pane] isKindOfClass:[OSDesktopPane class]])
+			if([[(OSPaneThumbnail*)gesture.view pane] isKindOfClass:[OSDesktopPane class]] && ![(OSPaneThumbnail*)gesture.view closeboxVisible])
 				[(OSPaneThumbnail*)[gesture view] setCloseboxVisible:true animated:true];
-		
 	}
-
 }
 
+- (void)closeAllCloseboxesAnimated:(BOOL)animated{
+	for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+		if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
+			continue;
+		if(thumbnail.closeboxVisible == true)
+			[thumbnail setCloseboxVisible:false animated:animated];
+	}
+}
 
 -(void)handleThumbnailPanGesture:(UIPanGestureRecognizer *)gesture{
 

@@ -31,5 +31,6 @@
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation;
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated;
 - (void)updateSelectedThumbnail;
+- (void)closeAllCloseboxesAnimated:(BOOL)animated;
 
 @end
