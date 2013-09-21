@@ -141,14 +141,15 @@
 	panGesture.maximumNumberOfTouches = 1;
 	[thumbnail addGestureRecognizer:panGesture];
 
+	
 	UILongPressGestureRecognizer *longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailLongPress:)];
 	[thumbnail addGestureRecognizer:longPressRecognizer];
+	[longPressRecognizer release];
 
 	[self.wrapperView addSubview:thumbnail];
 	[self alignSubviews];
 	[self updateSelectedThumbnail];
 
-	[longPressRecognizer release];
 	[panGesture release];
 	[thumbnail release];
 }
@@ -192,13 +193,15 @@
 - (void)handleThumbnailLongPress:(UILongPressGestureRecognizer *)gesture{
 
 	if([gesture state] == UIGestureRecognizerStateBegan){
-		for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
-			if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
-				continue;
-			if(thumbnail.closeboxVisible == true)
-				[thumbnail setCloseboxVisible:false animated:true];
-		}
-		[(OSPaneThumbnail*)[gesture view] setCloseboxVisible:true animated:true];
+			for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+				if(![thumbnail isKindOfClass:[OSPaneThumbnail class]] || thumbnail == gesture.view)
+					continue;
+				if(thumbnail.closeboxVisible == true)
+					[thumbnail setCloseboxVisible:false animated:true];
+			}
+			if([[(OSPaneThumbnail*)gesture.view pane] isKindOfClass:[OSDesktopPane class]])
+				[(OSPaneThumbnail*)[gesture view] setCloseboxVisible:true animated:true];
+		
 	}
 
 }

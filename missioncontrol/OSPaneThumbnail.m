@@ -120,13 +120,13 @@
 			self.closebox.alpha = 0;
 			self.closebox.hidden = false;
 			self.closeboxVisible = true;
-			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+			[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 				self.closebox.alpha = 1;
 			}completion:^(BOOL finished){}];
 		}else{
 			self.closebox.alpha = 1;
 			self.closeboxVisible = false;
-			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+			[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 				self.closebox.alpha = 0;
 			}completion:^(BOOL finished){
 				self.closebox.hidden = true;
