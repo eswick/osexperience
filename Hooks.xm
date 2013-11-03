@@ -476,9 +476,12 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
-
-	if(![[arg1 application] isRunning])
+	NSLog(@"Icon was tapped.");
+	if(![[arg1 application] isRunning]){
 		[arg1 launchFromViewSwitcher];
+	}else{
+		[[arg1 application] addToSlider];
+	}
 
 
 	for(OSAppPane *pane in [[OSSlider sharedInstance] subviews]){
@@ -494,6 +497,7 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 
 -(void)iconTapped:(SBIconView*)arg1{
+	NSLog(@"Icon tapped.");
     if(![[OSViewController sharedInstance] launchpadIsActive]){
         %orig;
         return;
