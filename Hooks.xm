@@ -6,6 +6,8 @@
 #import <UIKit/UIKit.h>
 #import "launchpad/UIImage+StackBlur.h"
 #import <mach/mach_time.h>
+#import <IOKit/hid/IOHIDEventSystem.h>
+#import <substrate.h>
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
@@ -51,6 +53,14 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 	[viewController.view setFrame:[[UIScreen mainScreen] bounds]];
 
 
+	CPDistributedMessagingCenter *messagingCenter;
+	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+
+	NSArray *keys = [NSArray arrayWithObjects:@"context", nil];
+	NSArray *objects = [NSArray arrayWithObjects:[NSNumber numberWithInt:[[UIApp keyWindow] _contextId]], nil];
+	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+	[messagingCenter sendMessageAndReceiveReplyName:@"setKeyWindowContext" userInfo:dictionary];
 	return self;
 }
 
@@ -479,7 +489,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 %end
 
-
 //Multitasking things
 %hook BKSWorkspace
 
@@ -499,9 +508,9 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 %group Backboard
 
+static unsigned int springBoardContext;
+
 %hook BKWorkspaceServerManager
-
-
 
 -(id)init{
 	self = %orig;
@@ -512,6 +521,7 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 	[messagingCenter runServerOnCurrentThread];
 	[messagingCenter registerForMessageName:@"activate" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
 	[messagingCenter registerForMessageName:@"setApplicationPerformOriginals" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+	[messagingCenter registerForMessageName:@"setKeyWindowContext" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
 
 	return self;
 }
@@ -531,6 +541,8 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
 		[application setPerformOriginals:[[userinfo objectForKey:@"performOriginals"] boolValue]];
 		
+	}else if([name isEqualToString:@"setKeyWindowContext"]){
+		springBoardContext = [(NSNumber*)[userinfo objectForKey:@"context"] intValue];
 	}
 
 	return nil;
@@ -539,7 +551,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 - (unsigned int)currentEventPort{
 	return [self portForBundleIdentifier:@"com.apple.springboard"];
 }
-
 %end
 
 
@@ -577,14 +588,58 @@ static char originalsKey;
 
 %end
 
+
+//Gesture fix
+static BOOL OSGestureInProgress = false;
+%hook CAWindowServerDisplay
+
+- (unsigned int)contextIdAtPosition:(CGPoint)arg1{
+	if(OSGestureInProgress == true){
+		return springBoardContext;
+	}else{
+		return %orig;
+	}
+}
 %end
 
+static IOHIDEventSystemCallback eventCallback = NULL;
+
+void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event) {
+	if(IOHIDEventGetType(event) == kIOHIDEventTypeDigitizer){
+		CFArrayRef children = IOHIDEventGetChildren(event);
+		
+		int count = 0;
+
+		for(int i = 0; i < CFArrayGetCount(children); i++){
+			int value = IOHIDEventGetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch);
+			if(value == 1)
+				count++;
+		}
+		
+		if(count >= 4){
+			OSGestureInProgress = true;
+		}else if(count == 0){
+			OSGestureInProgress = false;
+		}
+	}
+	eventCallback(target, refcon, service, event);
+}
+
+MSHook(Boolean, IOHIDEventSystemOpen, IOHIDEventSystemRef system, IOHIDEventSystemCallback callback, void* target, void* refcon, void* unused){
+	eventCallback = callback;
+	return _IOHIDEventSystemOpen(system, handle_event, target, refcon, unused);
+}
+
+%end
+//End (gesture fix)
 
 
 __attribute__((constructor))
 static void initialize() {
-	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"])
+	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){
 		%init(Backboard);
+		MSHookFunction(&IOHIDEventSystemOpen, MSHake(IOHIDEventSystemOpen));
+	}
 	
 
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])

@@ -34,14 +34,6 @@
 	overlayView.backgroundColor = [UIColor grayColor];
 	overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-	OSTouchForwarder *touchForwarder = [[OSTouchForwarder alloc] initWithApplication:self.application];
-    [overlayView addGestureRecognizer:touchForwarder];
-
-	[self addSubview:overlayView];
-
-	[overlayView release];
-	[touchForwarder release];
-
 	self.windowBar = [[UIToolbar alloc] init];
 	self.windowBar.frame = CGRectMake(0, -44, self.frame.size.width, 44);
 	self.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
