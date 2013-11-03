@@ -159,9 +159,7 @@
 -(void)loadView{
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
-    self.switcherBackgroundView = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.switcherBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.switcherBackgroundView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/SwitcherBackgroundImage.png"]];
+    self.switcherBackgroundView = [[OSSwitcherBackgroundView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.switcherBackgroundView.hidden = true;
     [self.view addSubview:self.switcherBackgroundView];
 
