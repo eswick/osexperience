@@ -112,7 +112,7 @@
 }
 
 - (void)expandButtonPressed{
-	
+	[[self application] rotateToInterfaceOrientation:[UIApp statusBarOrientation]];
 	
 	CGAffineTransform appViewTransform = self.appView.transform;
   	OSAppPane *appPane = [[OSAppPane alloc] initWithDisplayIdentifier:[self.application bundleIdentifier]];
