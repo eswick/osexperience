@@ -3,6 +3,21 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+typedef struct {
+	int type;
+	unsigned pathIndex;
+	CGPoint location;
+	CGPoint previousLocation;
+	CGFloat totalDistanceTraveled;
+	UIInterfaceOrientation interfaceOrientation;
+	UIInterfaceOrientation previousInterfaceOrientation;
+} SBGestureRecognizerTouchData;
+
+@interface SBHandMotionExtractor
+
+- (void)extractHandMotionForActiveTouches:(SBGestureRecognizerTouchData *)arg1 count:(unsigned int)arg2 centroid:(struct CGPoint)arg3;
+
+@end
 
 
 @interface BKProcess{

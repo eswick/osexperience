@@ -190,7 +190,29 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 
 
+%hook SBHandMotionExtractor
 
+- (void)extractHandMotionForActiveTouches:(SBGestureRecognizerTouchData *)arg1 count:(unsigned int)arg2 centroid:(struct CGPoint)arg3{
+
+	if(arg2 < 4 && arg1[0].type == 0){
+		for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
+			if(![pane isKindOfClass:[OSDesktopPane class]])
+				continue;
+			for(OSAppWindow *appWindow in pane.subviews){
+				if(![appWindow isKindOfClass:[OSAppWindow class]])
+					continue;
+				CGPoint point = [[[OSViewController sharedInstance] view] convertPoint:arg1[0].location toView:appWindow];
+				if([appWindow pointInside:point withEvent:nil]){
+					[pane bringSubviewToFront:appWindow];
+					[pane setActiveWindow:appWindow];
+				}
+			}
+		}
+	}
+
+	%orig;
+}
+%end
 
 
 
