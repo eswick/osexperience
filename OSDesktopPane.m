@@ -62,6 +62,10 @@
 }
 
 - (void)window:(OSWindow*)window didRecievePanGesture:(UIPanGestureRecognizer*)gesture{
+	if([[OSViewController sharedInstance] missionControlIsActive]){
+		return;
+	}
+
 	if([gesture state] == UIGestureRecognizerStateBegan){
 		[window setGrabPoint:[gesture locationInView:window]];
 		[self bringSubviewToFront:window];
@@ -76,6 +80,10 @@
 }
 
 - (void)window:(OSWindow*)window didRecieveResizePanGesture:(UIPanGestureRecognizer*)gesture{
+	if([[OSViewController sharedInstance] missionControlIsActive]){
+		return;
+	}
+
 	if([gesture state] == UIGestureRecognizerStateBegan){
 		window.resizeAnchor = CGPointMake(window.frame.origin.x, window.frame.origin.y + window.frame.size.height);
 	}else if([gesture state] == UIGestureRecognizerStateChanged){

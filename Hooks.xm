@@ -391,10 +391,7 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 		[[OSPaneModel sharedInstance] addPaneToBack:appPane];
 		[self activate];
 		[appPane release];
-}
-
-
-
+	}
 
 }
 
@@ -557,6 +554,7 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 %group Backboard
 
 static unsigned int springBoardContext;
+static BOOL missionControlActive;
 
 %hook BKWorkspaceServerManager
 
@@ -570,6 +568,8 @@ static unsigned int springBoardContext;
 	[messagingCenter registerForMessageName:@"activate" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
 	[messagingCenter registerForMessageName:@"setApplicationPerformOriginals" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
 	[messagingCenter registerForMessageName:@"setKeyWindowContext" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+	[messagingCenter registerForMessageName:@"setMissionControlActivated" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+	[messagingCenter registerForMessageName:@"setMissionControlDeactivated" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
 	return self;
 }
 
@@ -590,6 +590,10 @@ static unsigned int springBoardContext;
 		
 	}else if([name isEqualToString:@"setKeyWindowContext"]){
 		springBoardContext = [(NSNumber*)[userinfo objectForKey:@"context"] intValue];
+	}else if([name isEqualToString:@"setMissionControlActivated"]){
+		missionControlActive = true;
+	}else if([name isEqualToString:@"setMissionControlDeactivated"]){
+		missionControlActive = false;
 	}
 
 	return nil;
@@ -641,7 +645,7 @@ static BOOL OSGestureInProgress = false;
 %hook CAWindowServerDisplay
 
 - (unsigned int)contextIdAtPosition:(CGPoint)arg1{
-	if(OSGestureInProgress == true){
+	if(OSGestureInProgress || missionControlActive){
 		return springBoardContext;
 	}else{
 		return %orig;

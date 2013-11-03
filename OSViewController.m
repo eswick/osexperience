@@ -67,6 +67,18 @@
     [self.dock setFrame:dockFrame];
 }
 
+- (void)setMissionControlActive:(BOOL)active{
+    _missionControlActive = active;
+
+    CPDistributedMessagingCenter *messagingCenter;
+    messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+
+    if(active){
+        [messagingCenter sendMessageName:@"setMissionControlActivated" userInfo:nil];
+    }else{
+        [messagingCenter sendMessageName:@"setMissionControlDeactivated" userInfo:nil];
+    }
+}
 
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated{
 
