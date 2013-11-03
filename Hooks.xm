@@ -604,6 +604,30 @@ static BOOL OSGestureInProgress = false;
 
 static IOHIDEventSystemCallback eventCallback = NULL;
 
+void resetTouches(void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event){
+	IOHIDEventRef eventNegator = IOHIDEventCreateCopy(kCFAllocatorDefault, event);
+
+	CFArrayRef children = IOHIDEventGetChildren(eventNegator);
+
+	for(int i = 0; i < CFArrayGetCount(children); i++){
+		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch, 0);
+		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerRange, 0);
+		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerEventMask, 3);
+	}
+
+	eventCallback(target, refcon, service, eventNegator);
+
+	for(int i = 0; i < CFArrayGetCount(children); i++){
+		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch, 1);
+		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerRange, 1);
+		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerEventMask, 3);
+	}
+
+	eventCallback(target, refcon, service, eventNegator);
+
+	CFRelease(eventNegator);
+}
+
 void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event) {
 	if(IOHIDEventGetType(event) == kIOHIDEventTypeDigitizer){
 		CFArrayRef children = IOHIDEventGetChildren(event);
@@ -615,9 +639,13 @@ void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEve
 			if(value == 1)
 				count++;
 		}
-		
+
 		if(count >= 4){
-			OSGestureInProgress = true;
+			if(!OSGestureInProgress == true){
+				OSGestureInProgress = true;
+				resetTouches(target, refcon, service, event);
+				return;
+			}
 		}else if(count == 0){
 			OSGestureInProgress = false;
 		}
