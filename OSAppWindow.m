@@ -38,8 +38,22 @@
 	self.appView.frame = frame;
 	[self addSubview:self.appView];
 
+	UILongPressGestureRecognizer *rotateRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(expandButtonHeld:)];
+	[self.expandButton.view addGestureRecognizer:rotateRecognizer];
+	[rotateRecognizer release];
+
 
 	return self;
+}
+
+- (void)expandButtonHeld:(UILongPressGestureRecognizer*)gesture{
+	if([gesture state] == UIGestureRecognizerStateBegan){
+		if(UIInterfaceOrientationIsPortrait([[self application] statusBarOrientation])){
+			[[self application] rotateToInterfaceOrientation:UIInterfaceOrientationLandscapeLeft];
+		}else{
+			[[self application] rotateToInterfaceOrientation:UIInterfaceOrientationPortrait];
+		}
+	}
 }
 
 - (void)handleResizePanGesture:(UIPanGestureRecognizer*)gesture{
