@@ -196,6 +196,30 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 %hook SBApplication
 
+- (void)setDisplaySetting:(unsigned int)arg1 value:(id)arg2{
+	%orig;
+	if(arg1 == 5){//Rotation changed
+		for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+			if([pane isKindOfClass:[OSDesktopPane class]]){
+				for(OSAppWindow *window in pane.subviews){
+					if(![window isKindOfClass:[OSAppWindow class]])
+						continue;
+					if(window.application == self){
+						[window applicationDidRotate];
+						return;
+					}
+				}
+				continue;
+			}else if(![pane isKindOfClass:[OSAppPane class]])
+				continue;
+
+			if([(OSAppPane*)pane application] == self){
+
+			}
+		}
+	}
+}
+
 -(void)didExitWithInfo:(id)arg1 type:(int)arg2{
 
 	OSAppPane *appPane = nil;

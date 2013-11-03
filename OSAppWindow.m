@@ -19,6 +19,8 @@
 	if(![super initWithFrame:windowFrame title:application.displayName])
 		return nil;
 
+	self.backgroundColor = [UIColor blackColor];
+
 	windowFrame.size.height += self.windowBar.bounds.size.height;
 	self.frame = windowFrame;
 
@@ -44,6 +46,32 @@
 
 
 	return self;
+}
+
+- (void)applicationDidRotate{
+
+	[self layoutSubviews];
+
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+
+		CGRect originalFrame = self.frame;
+		CGRect frame = self.frame;
+
+		if(frame.size.height < 200){
+			frame.size.height = 200;
+			frame.origin = originalFrame.origin;
+		}
+
+		if(UIDeviceOrientationIsPortrait([self.application statusBarOrientation])){
+			frame.size.width = (UIScreen.mainScreen.bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.height;
+		}else{
+			frame.size.width = (UIScreen.mainScreen.bounds.size.height * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.width;
+		}
+
+		self.frame = frame;
+
+	}completion:^(BOOL finished){}];
+
 }
 
 - (void)expandButtonHeld:(UILongPressGestureRecognizer*)gesture{
@@ -72,7 +100,7 @@
 			frame.origin = originalFrame.origin;
 		}
 
-		if UIDeviceOrientationIsPortrait([self.application statusBarOrientation]){
+		if (UIDeviceOrientationIsPortrait([self.application statusBarOrientation])){
 			frame.size.width = (UIScreen.mainScreen.bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.height;
 		}else{
 			frame.size.width = (UIScreen.mainScreen.bounds.size.height * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.width;

@@ -10,6 +10,7 @@
 @property (nonatomic, retain) SBHostWrapperView *appView;
 
 - (id)initWithApplication:(SBApplication*)application;
+- (void)applicationDidRotate;
 
 
 @end
