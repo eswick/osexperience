@@ -128,6 +128,7 @@
 
   	[[OSPaneModel sharedInstance] addPaneToBack:appPane];
 
+  	self.windowBar.clipsToBounds = true;
 
   	frame = self.windowBar.frame;
   	frame.origin = [self convertPoint:self.windowBar.frame.origin toView:[[OSViewController sharedInstance] view]];

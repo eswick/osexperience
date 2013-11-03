@@ -38,6 +38,7 @@
 	self.windowBar.frame = CGRectMake(0, -44, self.frame.size.width, 44);
 	self.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 	self.windowBar.hidden = true;
+	self.windowBar.clipsToBounds = true;
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 
 
