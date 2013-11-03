@@ -89,6 +89,7 @@
             [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self setDockPercentage:0.0];
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+                    [pane missionControlWillActivate];
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                     pane.userInteractionEnabled = false;
                 }
@@ -123,12 +124,18 @@
 
             [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+                    [pane missionControlWillDeactivate];
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0, 1.0);
                     pane.userInteractionEnabled = true;
                 }
                 [[OSSlider sharedInstance] updateDockPosition];
 
             } completion:^(BOOL finished){
+                for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
+                    if(![desktopPane isKindOfClass:[OSDesktopPane class]])
+                        continue;
+                    [desktopPane missionControlDidDeactivate];
+                }
                 self.switcherBackgroundView.hidden = true;
                 [[OSThumbnailView sharedInstance] setHidden:true];
                 self.missionControlAnimating = false;

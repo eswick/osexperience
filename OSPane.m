@@ -37,6 +37,10 @@
 
 }
 
+- (void)missionControlWillActivate{}
+- (void)missionControlWillDeactivate{}
+- (void)missionControlDidDeactivate{}
+
 
 -(BOOL)showsDock{
 	return false;

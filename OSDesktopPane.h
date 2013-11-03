@@ -5,6 +5,7 @@
 #import "explorer/OSFileGridView.h"
 #import "include.h"
 #import "OSWindow.h"
+#import "OSSlider.h"
 
 
 @interface OSDesktopPane : OSPane <OSWindowDelegate> {
@@ -12,12 +13,14 @@
 	OSFileGridView *_gridView;
 	SBFakeStatusBarView *_statusBar;
 	OSWindow *_activeWindow;
+	NSMutableArray *_windows;
 }
 
 @property (nonatomic, retain) SBWallpaperView *wallpaperView;
 @property (nonatomic, retain) OSFileGridView *gridView;
 @property (nonatomic, retain) SBFakeStatusBarView *statusBar;
 @property (nonatomic, assign) OSWindow *activeWindow;
+@property (nonatomic, retain) NSMutableArray *windows;
 
 
 

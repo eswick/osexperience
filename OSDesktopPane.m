@@ -8,6 +8,7 @@
 @synthesize gridView = _gridView;
 @synthesize statusBar = _statusBar;
 @synthesize activeWindow = _activeWindow;
+@synthesize windows = _windows;
 
 
 
@@ -37,11 +38,20 @@
 	[self.statusBar requestStyle:1];
 	[self addSubview:self.statusBar];
 	
-	return self;
+	self.windows = [[NSMutableArray alloc] init];
 
+	return self;
 }
 
--(BOOL)showsDock{
+- (void)addSubview:(UIView*)arg1{
+	[super addSubview:arg1];
+	if([arg1 isKindOfClass:[OSWindow class]]){
+		if(![self.windows containsObject:arg1])
+			[self.windows addObject:arg1];
+	}
+}
+
+- (BOOL)showsDock{
 	return true;
 }
 
@@ -78,12 +88,47 @@
 	}
 }
 
+- (void)missionControlWillActivate{
+	for(OSWindow *window in self.subviews){
+		if(![window isKindOfClass:[OSWindow class]])
+			continue;
+		CGPoint origin = [self convertPoint:window.frame.origin toView:[OSSlider sharedInstance]];
+		
+		CGRect frame = window.frame;
+		frame.origin = origin;
+		window.frame = frame;
+
+		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.7, 0.7);
+
+		[[OSSlider sharedInstance] addSubview:window];
+	}
+}
+
+- (void)missionControlWillDeactivate{
+	for(OSWindow *window in self.windows){
+		if(![window isKindOfClass:[OSWindow class]])
+			continue;
+		
+		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
+	}
+}
+
+- (void)missionControlDidDeactivate{
+	for(OSWindow *window in self.windows){
+		if(![window isKindOfClass:[OSWindow class]])
+			continue;
+		
+		[self addSubview:window];
+	}
+}
+
 -(void)dealloc{
 	[self.statusBar release];
 	[self.wallpaperView release];
 	[self.gridView release];
 	[self.statusBar release];
-	
+	[self.windows release];
+
 	[super dealloc];
 }
 
