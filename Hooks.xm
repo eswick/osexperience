@@ -267,6 +267,7 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 				if(![window isKindOfClass:[OSAppWindow class]])
 					continue;
 				if(window.application == self){
+					[desktop.windows removeObject:window];
 					[window removeFromSuperview];
 				}
 			}

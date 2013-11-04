@@ -181,6 +181,7 @@
 		[appPane sendSubviewToBack:self.appView];
 		[appPane release];
 		[self.windowBar removeFromSuperview];
+		[[(OSDesktopPane*)[self superview] windows] removeObject:self];
 		[self removeFromSuperview];
   	}];
 
