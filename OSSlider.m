@@ -40,10 +40,11 @@
 
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.pagingEnabled = true;
+	self.clipsToBounds = false;
+	self.showsHorizontalScrollIndicator = false;
+
 	self.panGestureRecognizer.minimumNumberOfTouches = 4;
 	self.panGestureRecognizer.cancelsTouchesInView = false;
-	self.showsHorizontalScrollIndicator = false;
-	self.clipsToBounds = false;
 
 	self.switcherUpGesture = [[OSSwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpSwitcherGesture:)];
 	self.switcherUpGesture.direction = UISwipeGestureRecognizerDirectionUp;
