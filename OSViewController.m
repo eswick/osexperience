@@ -122,7 +122,7 @@
 
             } completion:^(BOOL finished){
                 self.missionControlAnimating = false;
-                [self.view insertSubview:[OSThumbnailView sharedInstance] aboveSubview:self.slider];
+                [self.view insertSubview:[OSThumbnailView sharedInstance] belowSubview:self.slider];
             }];
 
 
@@ -148,7 +148,7 @@
                 [pane missionControlWillActivate];
             }
 
-            [self.view insertSubview:[OSThumbnailView sharedInstance] aboveSubview:self.slider];
+            [self.view insertSubview:[OSThumbnailView sharedInstance] belowSubview:self.slider];
 
         }
 
