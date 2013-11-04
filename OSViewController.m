@@ -83,10 +83,11 @@
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated{
 
     if(active){
+
         for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
             [thumbnail updateImage];
         }
-        [[UIApplication sharedApplication] setStatusBarHidden:true animated:true];
+        [[UIApplication sharedApplication] setStatusBarHidden:true withAnimation:true];
 
         self.switcherBackgroundView.hidden = false;
         [[OSThumbnailView sharedInstance] setHidden:false];
@@ -104,6 +105,18 @@
                     [pane missionControlWillActivate];
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                     pane.userInteractionEnabled = false;
+
+                    float y = pane.frame.origin.y;
+
+                    CGRect frame = pane.frame;
+                    frame.origin.y = 0;
+
+                    [pane setFrame:frame];
+
+                    frame = [[OSSlider sharedInstance] frame];
+                    frame.origin.y = y;
+
+                    [[OSSlider sharedInstance] setFrame:frame];
                 }
 
             } completion:^(BOOL finished){
@@ -117,9 +130,22 @@
             self.missionControlActive = true;
         
             for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+                [pane missionControlWillActivate];
                 pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                 pane.userInteractionEnabled = false;
+
+                float y = pane.frame.origin.y;
+
+                CGRect frame = pane.frame;
+                frame.origin.y = 0;
+                [pane setFrame:frame];
+
+                frame = [[OSSlider sharedInstance] frame];
+                frame.origin.y = y;
+
+                [[OSSlider sharedInstance] setFrame:frame];
             }
+
             [self.view insertSubview:[OSThumbnailView sharedInstance] aboveSubview:self.slider];
 
         }
@@ -139,6 +165,15 @@
                     [pane missionControlWillDeactivate];
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0, 1.0);
                     pane.userInteractionEnabled = true;
+
+                    CGRect frame = [pane frame];
+                    frame.origin.y = 0;
+                    [pane setFrame:frame];
+
+                    frame = [[OSSlider sharedInstance] frame];
+                    frame.origin.y = 0;
+                    [[OSSlider sharedInstance] setFrame:frame];
+
                 }
                 [[OSSlider sharedInstance] updateDockPosition];
 

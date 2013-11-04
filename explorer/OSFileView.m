@@ -46,7 +46,7 @@
         labelRect.origin.y = self.bounds.size.height;
         [self.fileLabel setFrame:labelRect];
 
-        self.fileLabel.textAlignment =  UITextAlignmentCenter;//Set up look of label
+        self.fileLabel.textAlignment = NSTextAlignmentCenter;//Set up look of label
         self.fileLabel.textColor = [UIColor whiteColor];
         self.fileLabel.backgroundColor = [UIColor clearColor];
         self.fileLabel.shadowColor = [UIColor blackColor];
