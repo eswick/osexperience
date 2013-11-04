@@ -137,6 +137,12 @@
 	if([[OSViewController sharedInstance] missionControlIsActive])
 		pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
 
+	if([[OSViewController sharedInstance] missionControlIsActive]){
+		CGRect frame = [pane frame];
+		frame.origin.y = 0;
+		[pane setFrame:frame];
+	}
+
 	[self addSubview:pane];
 
 	[self alignPanes];
