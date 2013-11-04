@@ -102,7 +102,6 @@
             [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self setDockPercentage:0.0];
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
-                    [pane missionControlWillActivate];
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                     pane.userInteractionEnabled = false;
 
@@ -117,6 +116,8 @@
                     frame.origin.y = y;
 
                     [[OSSlider sharedInstance] setFrame:frame];
+
+                    [pane missionControlWillActivate];
                 }
 
             } completion:^(BOOL finished){
@@ -130,7 +131,6 @@
             self.missionControlActive = true;
         
             for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
-                [pane missionControlWillActivate];
                 pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                 pane.userInteractionEnabled = false;
 
@@ -144,6 +144,8 @@
                 frame.origin.y = y;
 
                 [[OSSlider sharedInstance] setFrame:frame];
+
+                [pane missionControlWillActivate];
             }
 
             [self.view insertSubview:[OSThumbnailView sharedInstance] aboveSubview:self.slider];
@@ -162,7 +164,6 @@
 
             [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
-                    [pane missionControlWillDeactivate];
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0, 1.0);
                     pane.userInteractionEnabled = true;
 
@@ -174,6 +175,7 @@
                     frame.origin.y = 0;
                     [[OSSlider sharedInstance] setFrame:frame];
 
+                    [pane missionControlWillDeactivate];
                 }
                 [[OSSlider sharedInstance] updateDockPosition];
 

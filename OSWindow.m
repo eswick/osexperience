@@ -79,7 +79,13 @@
 }
 
 - (void)handleMCPanGesture:(UIPanGestureRecognizer*)gesture{
-	NSLog(@"Pan gesture handled.");
+	if(gesture.state == UIGestureRecognizerStateBegan){
+		self.grabPoint = CGPointSub([gesture locationInView:[self superview]], self.frame.origin);
+	}else if(gesture.state == UIGestureRecognizerStateChanged){
+		CGRect frame = self.frame;
+		frame.origin = CGPointSub([gesture locationInView:[self superview]], [self grabPoint]);
+		[self setFrame:frame];
+	}
 }
 
 - (void)dealloc{
