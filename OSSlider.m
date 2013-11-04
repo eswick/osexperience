@@ -44,12 +44,12 @@
 	self.panGestureRecognizer.cancelsTouchesInView = false;
 	self.showsHorizontalScrollIndicator = false;
 
-	self.switcherUpGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpSwitcherGesture:)];
+	self.switcherUpGesture = [[OSSwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpSwitcherGesture:)];
 	self.switcherUpGesture.direction = UISwipeGestureRecognizerDirectionUp;
 	self.switcherUpGesture.numberOfTouchesRequired = 4;
 	[self addGestureRecognizer:self.switcherUpGesture];
 
-	self.switcherDownGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleDownSwitcherGesture:)];
+	self.switcherDownGesture = [[OSSwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleDownSwitcherGesture:)];
 	self.switcherDownGesture.direction = UISwipeGestureRecognizerDirectionDown;
 	self.switcherDownGesture.numberOfTouchesRequired = 4;
 	[self addGestureRecognizer:self.switcherDownGesture];	

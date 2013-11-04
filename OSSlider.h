@@ -4,6 +4,7 @@
 #import "UIView+FrameExtensions.h"
 #import "OSViewController.h"
 #import "OSPaneModel.h"
+#import "OSSwipeGestureRecognizer.h"
 
 
 
@@ -15,8 +16,8 @@
 	OSPane *_currentPane;
 	UIInterfaceOrientation _currentOrientation;
 	int _pageIndexPlaceholder;
-	UISwipeGestureRecognizer *_switcherUpGesture;
-	UISwipeGestureRecognizer *_switcherDownGesture;
+	OSSwipeGestureRecognizer *_switcherUpGesture;
+	OSSwipeGestureRecognizer *_switcherDownGesture;
 }
 
 @property (nonatomic) CGPoint startingOffset;
@@ -24,8 +25,8 @@
 @property (nonatomic, readonly) OSPane *currentPane;
 @property (nonatomic, readwrite) UIInterfaceOrientation currentOrientation;
 @property (nonatomic, readwrite) int pageIndexPlaceholder;
-@property (nonatomic, retain) UISwipeGestureRecognizer *switcherUpGesture;
-@property (nonatomic, retain) UISwipeGestureRecognizer *switcherDownGesture;
+@property (nonatomic, retain) OSSwipeGestureRecognizer *switcherUpGesture;
+@property (nonatomic, retain) OSSwipeGestureRecognizer *switcherDownGesture;
 
 
 + (id)sharedInstance;

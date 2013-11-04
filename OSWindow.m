@@ -25,6 +25,10 @@
 	self.windowBar.frame = CGRectMake(0, 0, self.frame.size.width, 40);
 	self.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
+	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleMCPanGesture:)];
+	[self addGestureRecognizer:panGesture];
+	[panGesture release];
+
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 
 	UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(stopButtonPressed)];
@@ -72,6 +76,10 @@
 	[items release];
 
 	return self;
+}
+
+- (void)handleMCPanGesture:(UIPanGestureRecognizer*)gesture{
+	NSLog(@"Pan gesture handled.");
 }
 
 - (void)dealloc{
