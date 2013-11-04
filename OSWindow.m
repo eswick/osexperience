@@ -8,6 +8,7 @@
 @synthesize resizeAnchor = _resizeAnchor;
 @synthesize grabPoint = _grabPoint;
 @synthesize expandButton = _expandButton;
+@synthesize originBeforeGesture = _originBeforeGesture;
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{
@@ -80,13 +81,28 @@
 
 - (void)handleMCPanGesture:(UIPanGestureRecognizer*)gesture{
 	if(gesture.state == UIGestureRecognizerStateBegan){
+
 		self.grabPoint = CGPointSub([gesture locationInView:[self superview]], self.frame.origin);
+		self.originBeforeGesture = self.frame.origin;
+
 	}else if(gesture.state == UIGestureRecognizerStateChanged){
+
 		CGRect frame = self.frame;
 		frame.origin = CGPointSub([gesture locationInView:[self superview]], [self grabPoint]);
 		[self setFrame:frame];
+
+	}else if(gesture.state == UIGestureRecognizerStateEnded){
+
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+			CGRect frame = self.frame;
+			frame.origin = self.originBeforeGesture;
+			[self setFrame:frame];
+		}completion:^(BOOL finished){
+			
+		}];
 	}
 }
+
 
 - (void)dealloc{
 	[self.windowBar release];
