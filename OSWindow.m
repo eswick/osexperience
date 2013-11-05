@@ -9,6 +9,8 @@
 @synthesize grabPoint = _grabPoint;
 @synthesize expandButton = _expandButton;
 @synthesize originBeforeGesture = _originBeforeGesture;
+@synthesize originInDesktop = _originInDesktop;
+@synthesize scale = _scale;
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{
@@ -88,12 +90,14 @@
 	}else if(gesture.state == UIGestureRecognizerStateChanged){
 
 		CGRect frame = self.frame;
-		frame.origin = CGPointSub([gesture locationInView:[self superview]], [self grabPoint]);
+		frame.origin = CGPointSub([gesture locationInView:[self superview]], [self grabPointWithTransform]);
 		[self setFrame:frame];
+		[self updateTransform];
 
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
 
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+			self.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.7, 0.7);
 			CGRect frame = self.frame;
 			frame.origin = self.originBeforeGesture;
 			[self setFrame:frame];
@@ -103,6 +107,30 @@
 	}
 }
 
+- (CGPoint)grabPointWithTransform{
+	float scale = self.scale;
+	scale = (scale * 100) / 0.70;
+	return CGPointMake(self.grabPoint.x * self.scale, self.grabPoint.y * self.scale);
+}
+
+- (void)updateTransform{
+		const float max = self.originBeforeGesture.y;
+
+		const float percentage = self.frame.origin.y / max;
+		float transform = (((percentage * 100) * 55) / 100) + 15;
+		
+		if(transform < 15){
+			transform = 15;
+		}else if(transform > 70){
+			transform = 70;
+		}
+
+		transform = transform / 100;
+		self.transform = CGAffineTransformScale(CGAffineTransformIdentity, transform, transform);
+		self.scale = transform;
+
+
+}
 
 - (void)dealloc{
 	[self.windowBar release];

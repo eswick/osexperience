@@ -100,6 +100,8 @@
 	for(OSWindow *window in self.subviews){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
+		[window setOriginInDesktop:window.frame.origin];
+
 		CGPoint origin = [self convertPoint:window.frame.origin toView:[OSSlider sharedInstance]];
 		
 		CGRect frame = window.frame;
@@ -118,6 +120,10 @@
 			continue;
 		
 		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
+		
+		CGRect frame = window.frame;
+		frame.origin = window.originInDesktop;
+		[window setFrame:frame];
 	}
 }
 
