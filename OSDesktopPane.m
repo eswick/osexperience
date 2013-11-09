@@ -101,6 +101,7 @@
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
 		[window setOriginInDesktop:window.frame.origin];
+		window.windowBar.userInteractionEnabled = false;
 
 		CGPoint origin = [self convertPoint:window.frame.origin toView:[OSSlider sharedInstance]];
 		
@@ -131,8 +132,8 @@
 	for(OSWindow *window in self.windows){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
-		
 		[self addSubview:window];
+		window.windowBar.userInteractionEnabled = true;
 	}
 }
 
