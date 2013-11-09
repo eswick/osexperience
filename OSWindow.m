@@ -88,7 +88,6 @@
 
 		self.grabPoint = [gesture locationInView:self];
 		self.grabPointInSuperview = [gesture locationInView:[self superview]];
-		
 		self.originBeforeGesture = self.frame.origin;
 
 	}else if(gesture.state == UIGestureRecognizerStateChanged){
