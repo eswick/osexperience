@@ -83,15 +83,21 @@
 	if([[OSViewController sharedInstance] missionControlIsActive]){
 		return;
 	}
-
+	
 	if([gesture state] == UIGestureRecognizerStateBegan){
+
 		window.resizeAnchor = CGPointMake(window.frame.origin.x, window.frame.origin.y + window.frame.size.height);
+		window.grabPoint = CGPointSub(CGPointMake(window.frame.size.width, 0), [gesture locationInView:window]);
+
 	}else if([gesture state] == UIGestureRecognizerStateChanged){
-		CGRect frame = [window CGRectFromCGPoints:window.resizeAnchor p2:[gesture locationInView:self]];
+
+		CGRect frame = [window CGRectFromCGPoints:window.resizeAnchor p2:CGPointAdd(window.grabPoint, [gesture locationInView:self])];
+
 		if(frame.origin.y < self.statusBar.bounds.size.height){
 			frame.origin.y = self.statusBar.bounds.size.height;
 			frame.size = window.bounds.size;
 		}
+
 		window.frame = frame;
 	}
 }

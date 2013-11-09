@@ -87,7 +87,7 @@
 - (void)handleResizePanGesture:(UIPanGestureRecognizer*)gesture{
 
 	if([gesture state] == UIGestureRecognizerStateBegan){
-		self.resizeAnchor = CGPointMake(self.frame.origin.x, self.frame.origin.y + self.frame.size.height);
+		[[self delegate] window:self didRecieveResizePanGesture:gesture];
 	}else if([gesture state] == UIGestureRecognizerStateChanged){
 		CGRect originalFrame = self.frame;
 
