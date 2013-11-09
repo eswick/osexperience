@@ -18,6 +18,7 @@
 	UIToolbar *_windowBar;
 	id<OSWindowDelegate> _delegate;
 	CGPoint _grabPoint;
+	CGPoint _grabPointInSuperview;
 	CGPoint _resizeAnchor;
 	CGPoint _originBeforeGesture;
 	CGPoint _originInDesktop;
@@ -29,10 +30,10 @@
 @property (nonatomic, assign) id<OSWindowDelegate> delegate; 
 @property (nonatomic, readwrite) CGPoint resizeAnchor;
 @property (nonatomic, readwrite) CGPoint grabPoint;
+@property (nonatomic, readwrite) CGPoint grabPointInSuperview;
 @property (nonatomic, readwrite) CGPoint originBeforeGesture;
 @property (nonatomic, readwrite) CGPoint originInDesktop;
 @property (nonatomic, retain) UIBarButtonItem *expandButton;
-@property (nonatomic, readwrite) float scale;
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title;
 - (void)stopButtonPressed;

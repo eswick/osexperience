@@ -10,4 +10,4 @@ OSExperience_PRIVATE_FRAMEWORKS = AppSupport GraphicsServices BackBoardServices
 include $(THEOS_MAKE_PATH)/tweak.mk
 
 after-install::
-	$(ECHO_NOTHING)install.exec "killall -9 backboardd"$(ECHO_END)
+	install.exec "killall -9 backboardd"

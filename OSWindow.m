@@ -7,10 +7,10 @@
 @synthesize delegate = _delegate;
 @synthesize resizeAnchor = _resizeAnchor;
 @synthesize grabPoint = _grabPoint;
+@synthesize grabPointInSuperview = _grabPointInSuperview;
 @synthesize expandButton = _expandButton;
 @synthesize originBeforeGesture = _originBeforeGesture;
 @synthesize originInDesktop = _originInDesktop;
-@synthesize scale = _scale;
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{
@@ -84,16 +84,21 @@
 - (void)handleMCPanGesture:(UIPanGestureRecognizer*)gesture{
 	if(gesture.state == UIGestureRecognizerStateBegan){
 
-		self.grabPoint = CGPointSub([gesture locationInView:[self superview]], self.frame.origin);
+		self.grabPoint = [gesture locationInView:self];
+		self.grabPointInSuperview = [gesture locationInView:[self superview]];
+		
 		self.originBeforeGesture = self.frame.origin;
 
 	}else if(gesture.state == UIGestureRecognizerStateChanged){
+		[self updateTransform:[gesture locationInView:[self superview]]];
 
 		CGRect frame = self.frame;
-		frame.origin = CGPointSub([gesture locationInView:[self superview]], [self grabPointWithTransform]);
-		[self setFrame:frame];
-		[self updateTransform];
 
+		CGPoint difference = CGPointSub([gesture locationInView:[self superview]], [self convertPoint:self.grabPoint toView:[self superview]]);
+		frame.origin = CGPointAdd(difference, self.frame.origin);
+
+		[self setFrame:frame];
+	
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
 
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
@@ -107,16 +112,11 @@
 	}
 }
 
-- (CGPoint)grabPointWithTransform{
-	float scale = self.scale;
-	scale = (scale * 100) / 0.70;
-	return CGPointMake(self.grabPoint.x * self.scale, self.grabPoint.y * self.scale);
-}
 
-- (void)updateTransform{
-		const float max = self.originBeforeGesture.y;
+- (void)updateTransform:(CGPoint)fingerPosition{
+		const float max = self.grabPointInSuperview.y;
+		const float percentage = fingerPosition.y / max;
 
-		const float percentage = self.frame.origin.y / max;
 		float transform = (((percentage * 100) * 55) / 100) + 15;
 		
 		if(transform < 15){
@@ -127,9 +127,6 @@
 
 		transform = transform / 100;
 		self.transform = CGAffineTransformScale(CGAffineTransformIdentity, transform, transform);
-		self.scale = transform;
-
-
 }
 
 - (void)dealloc{
