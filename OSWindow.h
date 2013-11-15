@@ -22,6 +22,7 @@
 	CGPoint _resizeAnchor;
 	CGPoint _originBeforeGesture;
 	CGPoint _originInDesktop;
+	CGPoint _desktopPaneOffset;
 	float _scale;
 	UIBarButtonItem *_expandButton;
 }
@@ -33,6 +34,7 @@
 @property (nonatomic, readwrite) CGPoint grabPointInSuperview;
 @property (nonatomic, readwrite) CGPoint originBeforeGesture;
 @property (nonatomic, readwrite) CGPoint originInDesktop;
+@property (nonatomic, readwrite) CGPoint desktopPaneOffset;
 @property (nonatomic, retain) UIBarButtonItem *expandButton;
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title;

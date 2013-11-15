@@ -15,9 +15,13 @@
 - (id)initWithName:(NSString*)name thumbnail:(UIImage*)thumbnail;
 - (BOOL)showsDock;
 - (BOOL)isPortrait;
+
 - (void)missionControlWillActivate;
 - (void)missionControlWillDeactivate;
 - (void)missionControlDidDeactivate;
+
+- (void)paneIndexWillChange;
+- (void)paneIndexDidChange;
 
 
 

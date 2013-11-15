@@ -11,6 +11,7 @@
 @synthesize expandButton = _expandButton;
 @synthesize originBeforeGesture = _originBeforeGesture;
 @synthesize originInDesktop = _originInDesktop;
+@synthesize desktopPaneOffset = _desktopPaneOffset;
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{

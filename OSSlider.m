@@ -159,12 +159,16 @@
 	self.contentSize = CGSizeMake([[OSPaneModel sharedInstance] count] * self.bounds.size.width, self.bounds.size.height);
 
 	for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+		[pane paneIndexWillChange];
+		
 		CGRect bounds = CGRectMake(0, 0, self.bounds.size.width - marginSize, self.bounds.size.height);
 		pane.bounds = bounds;
 
 		[pane setCenter:CGPointMake((self.bounds.size.width * [[OSPaneModel sharedInstance] indexOfPane:pane]) - (marginSize / 2) + (self.bounds.size.width / 2), pane.center.y)];
 		
 		pane.layer.shadowPath = [UIBezierPath bezierPathWithRect:pane.bounds].CGPath;
+
+		[pane paneIndexDidChange];
 	}
 }
 

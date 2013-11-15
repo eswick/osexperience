@@ -40,6 +40,8 @@
 - (void)missionControlWillActivate{}
 - (void)missionControlWillDeactivate{}
 - (void)missionControlDidDeactivate{}
+- (void)paneIndexWillChange{}
+- (void)paneIndexDidChange{}
 
 
 -(BOOL)showsDock{

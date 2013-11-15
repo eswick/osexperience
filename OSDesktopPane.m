@@ -108,15 +108,23 @@
 		[window setOriginInDesktop:window.frame.origin];
 		window.windowBar.userInteractionEnabled = false;
 
+
 		CGPoint origin = [self convertPoint:window.frame.origin toView:[OSSlider sharedInstance]];
-		
+
 		CGRect frame = window.frame;
 		frame.origin = origin;
-		window.frame = frame;
-
-		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.7, 0.7);
-
+		
 		[[OSSlider sharedInstance] addSubview:window];
+
+		[UIView animateWithDuration:0.0 delay:0.0 options:UIViewAnimationOptionOverrideInheritedDuration animations:^{//Cancel any animation
+			window.frame = frame;
+			
+		}completion:^(BOOL finished){
+			
+		}];
+		
+		
+		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.7, 0.7);
 	}
 }
 
@@ -128,7 +136,7 @@
 		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
 		
 		CGRect frame = window.frame;
-		frame.origin = window.originInDesktop;
+		frame.origin = [self convertPoint:window.originInDesktop toView:[self superview]];
 		[window setFrame:frame];
 	}
 }
@@ -137,8 +145,36 @@
 	for(OSWindow *window in self.windows){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
+
+		CGRect frame = window.frame;
+		frame.origin = window.originInDesktop;
+		[window setFrame:frame];
+
 		[self addSubview:window];
 		window.windowBar.userInteractionEnabled = true;
+	}
+}
+
+- (void)paneIndexWillChange{
+	for(OSWindow *window in self.windows){
+		if(![window isKindOfClass:[OSWindow class]])
+			continue;
+		window.desktopPaneOffset = CGPointSub(window.frame.origin, self.frame.origin);
+	}
+}
+
+- (void)paneIndexDidChange{
+	for(OSWindow *window in self.windows){
+		if(![window isKindOfClass:[OSWindow class]])
+			continue;
+		CGPoint newOffset = CGPointSub(window.frame.origin, self.frame.origin);
+
+		CGPoint difference = CGPointSub(window.desktopPaneOffset, newOffset);
+
+		CGRect frame = window.frame;
+		frame.origin = CGPointAdd(difference, frame.origin);
+
+		[window setFrame:frame];
 	}
 }
 
