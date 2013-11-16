@@ -87,7 +87,7 @@
 
     if(active){
 
-        //self.tempView.frame = [self missionControlWindowConstraints]; //(Visualize missionControlWindowConstraints)
+        self.tempView.frame = [self missionControlWindowConstraints]; //(Visualize missionControlWindowConstraints)
 
         for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
             [thumbnail updateImage];
@@ -225,7 +225,7 @@
 
     area = CGRectApplyAffineTransform(area, CGAffineTransformScale(CGAffineTransformIdentity, 0.95, 1));
 
-    area.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
+    area.origin.y = [[OSThumbnailView sharedInstance] frame].size.height + windowConstraintsTopMargin;
     area.size.height = self.dock.frame.origin.y - area.origin.y;
 
 
@@ -293,7 +293,7 @@
     self.tempView = [[UIView alloc] init];
     self.tempView.backgroundColor = [UIColor greenColor];
     self.tempView.alpha = 0.25;
-    //[self.view addSubview:self.tempView]; (Visualize missionControlWindowConstraints)
+    [self.view insertSubview:self.tempView belowSubview:[OSSlider sharedInstance]]; //(Visualize missionControlWindowConstraints)
 
 
     self.missionControlAnimating = false;

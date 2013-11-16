@@ -8,6 +8,7 @@
 #import "OSPinchGestureRecognizer.h"
 #import "OSSwitcherBackgroundView.h"
 
+#define windowConstraintsTopMargin 7
 
 @class OSSlider, OSIconContentView;
 
