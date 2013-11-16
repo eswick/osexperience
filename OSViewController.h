@@ -22,6 +22,7 @@
 	OSSwitcherBackgroundView *_switcherBackgroundView;
 	OSPinchGestureRecognizer *_pinchOutGesture;
 	OSPinchGestureRecognizer *_pinchInGesture;
+	UIView *_tempView;
 }
 
 @property (nonatomic, retain) OSSlider *slider;
@@ -34,6 +35,7 @@
 @property (nonatomic, retain) OSSwitcherBackgroundView *switcherBackgroundView;
 @property (nonatomic, retain) OSPinchGestureRecognizer *pinchOutGesture;
 @property (nonatomic, retain) OSPinchGestureRecognizer *pinchInGesture;
+@property (nonatomic, retain) UIView *tempView;
 
 
 

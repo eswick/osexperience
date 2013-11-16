@@ -14,6 +14,7 @@
 @synthesize switcherBackgroundView = _switcherBackgroundView;
 @synthesize pinchInGesture = _pinchInGesture;
 @synthesize pinchOutGesture = _pinchOutGesture;
+@synthesize tempView = _tempView;
 
 
 + (id)sharedInstance{
@@ -41,7 +42,6 @@
     self.pinchOutGesture.minimumNumberOfTouches = 5;
     self.pinchOutGesture.type = OSPinchGestureRecognizerTypeOutwards;
 
-
     return self;
 }
 
@@ -67,6 +67,9 @@
     [self.dock setFrame:dockFrame];
 }
 
+
+/*----- Mission Control -------*/
+
 - (void)setMissionControlActive:(BOOL)active{
     _missionControlActive = active;
 
@@ -84,12 +87,16 @@
 
     if(active){
 
+        //self.tempView.frame = [self missionControlWindowConstraints]; //(Visualize missionControlWindowConstraints)
+
         for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
             [thumbnail updateImage];
         }
         [[UIApplication sharedApplication] setStatusBarHidden:true withAnimation:true];
 
         self.switcherBackgroundView.hidden = false;
+        
+
         [[OSThumbnailView sharedInstance] setHidden:false];
 
         [[[OSSlider sharedInstance] panGestureRecognizer] setMinimumNumberOfTouches:1];
@@ -205,11 +212,37 @@
 
     }
 
-
-
 }
 
+- (CGRect)missionControlWindowConstraints{
+    CGRect area = [[UIScreen mainScreen] bounds];
 
+    if(!UIInterfaceOrientationIsPortrait([UIApp statusBarOrientation])){
+        float width = area.size.width;
+        area.size.width = area.size.height;
+        area.size.height = width;
+    }
+
+    area = CGRectApplyAffineTransform(area, CGAffineTransformScale(CGAffineTransformIdentity, 0.95, 1));
+
+    area.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
+    area.size.height = self.dock.frame.origin.y - area.origin.y;
+
+
+    CGPoint center = self.view.center;
+    if(!UIInterfaceOrientationIsPortrait([UIApp statusBarOrientation])){
+        float x = center.x;
+        center.x = center.y;
+        center.y = x;
+    }
+
+    area.origin = CGPointMake(center.x - area.size.width / 2, area.origin.y);
+
+
+    return area;
+}
+
+/*------------------------------*/
 
 
 -(void)loadView{
@@ -256,6 +289,11 @@
 	[self.dock setFrame:dockFrame];
 	[self.view addSubview:self.dock];
 
+
+    self.tempView = [[UIView alloc] init];
+    self.tempView.backgroundColor = [UIColor greenColor];
+    self.tempView.alpha = 0.25;
+    //[self.view addSubview:self.tempView]; (Visualize missionControlWindowConstraints)
 
 
     self.missionControlAnimating = false;
