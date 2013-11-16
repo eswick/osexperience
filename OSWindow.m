@@ -12,6 +12,7 @@
 @synthesize originBeforeGesture = _originBeforeGesture;
 @synthesize originInDesktop = _originInDesktop;
 @synthesize desktopPaneOffset = _desktopPaneOffset;
+@synthesize maxScale = _maxScale;
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{
@@ -24,6 +25,7 @@
 	self.layer.shadowOpacity = 0.5;
 	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 
+	self.maxScale = 50;
 
 	self.windowBar = [[UIToolbar alloc] init];
 	self.windowBar.frame = CGRectMake(0, 0, self.frame.size.width, 40);
@@ -104,7 +106,7 @@
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
 
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-			self.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.7, 0.7);
+			self.transform = CGAffineTransformScale(CGAffineTransformIdentity, self.maxScale * 0.01, self.maxScale * 0.01);
 			CGRect frame = self.frame;
 			frame.origin = self.originBeforeGesture;
 			[self setFrame:frame];
@@ -119,12 +121,12 @@
 		const float max = self.grabPointInSuperview.y;
 		const float percentage = fingerPosition.y / max;
 
-		float transform = (((percentage * 100) * 55) / 100) + 15;
+		float transform = (((percentage * 100) * (self.maxScale - missionControlMinDragScale)) / 100) + missionControlMinDragScale;
 		
-		if(transform < 15){
-			transform = 15;
-		}else if(transform > 70){
-			transform = 70;
+		if(transform < missionControlMinDragScale){
+			transform = missionControlMinDragScale;
+		}else if(transform > self.maxScale){
+			transform = self.maxScale;
 		}
 
 		transform = transform / 100;

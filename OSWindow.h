@@ -2,6 +2,7 @@
 #import "include.h"
 #import "explorer/CGPointExtension.h"
 
+#define missionControlMinDragScale 15
 
 @class OSWindow;
 
@@ -24,6 +25,7 @@
 	CGPoint _originInDesktop;
 	CGPoint _desktopPaneOffset;
 	float _scale;
+	float _maxScale;
 	UIBarButtonItem *_expandButton;
 }
 
@@ -36,6 +38,7 @@
 @property (nonatomic, readwrite) CGPoint originInDesktop;
 @property (nonatomic, readwrite) CGPoint desktopPaneOffset;
 @property (nonatomic, retain) UIBarButtonItem *expandButton;
+@property (nonatomic, readwrite) float maxScale;
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title;
 - (void)stopButtonPressed;

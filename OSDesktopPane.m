@@ -124,7 +124,7 @@
 		}];
 		
 		
-		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.7, 0.7);
+		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, window.maxScale * 0.01, window.maxScale * 0.01);
 	}
 }
 
