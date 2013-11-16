@@ -108,21 +108,18 @@
 
             [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self setDockPercentage:0.0];
+
+                CGRect frame = [[OSSlider sharedInstance] frame];
+                frame.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
+                [[OSSlider sharedInstance] setFrame:frame];
+                
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                     pane.userInteractionEnabled = false;
 
-                    float y = pane.frame.origin.y;
-
                     CGRect frame = pane.frame;
                     frame.origin.y = 0;
-
                     [pane setFrame:frame];
-
-                    frame = [[OSSlider sharedInstance] frame];
-                    frame.origin.y = y;
-
-                    [[OSSlider sharedInstance] setFrame:frame];
 
                     [pane missionControlWillActivate];
                 }
@@ -137,20 +134,17 @@
             [self setDockPercentage:0.0];
             self.missionControlActive = true;
         
+            CGRect frame = [[OSSlider sharedInstance] frame];
+            frame.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
+            [[OSSlider sharedInstance] setFrame:frame];
+
             for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                 pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                 pane.userInteractionEnabled = false;
 
-                float y = pane.frame.origin.y;
-
                 CGRect frame = pane.frame;
                 frame.origin.y = 0;
                 [pane setFrame:frame];
-
-                frame = [[OSSlider sharedInstance] frame];
-                frame.origin.y = y;
-
-                [[OSSlider sharedInstance] setFrame:frame];
 
                 [pane missionControlWillActivate];
             }

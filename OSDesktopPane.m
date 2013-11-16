@@ -109,21 +109,26 @@
 		window.windowBar.userInteractionEnabled = false;
 
 
-		CGPoint origin = [self convertPoint:window.frame.origin toView:[OSSlider sharedInstance]];
+		CGPoint origin = CGPointMake(([[OSPaneModel sharedInstance] indexOfPane:self] * [[OSSlider sharedInstance] bounds].size.width) + window.frame.origin.x, window.frame.origin.y - [[OSSlider sharedInstance] frame].origin.y);
+
+		//NSLog(@"Index: %i, content size: %f, window origin: %f, %@", [[OSPaneModel sharedInstance] indexOfPane:self], [[OSSlider sharedInstance] contentSize].width, window.frame.origin.x, NSStringFromCGPoint(origin));
 
 		CGRect frame = window.frame;
-		frame.origin = origin;
-		
-		[[OSSlider sharedInstance] addSubview:window];
 
 		[UIView animateWithDuration:0.0 delay:0.0 options:UIViewAnimationOptionOverrideInheritedDuration animations:^{//Cancel any animation
-			window.frame = frame;
-			
+			CGRect xFrame = frame;
+			xFrame.origin.x = origin.x;
+			window.frame = xFrame;
 		}completion:^(BOOL finished){
 			
 		}];
+
+		frame.origin.y = origin.y;
+		frame.origin.x = window.frame.origin.x;
+		window.frame = frame;
 		
-		
+		[[OSSlider sharedInstance] addSubview:window];
+
 		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, window.maxScale * 0.01, window.maxScale * 0.01);
 	}
 }
