@@ -5,6 +5,7 @@
 #import "include.h"
 #import "launchpad/OSIconContentView.h"
 #import "missioncontrol/OSThumbnailView.h"
+#import "missioncontrol/OSMCWindowLayoutManager.h"
 #import "OSPinchGestureRecognizer.h"
 #import "OSSwitcherBackgroundView.h"
 

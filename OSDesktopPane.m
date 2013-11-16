@@ -1,5 +1,5 @@
 #import "OSDesktopPane.h"
-
+#import "missioncontrol/OSMCWindowLayoutManager.h"
 
 
 
@@ -108,10 +108,7 @@
 		[window setOriginInDesktop:window.frame.origin];
 		window.windowBar.userInteractionEnabled = false;
 
-
-		CGPoint origin = CGPointMake(([[OSPaneModel sharedInstance] indexOfPane:self] * [[OSSlider sharedInstance] bounds].size.width) + window.frame.origin.x, window.frame.origin.y - [[OSSlider sharedInstance] frame].origin.y);
-
-		//NSLog(@"Index: %i, content size: %f, window origin: %f, %@", [[OSPaneModel sharedInstance] indexOfPane:self], [[OSSlider sharedInstance] contentSize].width, window.frame.origin.x, NSStringFromCGPoint(origin));
+		CGPoint origin = [OSMCWindowLayoutManager convertPointToSlider:window.frame.origin fromPane:self];
 
 		CGRect frame = window.frame;
 
@@ -128,8 +125,6 @@
 		window.frame = frame;
 		
 		[[OSSlider sharedInstance] addSubview:window];
-
-		window.transform = CGAffineTransformScale(CGAffineTransformIdentity, window.maxScale * 0.01, window.maxScale * 0.01);
 	}
 }
 

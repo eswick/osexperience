@@ -112,7 +112,7 @@
                 CGRect frame = [[OSSlider sharedInstance] frame];
                 frame.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
                 [[OSSlider sharedInstance] setFrame:frame];
-                
+
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                     pane.userInteractionEnabled = false;
@@ -123,6 +123,8 @@
 
                     [pane missionControlWillActivate];
                 }
+
+                [OSMCWindowLayoutManager layoutWindows];
 
             } completion:^(BOOL finished){
                 self.missionControlAnimating = false;
@@ -148,6 +150,8 @@
 
                 [pane missionControlWillActivate];
             }
+
+            [OSMCWindowLayoutManager layoutWindows];
 
             [self.view insertSubview:[OSThumbnailView sharedInstance] belowSubview:self.slider];
 
