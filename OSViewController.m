@@ -106,22 +106,26 @@
             self.missionControlAnimating = true;
             self.missionControlActive = true;
 
+            CGRect frame = [[OSSlider sharedInstance] frame];
+            frame.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
+            [[OSSlider sharedInstance] setFrame:frame];
+
+            for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+                CGRect frame = pane.frame;
+                frame.origin.y = 0 - [[OSThumbnailView sharedInstance] frame].size.height;
+                [pane setFrame:frame];
+            }
+
+            for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+                [pane missionControlWillActivate];
+            }
+
             [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [self setDockPercentage:0.0];
-
-                CGRect frame = [[OSSlider sharedInstance] frame];
-                frame.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
-                [[OSSlider sharedInstance] setFrame:frame];
 
                 for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                     pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                     pane.userInteractionEnabled = false;
-
-                    CGRect frame = pane.frame;
-                    frame.origin.y = 0;
-                    [pane setFrame:frame];
-
-                    [pane missionControlWillActivate];
                 }
 
                 [OSMCWindowLayoutManager layoutWindows];
@@ -133,31 +137,33 @@
 
 
         }else{
-            [self setDockPercentage:0.0];
             self.missionControlActive = true;
-        
+
             CGRect frame = [[OSSlider sharedInstance] frame];
             frame.origin.y = [[OSThumbnailView sharedInstance] frame].size.height;
             [[OSSlider sharedInstance] setFrame:frame];
 
             for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+                CGRect frame = pane.frame;
+                frame.origin.y = 0 - [[OSThumbnailView sharedInstance] frame].size.height;
+                [pane setFrame:frame];
+            }
+
+            for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
+                [pane missionControlWillActivate];
+            }
+
+            [self setDockPercentage:0.0];
+
+            for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                 pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.5, 0.5);
                 pane.userInteractionEnabled = false;
-
-                CGRect frame = pane.frame;
-                frame.origin.y = 0;
-                [pane setFrame:frame];
-
-                [pane missionControlWillActivate];
             }
 
             [OSMCWindowLayoutManager layoutWindows];
 
             [self.view insertSubview:[OSThumbnailView sharedInstance] belowSubview:self.slider];
-
         }
-
-
     }else{
         [self.view insertSubview:[OSThumbnailView sharedInstance] belowSubview:self.slider];
         [[[OSSlider sharedInstance] panGestureRecognizer] setMinimumNumberOfTouches:4];
@@ -198,11 +204,29 @@
 
         }else{
             self.missionControlActive = false;
+
             for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                 pane.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0, 1.0);
                 pane.userInteractionEnabled = true;
+
+                CGRect frame = [pane frame];
+                frame.origin.y = 0;
+                [pane setFrame:frame];
+
+                frame = [[OSSlider sharedInstance] frame];
+                frame.origin.y = 0;
+                [[OSSlider sharedInstance] setFrame:frame];
+
+                [pane missionControlWillDeactivate];
             }
             [[OSSlider sharedInstance] updateDockPosition];
+
+            for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
+                if(![desktopPane isKindOfClass:[OSDesktopPane class]])
+                    continue;
+                [desktopPane missionControlDidDeactivate];
+            }
+
             self.switcherBackgroundView.hidden = true;
             [[OSThumbnailView sharedInstance] setHidden:true];
         }

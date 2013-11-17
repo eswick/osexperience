@@ -108,22 +108,9 @@
 		[window setOriginInDesktop:window.frame.origin];
 		window.windowBar.userInteractionEnabled = false;
 
-		CGPoint origin = [OSMCWindowLayoutManager convertPointToSlider:window.frame.origin fromPane:self];
-
-		CGRect frame = window.frame;
-
-		[UIView animateWithDuration:0.0 delay:0.0 options:UIViewAnimationOptionOverrideInheritedDuration animations:^{//Cancel any animation
-			CGRect xFrame = frame;
-			xFrame.origin.x = origin.x;
-			window.frame = xFrame;
-		}completion:^(BOOL finished){
-			
-		}];
-
-		frame.origin.y = origin.y;
-		frame.origin.x = window.frame.origin.x;
+		CGRect frame = [OSMCWindowLayoutManager convertRectToSlider:window.frame fromPane:self];
 		window.frame = frame;
-		
+
 		[[OSSlider sharedInstance] addSubview:window];
 	}
 }

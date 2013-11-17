@@ -48,6 +48,7 @@
 - (void)menuButtonPressed;
 - (void)setDockPercentage:(float)percentage;
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated;
+- (CGRect)missionControlWindowConstraints;
 
 
 @end
