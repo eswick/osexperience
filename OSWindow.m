@@ -108,17 +108,53 @@
 	
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
 
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-			self.transform = CGAffineTransformScale(CGAffineTransformIdentity, self.maxScale * 0.01, self.maxScale * 0.01);
-			CGRect frame = self.frame;
-			frame.origin = self.originBeforeGesture;
-			[self setFrame:frame];
-		}completion:^(BOOL finished){
+		if([self selectedThumbnailView] == nil){
+			[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+				self.transform = CGAffineTransformScale(CGAffineTransformIdentity, self.maxScale * 0.01, self.maxScale * 0.01);
+				CGRect frame = self.frame;
+				frame.origin = self.originBeforeGesture;
+				[self setFrame:frame];
+			}completion:^(BOOL finished){
 			
-		}];
+			}];
+		}else{
+			if([[[self selectedThumbnailView] pane] isKindOfClass:[OSDesktopPane class]]){//If hovering over an OSPaneThumbnail
+				OSDesktopPane *toPane = (OSDesktopPane*)[[self selectedThumbnailView] pane];
 
+				OSDesktopPane *fromPane = nil;
+				for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
+					if(![pane isKindOfClass:[OSDesktopPane class]])
+						continue;
+					if([pane.windows containsObject:self])
+						fromPane = pane;
+				}
+
+				[[self selectedThumbnailView] setPressed:false];
+
+				self.transform = CGAffineTransformScale(CGAffineTransformIdentity, self.maxScale * 0.01, self.maxScale * 0.01);
+				CGRect frame = self.frame;
+				frame.origin = [OSMCWindowLayoutManager convertPointFromSlider:self.originBeforeGesture toPane:fromPane];
+				frame.origin = [OSMCWindowLayoutManager convertPointToSlider:frame.origin fromPane:toPane];
+				[self setFrame:frame];
+
+				[self switchToDesktopPane:toPane];
+
+				[[OSSlider sharedInstance] bringSubviewToFront:self];
+			}
+		}
 		[[OSThumbnailView sharedInstance] updatePressedThumbnails];
 	}
+}
+
+- (void)switchToDesktopPane:(OSDesktopPane*)pane{
+	for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
+		if(![pane isKindOfClass:[OSDesktopPane class]])
+			continue;
+		if([pane.windows containsObject:self])
+			[pane.windows removeObject:self];
+	}
+	[self setDelegate:pane];
+	[pane.windows addObject:self];
 }
 
 - (OSPaneThumbnail*)selectedThumbnailView{
