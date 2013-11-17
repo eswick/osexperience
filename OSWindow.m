@@ -32,6 +32,7 @@
 	self.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
 
 	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleMCPanGesture:)];
+	panGesture.maximumNumberOfTouches = 1;
 	[panGesture requireGestureRecognizerToFail:[[OSSlider sharedInstance] switcherDownGesture]];
 	[panGesture requireGestureRecognizerToFail:[[OSSlider sharedInstance] switcherUpGesture]];
 	[self addGestureRecognizer:panGesture];
