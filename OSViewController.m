@@ -87,7 +87,7 @@
 
     if(active){
 
-        self.tempView.frame = [self missionControlWindowConstraints]; //(Visualize missionControlWindowConstraints)
+        //self.tempView.frame = [self missionControlWindowConstraints]; //(Visualize missionControlWindowConstraints)
 
         for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
             [thumbnail updateImage];
@@ -248,7 +248,7 @@
     area = CGRectApplyAffineTransform(area, CGAffineTransformScale(CGAffineTransformIdentity, 0.95, 1));
 
     area.origin.y = [[OSThumbnailView sharedInstance] frame].size.height + windowConstraintsTopMargin;
-    area.size.height = self.dock.frame.origin.y - area.origin.y;
+    area.size.height = self.dock.frame.origin.y - area.origin.y - windowConstraintsBottomMargin;
 
 
     CGPoint center = self.view.center;

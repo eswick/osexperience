@@ -10,6 +10,7 @@
 #import "OSSwitcherBackgroundView.h"
 
 #define windowConstraintsTopMargin 7
+#define windowConstraintsBottomMargin 7
 
 @class OSSlider, OSIconContentView;
 
