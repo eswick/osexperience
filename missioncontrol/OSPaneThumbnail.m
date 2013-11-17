@@ -15,6 +15,8 @@
 @synthesize imageView = _imageView;
 @synthesize closebox = _closebox;
 @synthesize closeboxVisible = _closeboxVisible;
+@synthesize pressed = _pressed;
+@synthesize shadowOverlayView = _shadowOverlayView;
 
 
 - (id)initWithPane:(OSPane*)pane{
@@ -109,6 +111,15 @@
 
 	[self addSubview:self.closebox];
 
+	self.pressed = false;
+
+	self.shadowOverlayView = [[UIView alloc] initWithFrame:self.frame];
+	self.shadowOverlayView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+	self.shadowOverlayView.backgroundColor = [UIColor blackColor];
+	self.shadowOverlayView.alpha = 0.5;
+	self.shadowOverlayView.hidden = true;
+	[self addSubview:self.shadowOverlayView];
+
 	return self;
 
 }
@@ -152,6 +163,7 @@
 	[self.selectionView release];
 	[self.placeholder release];
 	[self.closebox release];
+	[self.shadowOverlayView release];
 
 	if(self.icon)
 		[self.icon release];
@@ -260,6 +272,19 @@
 	}else{
 		return [super hitTest:point withEvent:event];
 	}
+}
+
+- (void)setPressed:(BOOL)pressed{
+	_pressed = pressed;
+	if(pressed){
+		self.shadowOverlayView.hidden = false;
+	}else{
+		self.shadowOverlayView.hidden = true;
+	}
+}
+
+- (BOOL)isPressed{
+	return _pressed;
 }
 
 @end

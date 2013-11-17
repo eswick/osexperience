@@ -19,6 +19,8 @@
 	UIView *_selectionView;
 	UIButton *_closebox;
 	BOOL _closeboxVisible;
+	BOOL _pressed;
+	UIView *_shadowOverlayView;
 }
 
 @property (nonatomic, retain) OSPane *pane;
@@ -31,6 +33,8 @@
 @property (nonatomic, retain) UIView *selectionView;
 @property (nonatomic, retain) UIButton *closebox;
 @property (nonatomic, readwrite) BOOL closeboxVisible;
+@property (nonatomic, getter=isPressed, readwrite) BOOL pressed;
+@property (nonatomic, retain) UIView *shadowOverlayView;
  
 - (id)initWithPane:(OSPane*)pane;
 - (void)updateImage;
