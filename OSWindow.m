@@ -121,7 +121,7 @@
 	}
 }
 
-- (void)updatePressedThumbnailViews{
+- (OSPaneThumbnail*)selectedThumbnailView{
 	CGPoint originInThumbnailWrapper = [[self superview] convertPoint:self.frame.origin toView:[[OSThumbnailView sharedInstance] wrapperView]];
 		
 	CGRect rectInWrapper = self.frame;
@@ -137,16 +137,15 @@
 		CGRect intersection = CGRectIntersection(thumbnail.frame, rectInWrapper);
 
 		if(CGRectIsNull(intersection)){
-			thumbnail.pressed = false;
 			continue;
 		}
 
 		if(intersection.size.width > rectInWrapper.size.width / 2 && intersection.size.height > rectInWrapper.size.height / 2){
-			thumbnail.pressed = true;
-		}else{
-			thumbnail.pressed = false;
+			return thumbnail;
 		}
 	}
+
+	return nil;
 }
 
 - (void)updateTransform:(CGPoint)fingerPosition{
