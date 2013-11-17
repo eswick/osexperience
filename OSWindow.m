@@ -103,6 +103,8 @@
 		frame.origin = CGPointAdd(difference, self.frame.origin);
 
 		[self setFrame:frame];
+
+		[self updatePressedThumbnailViews];
 	
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
 
@@ -114,9 +116,27 @@
 		}completion:^(BOOL finished){
 			
 		}];
+		[self updatePressedThumbnailViews];
 	}
 }
 
+- (void)updatePressedThumbnailViews{
+	CGPoint originInThumbnailWrapper = [[self superview] convertPoint:self.frame.origin toView:[[OSThumbnailView sharedInstance] wrapperView]];
+		
+	CGRect rectInWrapper = self.frame;
+	rectInWrapper.origin = originInThumbnailWrapper;
+
+
+	for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+		if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
+			continue;
+		if(CGRectContainsRect(thumbnail.frame, rectInWrapper)){
+			thumbnail.pressed = true;
+		}else{
+			thumbnail.pressed = false;
+		}
+	}
+}
 
 - (void)updateTransform:(CGPoint)fingerPosition{
 		const float max = self.grabPointInSuperview.y;
