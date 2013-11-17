@@ -116,6 +116,7 @@
 		}completion:^(BOOL finished){
 			
 		}];
+
 		[self updatePressedThumbnailViews];
 	}
 }
@@ -128,9 +129,19 @@
 
 
 	for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
-		if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
+		if(![thumbnail isKindOfClass:[OSPaneThumbnail class]] || ![[thumbnail pane] isKindOfClass:[OSDesktopPane class]])
 			continue;
-		if(CGRectContainsRect(thumbnail.frame, rectInWrapper)){
+		if([[thumbnail pane] isKindOfClass:[OSDesktopPane class]])
+			if([[(OSDesktopPane*)[thumbnail pane] windows] containsObject:self])
+				continue;
+		CGRect intersection = CGRectIntersection(thumbnail.frame, rectInWrapper);
+
+		if(CGRectIsNull(intersection)){
+			thumbnail.pressed = false;
+			continue;
+		}
+
+		if(intersection.size.width > rectInWrapper.size.width / 2 && intersection.size.height > rectInWrapper.size.height / 2){
 			thumbnail.pressed = true;
 		}else{
 			thumbnail.pressed = false;
