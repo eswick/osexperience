@@ -104,7 +104,7 @@
 
 		[self setFrame:frame];
 
-		[self updatePressedThumbnailViews];
+		[[OSThumbnailView sharedInstance] updatePressedThumbnails];
 	
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
 
@@ -117,7 +117,7 @@
 			
 		}];
 
-		[self updatePressedThumbnailViews];
+		[[OSThumbnailView sharedInstance] updatePressedThumbnails];
 	}
 }
 

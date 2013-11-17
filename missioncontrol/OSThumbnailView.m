@@ -373,6 +373,43 @@
 	return false;
 }
 
+- (void)updatePressedThumbnails{
+	for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+		if(![thumbnail.pane isKindOfClass:[OSDesktopPane class]])
+			continue;
+		BOOL pressed = false;
+
+		for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
+			if(![pane isKindOfClass:[OSDesktopPane class]])
+				continue;
+			for(OSWindow *window in pane.windows){
+				if(![window isKindOfClass:[OSWindow class]] || [[(OSDesktopPane*)[thumbnail pane] windows] containsObject:window])
+					continue;
+				CGPoint originInThumbnailWrapper = [[window superview] convertPoint:window.frame.origin toView:self.wrapperView];
+		
+				CGRect rectInWrapper = window.frame;
+				rectInWrapper.origin = originInThumbnailWrapper;
+
+				CGRect intersection = CGRectIntersection(thumbnail.frame, rectInWrapper);
+
+				if(CGRectIsNull(intersection)){
+					continue;
+				}
+
+				if(intersection.size.width > rectInWrapper.size.width / 2 && intersection.size.height > rectInWrapper.size.height / 2){
+					pressed = true;
+				}
+			}
+		}
+
+		if(pressed){
+			thumbnail.pressed = true;
+		}else{
+			thumbnail.pressed = false;
+		}
+	}
+}
+
 
 - (void)dealloc{
 	[self.wrapperView release];

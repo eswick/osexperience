@@ -32,5 +32,6 @@
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated;
 - (void)updateSelectedThumbnail;
 - (void)closeAllCloseboxesAnimated:(BOOL)animated;
+- (void)updatePressedThumbnails;
 
 @end
