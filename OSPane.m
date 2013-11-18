@@ -1,5 +1,6 @@
 #import "OSPane.h"
-
+#import "missioncontrol/OSPaneThumbnail.h"
+#import "missioncontrol/OSThumbnailView.h"
 
 
 
@@ -43,6 +44,15 @@
 - (void)paneIndexWillChange{}
 - (void)paneIndexDidChange{}
 
+- (void)setName:(NSString*)name{
+	_name = name;
+	
+	for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+		if(thumbnail.pane == self){
+			thumbnail.label.text = self.name;
+		}
+	}
+}
 
 -(BOOL)showsDock{
 	return false;
