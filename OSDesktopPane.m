@@ -151,6 +151,8 @@
 }
 
 - (void)paneIndexDidChange{
+	[self setName:[NSString stringWithFormat:@"Desktop %i", [self desktopPaneIndex]]];
+
 	for(OSWindow *window in self.windows){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
@@ -163,6 +165,18 @@
 
 		[window setFrame:frame];
 	}
+}
+
+- (int) desktopPaneIndex{
+	int count = 0;
+	for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
+		if(![pane isKindOfClass:[OSDesktopPane class]])
+			continue;
+		count++;
+		if(pane == self)
+			break;
+	}
+	return count;
 }
 
 -(void)dealloc{
