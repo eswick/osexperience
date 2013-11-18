@@ -154,6 +154,11 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 
 -(void)sendEvent:(id)arg1{
+	if([arg1 isKindOfClass:[%c(UIMotionEvent) class]]){
+		%orig;
+		return;
+	}
+
 	GSEventRef event = [arg1 _gsEvent];
 
 
