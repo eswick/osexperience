@@ -117,8 +117,11 @@
 			}completion:^(BOOL finished){
 			
 			}];
+			[[OSThumbnailView sharedInstance] updatePressedThumbnails];
 		}else{
 			if([[[self selectedThumbnailView] pane] isKindOfClass:[OSDesktopPane class]]){//If hovering over an OSPaneThumbnail
+				OSPaneThumbnail *selectedThumbnail = [self selectedThumbnailView];
+
 				OSDesktopPane *toPane = (OSDesktopPane*)[[self selectedThumbnailView] pane];
 
 				OSDesktopPane *fromPane = nil;
@@ -129,7 +132,14 @@
 						fromPane = pane;
 				}
 
-				[[self selectedThumbnailView] setPressed:false];
+				
+				[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+					[[selectedThumbnail shadowOverlayView] setAlpha:0.0];
+				}completion:^(BOOL finished){
+					[[self selectedThumbnailView] setPressed:false];
+					[[selectedThumbnail shadowOverlayView] setAlpha:0.5];
+					[[OSThumbnailView sharedInstance] updatePressedThumbnails];
+				}];
 
 				self.transform = CGAffineTransformScale(CGAffineTransformIdentity, self.maxScale * 0.01, self.maxScale * 0.01);
 				CGRect frame = self.frame;
@@ -142,7 +152,7 @@
 				[[OSSlider sharedInstance] bringSubviewToFront:self];
 			}
 		}
-		[[OSThumbnailView sharedInstance] updatePressedThumbnails];
+		
 	}
 }
 
