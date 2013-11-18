@@ -64,7 +64,6 @@
 
 - (void)removePane:(OSPane*)pane{
 
-	OSPane *sliderSelectedPane = [[OSSlider sharedInstance] currentPane];
 	[[OSSlider sharedInstance] removePane:pane];
 
 	[self.panes removeObject:pane];
@@ -73,15 +72,6 @@
 		[[OSThumbnailView sharedInstance] removePane:pane animated:true];
 	else
 		[[OSThumbnailView sharedInstance] removePane:pane animated:false];
-
-	[[OSSlider sharedInstance] alignPanes];
-	if([sliderSelectedPane isKindOfClass:[OSAppPane class]]){
-		[[OSSlider sharedInstance] scrollToPane:self.firstDesktopPane animated:false];
-		[[OSSlider sharedInstance] updateDockPosition];
-	}
-
-	[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
-
 }
 
 - (unsigned int)indexOfPane:(OSPane*)pane{

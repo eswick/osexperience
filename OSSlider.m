@@ -2,7 +2,8 @@
 
 
 #define marginSize 40
-
+#define scrollDuration 1.0
+#define mcScrollDuration 0.40
 
 
 
@@ -152,6 +153,7 @@
 
 
 - (void)removePane:(OSPane*)pane{
+	
 	if([pane isKindOfClass:[OSDesktopPane class]]){
 		for(OSWindow *window in [(OSDesktopPane*)pane windows]){
 
@@ -172,7 +174,29 @@
 			[self bringSubviewToFront:window];
 		}
 	}
-	[pane removeFromSuperview];
+
+	OSPane *destination = nil;
+	
+	if(pane != [self currentPane]){
+		destination = [self currentPane];
+	}else{
+		for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
+			if(![desktopPane isKindOfClass:[OSDesktopPane class]] || desktopPane == pane)
+				continue;
+			destination = desktopPane;
+		}
+	}
+
+	pane.hidden = true;
+
+	[self scrollToPane:destination animated:true];
+
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, mcScrollDuration * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+		[pane removeFromSuperview];
+		[self alignPanes];
+		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
+	});
+	
 }
 
 -(void)alignPanes{
@@ -268,16 +292,19 @@
 		[self updateDockPosition];
 		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 	}else{
-		[UIView animateWithDuration:1.0 delay:0.25 options: UIViewAnimationOptionCurveEaseInOut animations:^{
-			CGRect bounds = [self bounds];
-        	bounds.origin.x = [[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width;
-        	[self setBounds:bounds];
-        	[self updateDockPosition];
-        	[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
+		[UIView animateWithDuration:([[OSViewController sharedInstance] missionControlIsActive] ? mcScrollDuration : scrollDuration) 
+			delay:([[OSViewController sharedInstance] missionControlIsActive] ? 0 : 0.25) 
+			options: UIViewAnimationOptionCurveEaseInOut 
+			animations:^{
 
-        }completion:^(BOOL finished){
-         
-        }];
+				CGRect bounds = [self bounds];
+        		bounds.origin.x = [[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width;
+        		[self setBounds:bounds];
+        		[self updateDockPosition];
+        		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
+
+        	}completion:^(BOOL finished){}
+        ];
 	}
 }
 
