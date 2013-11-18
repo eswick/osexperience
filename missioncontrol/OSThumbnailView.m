@@ -189,6 +189,7 @@
 
 	}else{
 		[thumbnail removeFromSuperview];
+		[self alignSubviews];
 	}
 
 

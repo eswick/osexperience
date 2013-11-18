@@ -263,7 +263,7 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 			if(![desktop isKindOfClass:[OSDesktopPane class]])
 				continue;
 
-			for(OSAppWindow *window in desktop.subviews){
+			for(OSAppWindow *window in desktop.windows){
 				if(![window isKindOfClass:[OSAppWindow class]])
 					continue;
 				if(window.application == self){

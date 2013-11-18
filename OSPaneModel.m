@@ -64,15 +64,15 @@
 
 - (void)removePane:(OSPane*)pane{
 
-	if([[OSViewController sharedInstance] missionControlIsActive])
-		[[OSThumbnailView sharedInstance] removePane:pane animated:true];
-	else
-		[[OSThumbnailView sharedInstance] removePane:pane animated:false];
-
 	OSPane *sliderSelectedPane = [[OSSlider sharedInstance] currentPane];
 	[[OSSlider sharedInstance] removePane:pane];
 
 	[self.panes removeObject:pane];
+
+	if([[OSViewController sharedInstance] missionControlIsActive])
+		[[OSThumbnailView sharedInstance] removePane:pane animated:true];
+	else
+		[[OSThumbnailView sharedInstance] removePane:pane animated:false];
 
 	[[OSSlider sharedInstance] alignPanes];
 	if([sliderSelectedPane isKindOfClass:[OSAppPane class]]){
