@@ -1,6 +1,7 @@
 #import "OSPane.h"
 #import "missioncontrol/OSPaneThumbnail.h"
 #import "missioncontrol/OSThumbnailView.h"
+#import "missioncontrol/OSThumbnailPlaceholder.h"
 
 
 
@@ -46,10 +47,26 @@
 
 - (void)setName:(NSString*)name{
 	_name = name;
-	
+
+	bool found = false;
+
 	for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+		if([thumbnail isKindOfClass:[OSThumbnailPlaceholder class]])
+			continue;
 		if(thumbnail.pane == self){
 			thumbnail.label.text = self.name;
+			found = true;
+		}
+	}
+
+	if(!found){
+		for(OSPaneThumbnail *thumbnail in [[OSThumbnailView sharedInstance] subviews]){
+			if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
+				continue;
+			if(thumbnail.pane == self){
+				thumbnail.label.text = self.name;
+				found = true;
+			}
 		}
 	}
 }
