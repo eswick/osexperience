@@ -43,10 +43,8 @@
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title;
 - (void)stopButtonPressed;
 - (CGRect) CGRectFromCGPoints:(CGPoint)p1 p2:(CGPoint)p2;
+- (void)switchToDesktopPane:(id)pane;
 
-
-
-float proportion(float x1, float x2, float y1, float y2);
 
 @end
 

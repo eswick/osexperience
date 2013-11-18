@@ -157,11 +157,11 @@
 }
 
 - (void)switchToDesktopPane:(OSDesktopPane*)pane{
-	for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
-		if(![pane isKindOfClass:[OSDesktopPane class]])
+	for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
+		if(![desktopPane isKindOfClass:[OSDesktopPane class]])
 			continue;
-		if([pane.windows containsObject:self])
-			[pane.windows removeObject:self];
+		if([desktopPane.windows containsObject:self])
+			[desktopPane.windows removeObject:self];
 	}
 	[self setDelegate:pane];
 	[pane.windows addObject:self];

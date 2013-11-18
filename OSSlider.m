@@ -152,6 +152,26 @@
 
 
 - (void)removePane:(OSPane*)pane{
+	if([pane isKindOfClass:[OSDesktopPane class]]){
+		for(OSWindow *window in [(OSDesktopPane*)pane windows]){
+
+			OSDesktopPane *toPane = nil;
+			for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
+				if(![desktopPane isKindOfClass:[OSDesktopPane class]] || desktopPane == pane)
+					continue;
+				toPane = desktopPane;
+				break;
+			}
+
+			CGRect frame = window.frame;
+			frame.origin = [OSMCWindowLayoutManager convertPointFromSlider:frame.origin toPane:pane];
+			frame.origin = [OSMCWindowLayoutManager convertPointToSlider:frame.origin fromPane:toPane];
+			[window setFrame:frame];
+
+			[window switchToDesktopPane:toPane];
+			[self bringSubviewToFront:window];
+		}
+	}
 	[pane removeFromSuperview];
 }
 

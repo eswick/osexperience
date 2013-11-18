@@ -13,9 +13,9 @@
 
 	setMaximumScaleOfAllWindowsToScale(missionControlMaximumScale);
 	setAllWindowsToScale(missionControlMaximumScale);
-
 	placeAllWindowsWithinConstraints();
 	
+	updateWindowOrigins();
 }
 
 + (CGPoint)convertPointToSlider:(CGPoint)point fromPane:(OSPane*)pane{
@@ -42,6 +42,16 @@
 	returnValue.size = rect.size;
 
 	return returnValue;
+}
+
+void updateWindowOrigins(){
+	for(OSDesktopPane *desktop in [[OSPaneModel sharedInstance] panes]){
+		if(![desktop isKindOfClass:[OSDesktopPane class]])
+			continue;
+		for(OSWindow *window in desktop.windows){
+			[window setOriginBeforeGesture:window.frame.origin];
+		}
+	}
 }
 
 void placeAllWindowsWithinConstraints(){
