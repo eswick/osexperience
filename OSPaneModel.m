@@ -80,6 +80,8 @@
 		[[OSSlider sharedInstance] updateDockPosition];
 	}
 
+	[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
+
 }
 
 - (unsigned int)indexOfPane:(OSPane*)pane{
