@@ -414,6 +414,7 @@
             } completion:^(BOOL finished){
                 self.launchpadAnimating = false;
                 [[[objc_getClass("SBIconController") sharedInstance] contentView] addSubview:[[OSViewController sharedInstance] dock]];
+                [(SpringBoard*)UIApp clearMenuButtonTimer];
             }];
 
 
@@ -449,6 +450,7 @@
             } completion:^(BOOL finished){
                 self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
                 self.launchpadAnimating = false;
+                [(SpringBoard*)UIApp clearMenuButtonTimer];
             }];
 
 

@@ -160,6 +160,7 @@ typedef struct {
 
 - (UIWindow*)statusBarWindow;
 - (UIWindow*)keyWindow;
+- (void)clearMenuButtonTimer;
 
 @end
 

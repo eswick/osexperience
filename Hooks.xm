@@ -35,8 +35,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
 	else
 		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
-	
-
 	return true;
 }
 
@@ -187,6 +185,13 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 	}
 
 	%orig;
+}
+
+- (void)_handleMenuButtonEvent{
+	if([[OSViewController sharedInstance] launchpadIsActive])
+		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
+	else
+		[[OSViewController sharedInstance] setLaunchpadActive:true animated:true];
 }
 
 %end
