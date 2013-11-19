@@ -1,7 +1,99 @@
-#define UIApp (SpringBoard*)[UIApplication sharedApplication]
+#define UIApp [UIApplication sharedApplication]
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 
 #import <QuartzCore/QuartzCore.h>
+
+
+typedef struct { 
+    char itemIsEnabled[24];
+    /*
+	0 - Time
+	1 - Do Not Disturb
+	2 - Airplane Mode
+	3 - Signal Bars
+	4 - Service String
+	5 - Wifi Bars
+	6 - Battery Icon
+	7 - Battery detail string
+	8 - Second battery detail string? Sligtly smaller. Possibly non-retina
+	9 - Horizontal bar with circle on top
+	10 - Bluetooth
+	11 - Phone with 7 dots underneath
+	12 - Alarm
+	13 - Plus sign
+	14 - Playing
+	15 - Location Services
+	16 - Orientation lock
+	17 - ?
+	18 - Airplay
+	19 - Microphone
+	20 - VPN
+	21 - Phone with right-facing arrow
+	22 - Activity icon
+	23 - Empty space?
+
+    */
+    char timeString[64];
+    int gsmSignalStrengthRaw;
+    int gsmSignalStrengthBars;
+    char serviceString[100];
+    char serviceCrossfadeString[100];
+    char serviceImages[2][100];
+    char operatorDirectory[1024];
+    unsigned int serviceContentType;
+    int wifiSignalStrengthRaw;
+    int wifiSignalStrengthBars;
+    unsigned int dataNetworkType;
+    int batteryCapacity;
+    unsigned int batteryState;
+    char batteryDetailString[150];
+    int bluetoothBatteryCapacity;
+    int thermalColor;
+    unsigned int thermalSunlightMode:1;
+    unsigned int slowActivity:1;
+    unsigned int syncActivity:1;
+    char activityDisplayId[256];
+    unsigned int bluetoothConnected:1;
+    unsigned int displayRawGSMSignal:1;
+    unsigned int displayRawWifiSignal:1;
+    unsigned int locationIconType:1;
+} UIStatusBarData;
+
+typedef struct{
+    char overrideItemIsEnabled[24];
+    unsigned int overrideTimeString:1;
+    unsigned int overrideGsmSignalStrengthRaw:1;
+    unsigned int overrideGsmSignalStrengthBars:1;
+    unsigned int overrideServiceString:1;
+    unsigned int overrideServiceImages:2;
+    unsigned int overrideOperatorDirectory:1;
+    unsigned int overrideServiceContentType:1;
+    unsigned int overrideWifiSignalStrengthRaw:1;
+    unsigned int overrideWifiSignalStrengthBars:1;
+    unsigned int overrideDataNetworkType:1;
+    unsigned int disallowsCellularDataNetworkTypes:1;
+    unsigned int overrideBatteryCapacity:1;
+    unsigned int overrideBatteryState:1;
+    unsigned int overrideBatteryDetailString:1;
+    unsigned int overrideBluetoothBatteryCapacity:1;
+    unsigned int overrideThermalColor:1;
+    unsigned int overrideSlowActivity:1;
+    unsigned int overrideActivityDisplayId:1;
+    unsigned int overrideBluetoothConnected:1;
+    unsigned int overrideDisplayRawGSMSignal:1;
+    unsigned int overrideDisplayRawWifiSignal:1;
+    UIStatusBarData values;
+} UIStatusBarOverrideData;
+
+
+@interface UIStatusBarServer : NSObject
+
++ (UIStatusBarData*) getStatusBarData;
++ (UIStatusBarOverrideData *)getStatusBarOverrideData;
++ (void)postStatusBarData:(UIStatusBarData *)arg1 withActions:(int)arg2;
++ (void)postStatusBarOverrideData:(UIStatusBarOverrideData *)arg1;
+
+@end
 
 typedef struct {
 	int type;
@@ -116,6 +208,8 @@ typedef struct {
 + (int)defaultStatusBarStyleWithTint:(BOOL)arg1;
 + (CGRect)frameForStyle:(int)arg1 orientation:(int)arg2;
 
+- (void)setLocalDataOverrides:(UIStatusBarOverrideData *)arg1;
+- (void)forceUpdateToData:(UIStatusBarData *)arg1 animated:(BOOL)arg2;
 @end
 
 
@@ -304,7 +398,7 @@ typedef struct {
 
 @interface UIApplication(STFUACAdditions)
 -(id)displayIdentifier;
-
+- (UIStatusBar*)statusBar;
 
 @end
 

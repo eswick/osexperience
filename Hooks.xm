@@ -161,7 +161,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 	GSEventRef event = [arg1 _gsEvent];
 
-
 	if(GSEventGetType(event) == kGSEventDeviceOrientationChanged){
 		for(OSAppPane *appPane in [[OSPaneModel sharedInstance] panes]){
 			if(![appPane isKindOfClass:[OSAppPane class]])
@@ -189,7 +188,6 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 	%orig;
 }
-
 
 %end
 
@@ -462,11 +460,11 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 - (void)setLocked:(BOOL)arg1{
 	if(!arg1){
 		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{	
-			[[UIApp statusBarWindow] setAlpha:0.0];
+			[[(SpringBoard*)UIApp statusBarWindow] setAlpha:0.0];
 		}completion:^(BOOL finished){
 		}];
 	}else{
-		[[UIApp statusBarWindow] setAlpha:1.0];
+		[[(SpringBoard*)UIApp statusBarWindow] setAlpha:1.0];
 	}
 	%orig;
 }
@@ -718,16 +716,45 @@ MSHook(Boolean, IOHIDEventSystemOpen, IOHIDEventSystemRef system, IOHIDEventSyst
 %end
 //End (gesture fix)
 
+%group other
+
+static BOOL networkActivity;
+
+%hook UIApplication
+
+- (BOOL)isNetworkActivityIndicatorVisible{
+	return networkActivity;
+}
+
+- (void)setNetworkActivityIndicatorVisible:(BOOL)arg1{
+	networkActivity = arg1;
+
+	UIStatusBarData data = *[UIStatusBarServer getStatusBarData];
+	data.itemIsEnabled[22] = arg1;
+	[[UIApp statusBar] forceUpdateToData:&data animated:true];
+}
+
+%end
+
+%hook UIStatusBar
+- (void)statusBarServer:(id)arg1 didReceiveStatusBarData:(UIStatusBarData *)arg2 withActions:(int)arg3{
+	arg2->itemIsEnabled[22] = networkActivity;
+	%orig;
+}
+%end
+
+%end
+
 
 __attribute__((constructor))
 static void initialize() {
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){
 		%init(Backboard);
 		MSHookFunction(&IOHIDEventSystemOpen, MSHake(IOHIDEventSystemOpen));
-	}
-	
-
-	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])
+	}else if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]){
 		%init(SpringBoard);
+	}else{
+		%init(other);
+	}
 	
 }
