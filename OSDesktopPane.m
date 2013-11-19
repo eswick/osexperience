@@ -154,7 +154,7 @@
 	[self setName:[NSString stringWithFormat:@"Desktop %i", [self desktopPaneIndex]]];
 
 	for(OSWindow *window in self.windows){
-		if(![window isKindOfClass:[OSWindow class]])
+		if(![window isKindOfClass:[OSWindow class]] || [[self subviews] containsObject:window])
 			continue;
 		CGPoint newOffset = CGPointSub(window.frame.origin, self.frame.origin);
 
