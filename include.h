@@ -85,6 +85,12 @@ typedef struct{
     UIStatusBarData values;
 } UIStatusBarOverrideData;
 
+@interface SBAwayController : NSObject
+
++ (id)sharedAwayController;
+- (BOOL)isLocked;
+
+@end
 
 @interface UIStatusBarServer : NSObject
 

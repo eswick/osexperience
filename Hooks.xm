@@ -188,6 +188,8 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 }
 
 - (void)_handleMenuButtonEvent{
+	if([[%c(SBAwayController) sharedAwayController] isLocked])
+		return;
 	if([[OSViewController sharedInstance] launchpadIsActive])
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
 	else
