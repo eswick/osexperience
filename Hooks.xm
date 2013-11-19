@@ -11,6 +11,7 @@
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
+extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CFStringRef entitlement, CFErrorRef *error);//In Security.framework
 
 %group SpringBoard //Springboard hooks
 
@@ -554,6 +555,17 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 
 %end
 
+MSHook (CFTypeRef, SecTaskCopyValueForEntitlement, void *task, CFStringRef entitlement, CFErrorRef *error){
+	CFTypeRef value = _SecTaskCopyValueForEntitlement(task, entitlement, error);
+
+	NSString *nsEntitlement = (NSString*)entitlement;
+	if([nsEntitlement isEqualToString:@"com.apple.springboard.openurlinbackground"]){
+		value = kCFBooleanTrue;
+	}
+	
+	return value;
+}
+
 %end
 
 
@@ -760,6 +772,7 @@ static void initialize() {
 		MSHookFunction(&IOHIDEventSystemOpen, MSHake(IOHIDEventSystemOpen));
 	}else if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]){
 		%init(SpringBoard);
+		MSHookFunction(&SecTaskCopyValueForEntitlement, &$SecTaskCopyValueForEntitlement, &_SecTaskCopyValueForEntitlement);
 	}else{
 		%init(other);
 	}
