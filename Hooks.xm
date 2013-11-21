@@ -13,6 +13,8 @@
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
 extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CFStringRef entitlement, CFErrorRef *error);//In Security.framework
 
+#define notificationCenterID @"com.eswick.osexperience.notificationCenter"
+
 %group SpringBoard //Springboard hooks
 
 
@@ -151,7 +153,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %hook SpringBoard
 
-
 -(void)sendEvent:(id)arg1{
 	if([arg1 isKindOfClass:[%c(UIMotionEvent) class]]){
 		%orig;
@@ -195,6 +196,25 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
 	else
 		[[OSViewController sharedInstance] setLaunchpadActive:true animated:true];
+}
+
+- (void)applicationDidFinishLaunching:(id)arg1{
+	%orig;
+
+	CPDistributedNotificationCenter* notificationCenter = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
+	[notificationCenter startDeliveringNotificationsToMainThread];
+ 
+	NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+	[nc addObserver:self
+       	selector:@selector(notificationRecieved:)
+        name:@"cancelTouches"
+        object:notificationCenter
+    ];
+}
+
+%new
+- (void)notificationRecieved:(NSNotification *)notification {
+	[UIApp _cancelAllTouches];
 }
 
 %end
@@ -408,8 +428,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)activate{
-	CPDistributedMessagingCenter *messagingCenter;
-	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
 
 	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", nil];
 	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], nil];
@@ -424,8 +443,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 - (void)suspend{
 
     
-	CPDistributedMessagingCenter *messagingCenter;
-	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
 
 	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", @"performOriginals", nil];
 	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], [NSNumber numberWithBool:true], nil];
@@ -631,6 +649,35 @@ static BOOL missionControlActive;
 
 
 
+static CPDistributedNotificationCenter *center;
+
+%hook BKWorkspaceServer
+
+- (id)init{
+	self = %orig;
+
+	NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+  	[nc addObserver:self
+        selector:@selector(clientDidStartListening:)
+        name:@"CPDistributedNotificationCenterClientDidStartListeningNotification"
+        object:center
+    ];
+
+	return self;
+}
+
+%new
+- (void)cancelAllTouches{
+	[center postNotificationName:@"cancelTouches" userInfo:nil];
+}
+
+%end
+
+
+
+
+
+
 %hook BKApplication
 
 static char originalsKey;
@@ -661,7 +708,6 @@ static char originalsKey;
 }
 
 %end
-
 
 //Gesture fix
 static BOOL OSGestureInProgress = false;
@@ -717,6 +763,7 @@ void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEve
 		if(count >= 4){
 			if(!OSGestureInProgress == true){
 				OSGestureInProgress = true;
+				[[[%c(BKWorkspaceServerManager) sharedInstance] currentWorkspace] cancelAllTouches];
 				resetTouches(target, refcon, service, event);
 				return;
 			}
@@ -740,6 +787,27 @@ MSHook(Boolean, IOHIDEventSystemOpen, IOHIDEventSystemRef system, IOHIDEventSyst
 static BOOL networkActivity;
 
 %hook UIApplication
+
+- (id)init{
+	self = %orig;
+
+	CPDistributedNotificationCenter* notificationCenter = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
+	[notificationCenter startDeliveringNotificationsToMainThread];
+ 
+	NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+	[nc addObserver:self
+       	selector:@selector(notificationRecieved:)
+        name:@"cancelTouches"
+        object:notificationCenter
+    ];
+
+	return self;
+}
+
+%new
+- (void)notificationRecieved:(NSNotification *)notification {
+		[UIApp _cancelAllTouches];
+}
 
 - (BOOL)isNetworkActivityIndicatorVisible{
 	return networkActivity;
@@ -770,6 +838,10 @@ static void initialize() {
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){
 		%init(Backboard);
 		MSHookFunction(&IOHIDEventSystemOpen, MSHake(IOHIDEventSystemOpen));
+
+		center = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
+  		[center runServer];
+  		[center retain];
 	}else if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]){
 		%init(SpringBoard);
 		MSHookFunction(&SecTaskCopyValueForEntitlement, &$SecTaskCopyValueForEntitlement, &_SecTaskCopyValueForEntitlement);

@@ -3,6 +3,32 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+@interface CPDistributedNotificationCenter : NSObject  {
+    NSString *_centerName;
+    NSLock *_lock;
+    struct __CFRunLoopSource { } *_receiveNotificationSource;
+    BOOL _isServer;
+    struct __CFDictionary { } *_sendPorts;
+    unsigned int _startCount;
+}
+
++ (id)centerNamed:(id)arg1;
+
+- (id)name;
+- (void)dealloc;
+- (void)stopDeliveringNotifications;
+- (void)_notificationServerWasRestarted;
+- (void)deliverNotification:(id)arg1 userInfo:(id)arg2;
+- (void)_checkIn;
+- (void)_checkOutAndRemoveSource;
+- (id)_initWithServerName:(id)arg1;
+- (void)runServer;
+- (void)runServerOnCurrentThread;
+- (void)postNotificationName:(id)arg1;
+- (BOOL)postNotificationName:(id)arg1 userInfo:(id)arg2 toBundleIdentifier:(id)arg3;
+- (void)postNotificationName:(id)arg1 userInfo:(id)arg2;
+- (void)startDeliveringNotificationsToMainThread;
+@end
 
 typedef struct { 
     char itemIsEnabled[24];
@@ -180,6 +206,7 @@ typedef struct {
 - (void)setPerformOriginals:(BOOL)arg1;//New
 - (void)_deactivate:(id)arg1;
 - (NSString*)bundleIdentifier;
+- (int)activationState;
 //- (id)initWithBundleIdentifier:(id)arg1 queue:(dispatch_queue_s*)arg2;
 
 @end
@@ -374,8 +401,9 @@ typedef struct {
 
 -(void)activate:(id)arg1 withActivation:(id)arg2 withDeactivation:(id)arg3 token:(id)arg4;
 - (BOOL)_activate:(id)arg1 activationSettings:(id)arg2 deactivationSettings:(id)arg3 token:(id)arg4;
-
+- (id)runningApplications;
 - (void)suspend:(id)arg1;
+- (void)cancelAllTouches;//New
 
 @end
 
@@ -406,6 +434,7 @@ typedef struct {
 @interface UIApplication(STFUACAdditions)
 -(id)displayIdentifier;
 - (UIStatusBar*)statusBar;
+- (void)_cancelAllTouches;
 
 @end
 
