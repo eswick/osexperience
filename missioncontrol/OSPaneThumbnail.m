@@ -251,10 +251,18 @@
 			UIGraphicsBeginImageContextWithOptions(frame.size, zoomView.opaque, [UIScreen mainScreen].scale);
     		[zoomView.layer renderInContext:UIGraphicsGetCurrentContext()];
   			image = [UIGraphicsGetImageFromCurrentImageContext() imageRotatedByDegrees:appViewDegrees];
-		}else{
-			UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.pane.opaque, 0.0);
+
+		}else if([self.pane isKindOfClass:[OSDesktopPane class]]){
+
+			UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.pane.opaque, 4);
 			CGContextConcatCTM(UIGraphicsGetCurrentContext(), CGAffineTransformMakeScale(0.15, 0.15));
     		[self.pane.layer renderInContext:UIGraphicsGetCurrentContext()];
+    		
+    		for(OSWindow *window in [(OSDesktopPane*)self.pane windows]){
+    			CGContextTranslateCTM(UIGraphicsGetCurrentContext(), window.originInDesktop.x, window.originInDesktop.y);
+    			[window.layer renderInContext:UIGraphicsGetCurrentContext()];
+    		}
+    		
     		image = UIGraphicsGetImageFromCurrentImageContext();
     	}
 

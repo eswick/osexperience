@@ -8,6 +8,7 @@
 #import <mach/mach_time.h>
 #import <IOKit/hid/IOHIDEventSystem.h>
 #import <substrate.h>
+#import "OSRemoteRenderLayer.h"
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
@@ -26,7 +27,18 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
+%hook SBAppContextHostView
 
++ (Class)layerClass{
+	return [OSRemoteRenderLayer class];
+}
+
+- (void)setManager:(id)manager{
+	[(OSRemoteRenderLayer*)self.layer setManager:manager];
+	%orig;
+}
+
+%end
 
 %hook SBUIController
 

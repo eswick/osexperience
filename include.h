@@ -3,6 +3,20 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+
+@interface SBAppContextHostManager : NSObject
+
+- (CGImageRef)createIOSurfaceForFrame:(struct CGRect)arg1;
+- (CGImageRef)createIOSurfaceForFrame:(struct CGRect)arg1 outTransform:(CGAffineTransform*)arg2;
+
+@end
+
+@interface SBAppContextHostView : UIView
+
+- (id)manager;
+
+@end
+
 @interface CPDistributedNotificationCenter : NSObject  {
     NSString *_centerName;
     NSLock *_lock;
