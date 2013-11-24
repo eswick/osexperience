@@ -269,9 +269,35 @@
     	UIGraphicsEndImageContext();
     	
     	dispatch_async(dispatch_get_main_queue(), ^{
-    		[self.imageView setImage:image];
+    		[self animateToImage:image];
     	});
 	});
+}
+
+- (void)animateToImage:(UIImage*)image{
+	UIImageView *newImageView = [[UIImageView alloc] initWithFrame:self.imageView.frame];
+	newImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	newImageView.alpha = 0;
+	newImageView.image = image;
+
+	[self addSubview:newImageView];
+	[self sendSubviewToBack:newImageView];
+	[self sendSubviewToBack:self.imageView];
+	[self sendSubviewToBack:self.selectionView];
+
+	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
+		newImageView.alpha = 1;
+	}completion:^(BOOL finished){
+		[self.imageView removeFromSuperview];
+		//[self.imageView release];
+		//self.imageView = nil;
+		self.imageView = newImageView;
+
+		self.imageView.layer.shadowOffset = CGSizeMake(0, 0);
+		self.imageView.layer.shadowRadius = 5;
+		self.imageView.layer.shadowOpacity = 0.5;
+		self.imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:newImageView.bounds].CGPath;
+	}];
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
