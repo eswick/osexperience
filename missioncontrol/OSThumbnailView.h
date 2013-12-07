@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 #import "OSThumbnailWrapper.h"
-#import "OSPaneThumbnail.h"
 #import "../OSPaneModel.h"
 #import "../OSPane.h"
 #import "../explorer/CGPointExtension.h"
@@ -11,7 +10,7 @@
 #define wrapperCenter 20
 
 
-@class OSThumbnailWrapper;
+@class OSThumbnailWrapper, OSPaneThumbnail;
 
 @interface OSThumbnailView : UIView <OSAddDesktopButtonDelegate>{
 	OSThumbnailWrapper *_wrapperView;

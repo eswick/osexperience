@@ -1,5 +1,6 @@
 #import "OSThumbnailView.h"
 #import "OSThumbnailPlaceholder.h"
+#import "OSPaneThumbnail.h"
 
 
 
@@ -198,14 +199,20 @@
 - (void)handleThumbnailLongPress:(UILongPressGestureRecognizer *)gesture{
 
 	if([gesture state] == UIGestureRecognizerStateBegan){
-			for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
-				if(![thumbnail isKindOfClass:[OSPaneThumbnail class]] || thumbnail == gesture.view)
-					continue;
-				if(thumbnail.closeboxVisible == true)
-					[thumbnail setCloseboxVisible:false animated:true];
+		for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+			if(![thumbnail isKindOfClass:[OSPaneThumbnail class]] || thumbnail == gesture.view)
+				continue;
+			if(thumbnail.closeboxVisible == true)
+				[thumbnail setCloseboxVisible:false animated:true];
+		}
+		if(![(OSPaneThumbnail*)gesture.view closeboxVisible]){
+			if([[(OSPaneThumbnail*)gesture.view pane] isKindOfClass:[OSDesktopPane class]]){
+				if([[OSPaneModel sharedInstance] desktopPaneCount] <= 1){
+					return;
+				}
 			}
-			if([[(OSPaneThumbnail*)gesture.view pane] isKindOfClass:[OSDesktopPane class]] && ![(OSPaneThumbnail*)gesture.view closeboxVisible] && [[OSPaneModel sharedInstance] desktopPaneCount] > 1)
-				[(OSPaneThumbnail*)[gesture view] setCloseboxVisible:true animated:true];
+			[(OSPaneThumbnail*)[gesture view] setCloseboxVisible:true animated:true];
+		}
 	}
 }
 

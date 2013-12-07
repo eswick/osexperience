@@ -184,7 +184,10 @@
 }
 
 - (void)closeboxTapped{
-	[[OSPaneModel sharedInstance] removePane:self.pane];
+	if([self.pane isKindOfClass:[OSDesktopPane class]])
+		[[OSPaneModel sharedInstance] removePane:self.pane];
+	else if([self.pane isKindOfClass:[OSAppPane class]])
+		[[(OSAppPane*)self.pane application] suspend];
 }
 
 - (void)layoutSubviews{
@@ -296,8 +299,6 @@
 		newImageView.alpha = 1;
 	}completion:^(BOOL finished){
 		[self.imageView removeFromSuperview];
-		//[self.imageView release];
-		//self.imageView = nil;
 		self.imageView = newImageView;
 
 		self.imageView.layer.shadowOffset = CGSizeMake(0, 0);

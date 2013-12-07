@@ -1,5 +1,6 @@
 #import "OSWindow.h"
 #import "OSViewController.h"
+#import "missioncontrol/OSPaneThumbnail.h"
 
 
 @implementation OSWindow
@@ -117,6 +118,7 @@
 			}completion:^(BOOL finished){
 			
 			}];
+			
 			[[OSThumbnailView sharedInstance] updatePressedThumbnails];
 		}else{
 			if([[[self selectedThumbnailView] pane] isKindOfClass:[OSDesktopPane class]]){//If hovering over an OSPaneThumbnail
