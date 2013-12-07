@@ -15,9 +15,54 @@ extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSStrin
 extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CFStringRef entitlement, CFErrorRef *error);//In Security.framework
 
 #define notificationCenterID @"com.eswick.osexperience.notificationCenter"
+#define explorerIconDisplayName @"OS Explorer"
+#define explorerIconIdentifier @"com.eswick.osexperience.osexplorer"
 
 %group SpringBoard //Springboard hooks
 
+
+/*----- Icon to open file explorer ----*/
+%subclass OSExplorerIcon : SBIcon
+
+- (id)displayName{
+	return explorerIconDisplayName;
+}
+
+- (id)leafIdentifier{
+	return explorerIconIdentifier;
+}
+
+- (BOOL)isLeafIcon{
+	return true;
+}
+
+- (NSString*)representation{
+	return explorerIconIdentifier;
+}
+
+- (void)launch{
+	NSLog(@"OS Explorer icon launched!");
+}
+
+- (void)launchFromViewSwitcher{
+	[self launch];
+}
+
+%end
+
+%hook SBIconModel
+
+- (void)loadAllIcons{
+	%orig;
+	OSExplorerIcon *explorerIcon = [[%c(OSExplorerIcon) alloc] init];
+	[self addIcon:explorerIcon];
+	[explorerIcon release];
+	return;
+}
+
+%end
+
+/* ------------------------------ */
 
 %hook SBWallpaperView
 
@@ -546,7 +591,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
         [[OSViewController sharedInstance] deactivateLaunchpadWithIconView:arg1];
         %orig;
     }
-
 }
 
 

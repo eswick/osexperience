@@ -4,6 +4,60 @@
 #import <QuartzCore/QuartzCore.h>
 
 
+@interface SBIcon : NSObject
+
+
+- (BOOL)isFolderIcon;
+- (BOOL)isNewsstandIcon;
+- (void)launch;
+- (id)generateIconImage:(int)arg1;
+- (id)getIconImage:(int)arg1;
+
+
+@end
+
+@interface OSExplorerIcon : SBIcon
+
+@end
+
+@interface SBApplicationIcon
+{
+    NSString *_displayIdentifier;
+    unsigned int _appIsBeingCleaned:1;
+}
+
+- (id)applicationBundleID;
+- (id)folderFallbackTitle;
+- (id)folderTitleOptions;
+- (void)setBadge:(id)arg1;
+- (void)launchFromViewSwitcher;
+- (void)launch;
+- (void)_terminationAssertionDidChange;
+- (void)_setAppIsBeingCleanedFlag;
+- (BOOL)launchEnabled;
+- (id)automationID;
+- (id)tags;
+- (BOOL)canEllipsizeLabel;
+- (id)displayName;
+- (id)generateIconImage:(int)arg1;
+- (BOOL)canGenerateImageInBackgroundForFormat:(int)arg1;
+- (void)generateIconImageInBackground:(id)arg1;
+- (id)blockForGeneratingIconImageInBackgroundWithFormat:(SEL)arg1;
+- (id)_blockForGeneratingIconImageInBackgroundWithFormat:(SEL)arg1 complete:(int)arg2;
+- (id)__loadIconImage:(id)arg1 format:(int)arg2 scale:(float)arg3;
+- (void)completeUninstall;
+- (id)application;
+- (void)dealloc;
+- (id)initWithApplication:(id)arg1;
+
+@end
+
+@interface SBIconModel : NSObject
+
+- (void)addIcon:(SBIcon *)arg1;
+
+@end
+
 @interface SBAppContextHostManager : NSObject
 
 - (CGImageRef)createIOSurfaceForFrame:(struct CGRect)arg1;
@@ -341,16 +395,6 @@ typedef struct {
 
 @end 
 
-@interface SBApplicationIcon : NSObject
-
-
--(void)launch;
--(void)launchFromViewSwitcher;
--(SBApplication*)application;
-- (id)initWithApplication:(id)arg1;
-
-@end
-
 @interface SBAppToAppTransitionController
 
 
@@ -358,21 +402,6 @@ typedef struct {
 - (void)_cleanupAnimation;
 - (void)_cancelAnimation;
 - (void)appTransitionViewAnimationDidStop:(id)arg1;
-
-@end
-
-
-
-
-@interface SBIcon : NSObject
-
-
-- (BOOL)isFolderIcon;
-- (BOOL)isNewsstandIcon;
-- (void)launch;
-- (id)generateIconImage:(int)arg1;
-- (id)getIconImage:(int)arg1;
-
 
 @end
 
