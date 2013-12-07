@@ -411,6 +411,16 @@
 	}
 }
 
+- (OSPaneThumbnail*)thumbnailForPane:(OSPane*)pane{
+	for(OSPaneThumbnail *thumbnail in self.wrapperView.subviews){
+		if(![thumbnail isKindOfClass:[OSPaneThumbnail class]])
+			continue;
+		if(thumbnail.pane == pane)
+			return thumbnail;
+	}
+	return nil;
+}
+
 
 - (void)dealloc{
 	[self.wrapperView release];

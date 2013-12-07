@@ -33,5 +33,6 @@
 - (void)updateSelectedThumbnail;
 - (void)closeAllCloseboxesAnimated:(BOOL)animated;
 - (void)updatePressedThumbnails;
+- (OSPaneThumbnail*)thumbnailForPane:(OSPane*)pane;
 
 @end

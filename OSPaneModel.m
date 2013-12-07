@@ -95,6 +95,18 @@
 	return [self.panes objectAtIndex:index];
 }
 
+- (OSDesktopPane*)desktopPaneContainingWindow:(OSWindow*)window{
+	for(OSDesktopPane *pane in self.panes){
+		if(![pane isKindOfClass:[OSDesktopPane class]])
+			continue;
+		for(OSWindow *windowInDesktop in pane.windows){
+			if(windowInDesktop == window)
+				return pane;
+		}
+	}
+	return nil;
+}
+
 - (void)dealloc{
 	[self.panes release];
 	[super dealloc];

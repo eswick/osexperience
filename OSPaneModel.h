@@ -23,6 +23,7 @@
 - (OSPane*)paneAtIndex:(unsigned int)index;
 - (OSDesktopPane*)firstDesktopPane;
 - (unsigned int)desktopPaneCount;
+- (OSDesktopPane*)desktopPaneContainingWindow:(OSWindow*)window;
 
 
 @end

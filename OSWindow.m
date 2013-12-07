@@ -121,6 +121,7 @@
 		}else{
 			if([[[self selectedThumbnailView] pane] isKindOfClass:[OSDesktopPane class]]){//If hovering over an OSPaneThumbnail
 				OSPaneThumbnail *selectedThumbnail = [self selectedThumbnailView];
+				OSPaneThumbnail *fromThumbnail = [[OSThumbnailView sharedInstance] thumbnailForPane:[[OSPaneModel sharedInstance] desktopPaneContainingWindow:self]];
 
 				OSDesktopPane *toPane = (OSDesktopPane*)[[self selectedThumbnailView] pane];
 
@@ -150,6 +151,9 @@
 				[self switchToDesktopPane:toPane];
 
 				[[OSSlider sharedInstance] bringSubviewToFront:self];
+
+				[selectedThumbnail updateImage];
+				[fromThumbnail updateImage];
 			}
 		}
 		
