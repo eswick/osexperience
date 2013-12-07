@@ -1,4 +1,6 @@
 THEOS_BUILD_DIR = debs
+THEOS_DEVICE_IP=127.0.0.1
+THEOS_DEVICE_PORT=2222
 
 include theos/makefiles/common.mk
 

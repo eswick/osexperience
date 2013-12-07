@@ -38,6 +38,7 @@
  
 - (id)initWithPane:(OSPane*)pane;
 - (void)updateImage;
+- (void)updateImageAnimated:(BOOL)animated;
 - (void)updateSize;
 - (void)setCloseboxVisible:(BOOL)visible animated:(BOOL)animated;
 

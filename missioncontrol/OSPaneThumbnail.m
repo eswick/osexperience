@@ -47,7 +47,8 @@
 
 
 	self.pane = pane;
-	[self updateImage];
+	self.imageView.image = [[[[OSThumbnailView sharedInstance] addDesktopButton] wallpaper] image];
+	[self updateImageAnimated:true];
 
 
 	if([self.pane isKindOfClass:[OSAppPane class]]){
@@ -221,8 +222,11 @@
 	self.imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.imageView.bounds].CGPath;
 }
 
-
 - (void)updateImage{
+	[self updateImageAnimated:true];
+}
+
+- (void)updateImageAnimated:(BOOL)animated{
 	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 
 		UIImage *image = nil;
@@ -269,7 +273,10 @@
     	UIGraphicsEndImageContext();
     	
     	dispatch_async(dispatch_get_main_queue(), ^{
-    		[self animateToImage:image];
+    		if(animated)
+    			[self animateToImage:image];
+    		else
+    			[self.imageView setImage:image];
     	});
 	});
 }
