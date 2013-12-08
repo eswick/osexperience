@@ -7,21 +7,20 @@
 //
 
 #import "OSFileGridView.h"
+#import "OSFileView.h"
 
 #define selectionDragViewOpacity 0.5
 
 @implementation OSFileGridView
 @synthesize selectionDragView = _selectionDragView;
 @synthesize selectionDragViewStartPoint = _selectionDragViewStartPoint;
-
-
-
+@synthesize path = _path;
 
 int marginSize = 25;
 int iconSize = 72;
 
 
--(id)initWithDirectory:(NSString*)directory frame:(CGRect)frame{
+-(id)initWithDirectory:(NSString*)directory frame:(CGRect)frame type:(OSFileGridViewType)type{
     if(![super initWithFrame:frame]){
         return nil;
     }
@@ -43,10 +42,12 @@ int iconSize = 72;
     UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanGesture:)];
     panGesture.maximumNumberOfTouches = 1;
     [self addGestureRecognizer:panGesture];
-
+    
+    self.type = type;
+    self.path = directory;
+    
     [self drawFiles];
-    
-    
+
     return self;
 }
 
@@ -99,14 +100,11 @@ int iconSize = 72;
 
 -(void)drawFiles{
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *dirContents = [fileManager contentsOfDirectoryAtPath:@"/var/mobile/Desktop" error:nil];
+    NSArray *dirContents = [fileManager contentsOfDirectoryAtPath:self.path error:nil];
 
     for(NSString *file in dirContents){
 
-        OSFileView *fileView = [[OSFileView alloc] initWithFile:[[OSFile alloc] initWithFile:[NSString stringWithFormat:@"/var/mobile/Desktop/%@", file]]];
-
-
-
+        OSFileView *fileView = [[OSFileView alloc] initWithFile:[[[OSFile alloc] initWithFile:[NSString stringWithFormat:@"%@/%@", self.path, file]] autorelease] type:self.type];
 
         UILongPressGestureRecognizer *panGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleFilePanGesture:)];
         panGesture.minimumPressDuration = 0.25;
@@ -118,6 +116,10 @@ int iconSize = 72;
 
 
         [self addSubview:fileView];
+
+        [fileView release];
+        [panGesture release];
+        [tapGesture release];
     }
 
 }
@@ -140,6 +142,8 @@ int iconSize = 72;
     [menu setMenuItems:[NSArray arrayWithObjects:open, nil]];
     [menu setTargetRect:gesture.view.frame inView:self];
     [menu setMenuVisible:YES animated:YES];
+
+    [open release];
 }
 
 

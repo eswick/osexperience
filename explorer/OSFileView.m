@@ -1,5 +1,6 @@
 #import "OSFileView.h"
 
+
 #define marginSize 25
 #define iconSize 72
 #define selectionAlpha 0.5
@@ -15,19 +16,21 @@
 @synthesize selectionBackdrop = _selectionBackdrop;
 @synthesize selected = _selected;
 @synthesize dragOffset = _dragOffset;
+@synthesize type = _type;
 
 
 
 
 
--(id)initWithFile:(OSFile*)file_{
+-(id)initWithFile:(OSFile*)file type:(OSFileGridViewType)type{
 
         if(![super initWithFrame:CGRectMake(0, 0, iconSize, iconSize)]){
                 return nil;
         }
 
 
-        self.file = file_;
+        self.file = file;
+        self.type = type;
 
 
         self.iconView = [[UIImageView alloc] initWithFrame:[self frame]];
@@ -47,23 +50,33 @@
         [self.fileLabel setFrame:labelRect];
 
         self.fileLabel.textAlignment = NSTextAlignmentCenter;//Set up look of label
-        self.fileLabel.textColor = [UIColor whiteColor];
+      
+        if(self.type == OSFileGridViewDesktop){
+                self.fileLabel.textColor = [UIColor whiteColor];
+                self.fileLabel.font = [UIFont boldSystemFontOfSize:12];
+        }else{
+                self.fileLabel.textColor = [UIColor blackColor];
+                self.fileLabel.font = [UIFont systemFontOfSize:12];
+        }
+
         self.fileLabel.backgroundColor = [UIColor clearColor];
-        self.fileLabel.shadowColor = [UIColor blackColor];
-        self.fileLabel.font = [UIFont boldSystemFontOfSize:12];
         self.fileLabel.numberOfLines = 0;
         self.fileLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
 
         //Set file label shadow blur
-        self.fileLabel.layer.shadowColor = [[UIColor blackColor] CGColor];
-        self.fileLabel.layer.shadowOffset = CGSizeMake(0.0, 0.0);
-        self.fileLabel.layer.shadowRadius = 3.0;
-        self.fileLabel.layer.shadowOpacity = 1;
-        self.fileLabel.layer.masksToBounds = NO;
+        if(self.type == OSFileGridViewDesktop){
+                self.fileLabel.shadowColor = [UIColor blackColor];
+                self.fileLabel.layer.shadowColor = [[UIColor blackColor] CGColor];
+                self.fileLabel.layer.shadowOffset = CGSizeMake(0.0, 0.0);
+                self.fileLabel.layer.shadowRadius = 3.0;
+                self.fileLabel.layer.shadowOpacity = 1;
+        }
+
+        self.fileLabel.layer.masksToBounds = false;
         self.fileLabel.layer.shouldRasterize = true;
         self.fileLabel.text = self.file.filename;
         [self addSubview:self.fileLabel];
-
+        
 
         self.selectionBackdrop = [[UIView alloc] initWithFrame:[self frame]];
         self.selectionBackdrop.backgroundColor = [UIColor darkGrayColor];
@@ -76,10 +89,6 @@
         [self sendSubviewToBack:self.selectionBackdrop];
 
 
-        
-
-
-
         return self;
 }
 
@@ -87,38 +96,38 @@
 
 
 -(void) setSelected:(bool)selected_ animated:(bool)animated{
-                float duration;
+        float duration;
 
-                duration = animated ? 0.1 : 0.0;
+        duration = animated ? 0.1 : 0.0;
 
-                float startAlpha;
-                float endAlpha;
-                if(selected_){
-                        startAlpha = 0.0;
-                        endAlpha = selectionAlpha;
-                }else{
-                        startAlpha = selectionAlpha;
-                        endAlpha = 0.0;
-                }
+        float startAlpha;
+        float endAlpha;
+        if(selected_){
+                startAlpha = 0.0;
+                endAlpha = selectionAlpha;
+        }else{
+                startAlpha = selectionAlpha;
+                endAlpha = 0.0;
+        }
 
-                [self.selectionBackdrop setAlpha:startAlpha];
-                [self.selectionBackdrop setHidden:false];
-                [UIView animateWithDuration:duration
-                        delay:0.0
-                        options: UIViewAnimationOptionCurveEaseOut
-                        animations:^{
-                                [self.selectionBackdrop setAlpha:endAlpha];
-                        } 
-                        completion:^(BOOL finished){
-                                if(!selected_){
-                                        [self.selectionBackdrop setHidden:true];
-                                }
+        [self.selectionBackdrop setAlpha:startAlpha];
+        [self.selectionBackdrop setHidden:false];
+        [UIView animateWithDuration:duration
+                delay:0.0
+                options: UIViewAnimationOptionCurveEaseOut
+                animations:^{
+                        [self.selectionBackdrop setAlpha:endAlpha];
+                } 
+                completion:^(BOOL finished){
+                        if(!selected_){
+                                [self.selectionBackdrop setHidden:true];
+                        }
                 }];
         
 
         _selected = selected_;
 }
-      
+
 
 
 

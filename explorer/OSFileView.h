@@ -1,26 +1,26 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import "OSFile.h"
-
+#import "OSFileGridView.h"
 
 
 
 
 @interface OSFileView : UIView {
 
-	UIPanGestureRecognizer *panGesture;
-	UILongPressGestureRecognizer *holdGesture;
+	UIPanGestureRecognizer *_panGesture;
+	UILongPressGestureRecognizer *_holdGesture;
 
-	UIImageView *iconView;
-	UILabel *fileLabel;
-	UIView *selectionBackdrop;
+	UIImageView *_iconView;
+	UILabel *_fileLabel;
+	UIView *_selectionBackdrop;
 
-	OSFile *file;
-	CGPoint dragOffset;
-	CGPoint startingPoint;
+	OSFile *_file;
+	CGPoint _dragOffset;
+	CGPoint _startingPoint;
 
-	bool selected;
-
+	bool _selected;
+	OSFileGridViewType _type;
 }
 
 @property (nonatomic, retain) UIPanGestureRecognizer *panGesture;
@@ -32,8 +32,9 @@
 @property (nonatomic, retain) OSFile *file;
 @property (nonatomic, retain) UIView *selectionBackdrop;
 @property (readwrite) bool selected;
+@property (readwrite) OSFileGridViewType type;
 
--(id)initWithFile:(OSFile*)file;
+-(id)initWithFile:(OSFile*)file type:(OSFileGridViewType)type;
 
 -(void)setSelected:(bool)selected animated:(bool)animated;
 

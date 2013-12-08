@@ -9,6 +9,7 @@
 #import <IOKit/hid/IOHIDEventSystem.h>
 #import <substrate.h>
 #import "OSRemoteRenderLayer.h"
+#import "OSExplorerWindow.h"
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
@@ -41,7 +42,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)launch{
-	NSLog(@"OS Explorer icon launched!");
+	OSExplorerWindow *window = [[OSExplorerWindow alloc] init];
+	[[[OSPaneModel sharedInstance] firstDesktopPane] addSubview:window];
+	[window release];
 }
 
 - (void)launchFromViewSwitcher{

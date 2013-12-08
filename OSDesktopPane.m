@@ -25,7 +25,7 @@
 	[self.wallpaperView setGradientAlpha:0.0];
 	[self addSubview:self.wallpaperView];
 
-	self.gridView = [[OSFileGridView alloc] initWithDirectory:@"/var/mobile/Desktop" frame:[[UIScreen mainScreen] applicationFrame]];
+	self.gridView = [[OSFileGridView alloc] initWithDirectory:@"/var/mobile/Desktop" frame:[[UIScreen mainScreen] applicationFrame] type:OSFileGridViewDesktop];
 	[self addSubview:self.gridView];
 
 
@@ -46,8 +46,10 @@
 - (void)addSubview:(UIView*)arg1{
 	[super addSubview:arg1];
 	if([arg1 isKindOfClass:[OSWindow class]]){
-		if(![self.windows containsObject:arg1])
+		if(![self.windows containsObject:arg1]){
 			[self.windows addObject:arg1];
+			[(OSWindow*)arg1 setDelegate:self];
+		}
 	}
 }
 

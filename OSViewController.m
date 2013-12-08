@@ -1,6 +1,5 @@
 #import "OSViewController.h"
-
-
+#import "missioncontrol/OSPaneThumbnail.h"
 
 
 @implementation OSViewController

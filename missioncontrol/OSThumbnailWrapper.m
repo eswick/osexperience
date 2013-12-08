@@ -1,5 +1,5 @@
 #import "OSThumbnailWrapper.h"
-
+#import "OSPaneThumbnail.h"
 
 
 @implementation OSThumbnailWrapper
