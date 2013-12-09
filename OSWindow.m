@@ -89,6 +89,10 @@
 }
 
 - (void)handleMCPanGesture:(UIPanGestureRecognizer*)gesture{
+	if(![[OSViewController sharedInstance] missionControlIsActive]){
+		return;
+	}
+	
 	if(gesture.state == UIGestureRecognizerStateBegan){
 
 		self.grabPoint = [gesture locationInView:self];

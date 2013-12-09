@@ -2,7 +2,6 @@
 #import "OSViewController.h"
 #import "OSPaneModel.h"
 #import "include.h"
-#import "explorer/OSFileGridView.h"
 
 
 #define desktopPane [[OSPaneModel sharedInstance] desktopPaneContainingWindow:self]
@@ -12,7 +11,6 @@
 #define defaultDirectory @"/var/mobile/"
 
 @implementation OSExplorerWindow
-@synthesize fileGridView = _fileGridView;
 
 
 - (id)init{
@@ -22,11 +20,6 @@
 	CGRect frame = self.frame;
 	frame.origin.y = self.windowBar.bounds.size.height;
 
-	self.fileGridView = [[OSFileGridView alloc] initWithDirectory:defaultDirectory frame:frame type:OSFileGridViewWindowed];
-	self.fileGridView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	self.fileGridView.clipsToBounds = true;
-	[self addSubview:self.fileGridView];
-	[self sendSubviewToBack:self.fileGridView];
 
 	self.backgroundColor = [UIColor whiteColor];
 
@@ -79,7 +72,6 @@
 }
 
 - (void)dealloc{
-	[self.fileGridView release];
 	[super dealloc];
 }
 

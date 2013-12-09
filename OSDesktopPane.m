@@ -1,15 +1,15 @@
 #import "OSDesktopPane.h"
 #import "missioncontrol/OSMCWindowLayoutManager.h"
 
-
+#define desktopPath @"/var/mobile/Desktop"
 
 @implementation OSDesktopPane
 @synthesize wallpaperView = _wallpaperView;
-@synthesize gridView = _gridView;
+@synthesize fileGridViewController = _fileGridViewController;
 @synthesize statusBar = _statusBar;
 @synthesize activeWindow = _activeWindow;
 @synthesize windows = _windows;
-
+@synthesize desktopViewContainer = _desktopViewContainer;
 
 
 -(id)init{
@@ -25,8 +25,16 @@
 	[self.wallpaperView setGradientAlpha:0.0];
 	[self addSubview:self.wallpaperView];
 
-	self.gridView = [[OSFileGridView alloc] initWithDirectory:@"/var/mobile/Desktop" frame:[[UIScreen mainScreen] applicationFrame] type:OSFileGridViewDesktop];
-	[self addSubview:self.gridView];
+
+	self.desktopViewContainer = [[UIView alloc] initWithFrame:[self desktopViewContainerFrame]];
+	//self.desktopViewContainer.backgroundColor = [UIColor redColor];
+	[self addSubview:self.desktopViewContainer];
+
+	self.fileGridViewController = [[OSFileGridViewController alloc] init];
+	self.fileGridViewController.type = OSFileGridViewTypeDesktop;
+	self.fileGridViewController.path = [NSURL URLWithString:desktopPath];
+	[self.fileGridViewController loadView];
+	[self.desktopViewContainer addSubview:self.fileGridViewController.view];
 
 
 	CGRect statusBarFrame = CGRectZero;
@@ -41,6 +49,20 @@
 	self.windows = [[NSMutableArray alloc] init];
 
 	return self;
+}
+
+- (CGRect)desktopViewContainerFrame{
+	CGRect frame = self.frame;
+	frame.origin.x = 0;
+	frame.origin.y = self.statusBar.frame.size.height;
+	frame.size.height = self.frame.size.height - [[[OSViewController sharedInstance] dock] frame].size.height;
+	return frame;
+}
+
+- (void)layoutSubviews{
+	self.desktopViewContainer.frame = [self desktopViewContainerFrame];
+	self.fileGridViewController.view.frame = [self.desktopViewContainer bounds];
+	[self.fileGridViewController layoutView];
 }
 
 - (void)addSubview:(UIView*)arg1{
@@ -184,7 +206,7 @@
 -(void)dealloc{
 	[self.statusBar release];
 	[self.wallpaperView release];
-	[self.gridView release];
+	[self.fileGridViewController release];
 	[self.statusBar release];
 	[self.windows release];
 
