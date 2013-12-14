@@ -13,7 +13,7 @@ typedef enum{
 
 @property (nonatomic, retain) UIScrollView *view;
 @property (nonatomic) OSFileGridViewType type;
-@property (nonatomic) CGSize gridSpacing;
-@property (nonatomic) CGSize tileSize;
+@property (nonatomic) float gridSpacing;
+@property (nonatomic) CGSize iconSize;
 
 @end

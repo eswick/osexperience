@@ -5,15 +5,22 @@
 
 @implementation OSFileGridTile
 
-- (id)initWithFrame:(CGRect)frame{
-	if(![super initWithFrame:frame])
+- (id)initWithIconSize:(CGSize)iconSize gridSpacing:(float)spacing{
+	if(![super initWithFrame:CGRectMake(0, 0, iconSize.width + spacing, iconSize.height)])
 		return nil;
 
-	CGRect iconViewFrame = frame;
-	iconViewFrame.origin = CGPointZero;
+	self.iconSize = iconSize;
+	self.gridSpacing = spacing;
+
+
+	CGRect iconViewFrame = CGRectMake(0, 0, self.iconSize.width, self.iconSize.height);
 
 	self.iconView = [[UIImageView alloc] initWithFrame:iconViewFrame];
 	[self addSubview:self.iconView];
+
+	CGPoint center = self.iconView.center;
+	center.x = self.bounds.size.width / 2;
+	self.iconView.center = center;
 
 	return self;
 }

@@ -13,18 +13,15 @@
 		return nil;
 
 	self.type = OSFileGridViewTypeWindowed;
-	self.tileSize = CGSizeMake(72, 72);
-	self.gridSpacing = CGSizeMake(72, 72);
+	self.iconSize = CGSizeMake(72, 72);
+	self.gridSpacing = 20;
 
 	return self;
 }
 
-
-
 - (void)loadView{
 	self.view = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	//[self layoutView];
 	self.loaded = true;
 }
 
@@ -32,36 +29,38 @@
 	for(UIView *view in self.view.subviews)
 		[view removeFromSuperview];
 
-	int index = 0;
+	int ix = 0;
+	int iy = 0;
 
 	NSError *error = nil;
 
 	for(NSURL *url in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.path includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:&error]){
+		if(self.iconSize.height * (iy + 1) > self.view.bounds.size.height){
+			iy = 0;
+			ix++;
+		}
+
 		OSFileGridTile *tile = [self tileForFileAtPath:url];
 
-		CGPoint origin = CGPointMake(self.view.bounds.size.width - (self.gridSpacing.width * (index + 1)), 0 + (self.gridSpacing.height * index));
+		CGPoint origin = CGPointMake(self.view.bounds.size.width - (tile.bounds.size.width * (ix + 1)), 0 + (tile.bounds.size.height * iy));
 
-		NSLog(@"Origin: %@", NSStringFromCGPoint(origin));
-		
 		CGRect frame = tile.frame;
 		frame.origin = origin;
 		tile.frame = frame;
-	
-		[self.view addSubview:tile];
-		[tile release];
 
-		index++;
+		[self.view addSubview:tile];
+
+		iy++;
 	}
 }
 
 - (OSFileGridTile *)tileForFileAtPath:(NSURL*)path{
-	OSFileGridTile *tile = [[OSFileGridTile alloc] initWithFrame:CGRectMake(0, 0, self.tileSize.width, self.tileSize.height)];
+	OSFileGridTile *tile = [[OSFileGridTile alloc] initWithIconSize:self.iconSize gridSpacing:self.gridSpacing];
 
 	UIDocumentInteractionController *documentController = [UIDocumentInteractionController interactionControllerWithURL:path];
 	[tile setIcon:[[documentController icons] objectAtIndex:0]];
 
-	//tile.backgroundColor = [UIColor greenColor];
-	return tile;
+	return [tile autorelease];
 }
 
 @end
