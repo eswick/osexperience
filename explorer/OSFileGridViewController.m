@@ -45,18 +45,20 @@
 	NSError *error = nil;
 
 	for(NSURL *url in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.path includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:&error]){
-		if(self.iconSize.height * (iy + 1) > self.view.bounds.size.height){
+		OSFileGridTile *tile = [self tileForFileAtPath:url];
+
+		if(tile.frame.size.height * (iy + 1) > self.view.bounds.size.height){
 			iy = 0;
 			ix++;
 		}
-
-		OSFileGridTile *tile = [self tileForFileAtPath:url];
 
 		CGPoint origin = CGPointMake(self.view.bounds.size.width - (tile.bounds.size.width * (ix + 1)), 0 + (tile.bounds.size.height * iy));
 
 		CGRect frame = tile.frame;
 		frame.origin = origin;
 		tile.frame = frame;
+
+		[tile setURL:url];
 
 		[self.view addSubview:tile];
 
