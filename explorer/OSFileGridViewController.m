@@ -71,6 +71,14 @@
 
 		[self.dragView setFrame:CGRectFromCGPoints(self.dragView.dragStartPoint, [gesture locationInView:self.view])];
 
+		for(OSFileGridTile *tile in self.view.subviews){
+			if(![tile isKindOfClass:[OSFileGridTile class]])
+				continue;
+			if(CGRectIntersectsRect(self.dragView.frame, tile.frame))
+				[tile setSelected:true];
+			else
+				[tile setSelected:false];
+		}
 	}else if([gesture state] == UIGestureRecognizerStateBegan){
 
 		self.dragView = [[OSSelectionDragView alloc] init];

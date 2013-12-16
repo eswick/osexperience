@@ -1,0 +1,5 @@
+
+@interface OSFileGridTileLabel : UILabel
+
+
+@end
