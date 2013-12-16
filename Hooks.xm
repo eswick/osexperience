@@ -810,24 +810,26 @@ void resetTouches(void* target, void* refcon, IOHIDServiceRef service, IOHIDEven
 void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event) {
 	if(IOHIDEventGetType(event) == kIOHIDEventTypeDigitizer){
 		CFArrayRef children = IOHIDEventGetChildren(event);
-		
-		int count = 0;
 
-		for(int i = 0; i < CFArrayGetCount(children); i++){
-			int value = IOHIDEventGetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch);
-			if(value == 1)
-				count++;
-		}
+		if(children != NULL){
+			int count = 0;
 
-		if(count >= 4){
-			if(!OSGestureInProgress == true){
-				OSGestureInProgress = true;
-				[[[%c(BKWorkspaceServerManager) sharedInstance] currentWorkspace] cancelAllTouches];
-				resetTouches(target, refcon, service, event);
-				return;
+			for(int i = 0; i < CFArrayGetCount(children); i++){
+				int value = IOHIDEventGetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch);
+				if(value == 1)
+					count++;
 			}
-		}else if(count == 0){
-			OSGestureInProgress = false;
+
+			if(count >= 4){
+				if(!OSGestureInProgress == true){
+					OSGestureInProgress = true;
+					[[[%c(BKWorkspaceServerManager) sharedInstance] currentWorkspace] cancelAllTouches];
+					resetTouches(target, refcon, service, event);
+					return;
+				}
+			}else if(count == 0){
+				OSGestureInProgress = false;
+			}
 		}
 	}
 	eventCallback(target, refcon, service, event);
