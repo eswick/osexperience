@@ -45,6 +45,7 @@
    	self.label.lineBreakMode = NSLineBreakByTruncatingMiddle;
    	self.label.numberOfLines = 2;
 
+
    	/* For desktop only */
 	self.label.shadowColor = [UIColor blackColor];
 	self.label.layer.shadowColor = [[UIColor blackColor] CGColor];

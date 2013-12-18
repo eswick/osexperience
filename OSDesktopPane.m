@@ -56,11 +56,14 @@
 	frame.origin.x = 0;
 	frame.origin.y = self.statusBar.frame.size.height;
 	frame.size.height = self.frame.size.height - [[[OSViewController sharedInstance] dock] frame].size.height;
+
+	frame = CGRectApplyAffineTransform(frame, CGAffineTransformMakeScale(0.90, 1));
 	return frame;
 }
 
 - (void)layoutSubviews{
 	self.desktopViewContainer.frame = [self desktopViewContainerFrame];
+
 	self.fileGridViewController.view.frame = [self.desktopViewContainer bounds];
 	[self.fileGridViewController layoutView];
 }

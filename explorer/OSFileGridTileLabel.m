@@ -1,14 +1,25 @@
 #import "OSFileGridTileLabel.h"
 #import <CoreText/CoreText.h>
+#import <math.h>
 
 #define NSMakeRangeFromCFRange(cfr) NSMakeRange( cfr.location == kCFNotFound ? NSNotFound : cfr.location, cfr.length )
 #define fixLineRect(rect) rect.origin.y = self.bounds.size.height - rect.origin.y - rect.size.height * 2; rect.size.height += -self.font.descender;
+
+#define widthMargin 10
+
+#define CGRectTopLeft(rect) rect.origin
+#define CGRectTopRight(rect) CGPointMake(rect.origin.x + rect.size.width, rect.origin.y)
+#define CGRectBottomLeft(rect) CGPointMake(rect.origin.x, rect.origin.y + rect.size.height)
+#define CGRectBottomRight(rect) CGPointMake(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height)
+
+#define deg2rad(degrees)  ((M_PI * degrees)/ 180)
 
 @interface UIColor ()
 + (UIColor*)tableSelectionColor;
 @end
 
 @implementation OSFileGridTileLabel
+@synthesize selected = _selected;
 
 CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	CGFloat ascent, descent, leading;
@@ -39,7 +50,7 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 
 
 	CGMutablePathRef path = CGPathCreateMutable();
-	CGPathAddRect(path, NULL, self.bounds);
+	CGPathAddRect(path, NULL, CGRectMake(widthMargin / 2, 0, self.bounds.size.width - widthMargin, self.bounds.size.height));
 
 	NSAttributedString *attributedText = [self attributedText];
 	CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedText);
@@ -73,6 +84,7 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 		CFRelease(frame);
 
 		framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)string);
+		CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedText length]), NULL, CGSizeMake(self.bounds.size.width - 50, self.bounds.size.height), NULL);
 		frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [string length]), path, NULL);
 	}
 
@@ -88,32 +100,47 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 
 		CGPoint *lineOrigins = malloc(CFArrayGetCount(lines));
 		CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
+
+		CGRect lineFrame1, lineFrame2;
 	//Line 1
 		if(CFArrayGetCount(lines) > 0){
 			CTLineRef line1 = CFArrayGetValueAtIndex(lines, 0);
-			CGRect lineFrame1 = rectFromLine(line1, frame, lineOrigins[0]);
+			lineFrame1 = rectFromLine(line1, frame, lineOrigins[0]);
 
 			fixLineRect(lineFrame1);
 
-			UIBezierPath *linePath = [UIBezierPath bezierPathWithRoundedRect:lineFrame1 cornerRadius:0];
 
-			[self.path appendPath:linePath];
 		}
 
-		if(CFArrayGetCount(lines) > 1){
+		if(CFArrayGetCount(lines) == 2){
 			CTLineRef line2 = CFArrayGetValueAtIndex(lines, 1);
-			CGRect lineFrame2 = rectFromLine(line2, frame, lineOrigins[1]);
+			lineFrame2 = rectFromLine(line2, frame, lineOrigins[1]);
 			
 			fixLineRect(lineFrame2);
 
-			UIBezierPath *linePath = [UIBezierPath bezierPathWithRoundedRect:lineFrame2 cornerRadius:0];
+			self.path = [self pathWithTopLine:lineFrame1 bottomLine:lineFrame2];
 
-			[self.path appendPath:linePath];
+		}else{
+			self.path = [self pathWithTopLine:lineFrame1 bottomLine:CGRectNull];
 		}
 
 	//end
 
 		free(lineOrigins);
+	}
+	
+	if(self.selected){
+
+		self.layer.shadowColor = [[UIColor clearColor] CGColor];
+
+		CGContextSetFillColorWithColor(context, [[UIColor tableSelectionColor] CGColor]);
+
+		[self.path applyTransform:CGAffineTransformMakeScale(1.0, -1.0)];
+		[self.path applyTransform:CGAffineTransformMakeTranslation(0, self.bounds.size.height)];
+		
+		[self.path fill];
+	}else{
+		self.layer.shadowColor = [[UIColor blackColor] CGColor];
 	}
 
 	/* Draw text */
@@ -122,6 +149,50 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	CFRelease(framesetter);
 	CFRelease(path);
 	CFRelease(frame);
+}
+
+- (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine{
+	//float insideRadius = 10.0f;
+	float topLineRadius = topLine.size.height / 2;
+	float bottomLineRadius = bottomLine.size.height / 2;
+
+	UIBezierPath *path = [UIBezierPath bezierPath];
+
+	[path moveToPoint:CGRectTopLeft(topLine)];
+
+	[path addLineToPoint:CGRectTopLeft(topLine)];
+	[path addLineToPoint:CGRectTopRight(topLine)];
+
+	//First line top right arc
+	[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, topLine.size.height / 2) radius:topLineRadius startAngle:deg2rad(270) endAngle:deg2rad(0) clockwise:true];
+
+	if(CGRectIsNull(bottomLine)){
+		//First line bottom right arc
+		[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, topLine.size.height / 2) radius:topLineRadius startAngle:deg2rad(0) endAngle:deg2rad(90) clockwise:true];
+
+		[path addLineToPoint:CGRectBottomLeft(topLine)];
+		//First line left arc
+		[path addArcWithCenter:CGPointMake(CGRectTopLeft(topLine).x, topLine.size.height / 2) radius:topLineRadius startAngle:deg2rad(90) endAngle:deg2rad(270) clockwise:true];
+
+		[path closePath];
+		return path;
+	}else 
+		return nil;
+
+	if(CGRectTopRight(bottomLine).x >= CGRectTopRight(topLine).x){
+		[path addLineToPoint:CGPointMake(CGRectTopRight(topLine).x + topLineRadius, bottomLine.origin.y)];
+		//[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x + topLineRadius + insideRadius, bottomLine.origin.y - insideRadius) radius:insideRadius startAngle:deg2rad(180) endAngle:deg2rad(90) clockwise:false];
+		
+		[path addLineToPoint:CGRectTopRight(bottomLine)];
+
+		[path addArcWithCenter:CGPointMake(CGRectTopRight(bottomLine).x, bottomLine.origin.y + bottomLine.size.height / 2) radius:bottomLineRadius startAngle:deg2rad(270) endAngle:deg2rad(90) clockwise:true];
+		[path addLineToPoint:CGPointMake(CGRectBottomLeft(bottomLine).x, CGRectBottomLeft(bottomLine).y)];
+	}
+
+
+
+	[path closePath];
+	return path;
 }
 
 - (NSAttributedString*)attributedText{
@@ -141,26 +212,11 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 }
 
 - (void)setSelected:(BOOL)selected{
-	if(_selected == selected)
+	if(_selected == selected){
 		return;
-	_selected = selected;
-
-	if(selected){
-		self.shadowColor = [UIColor clearColor];
-		self.layer.shadowColor = [[UIColor clearColor] CGColor];
-
-		CAShapeLayer *maskLayer = [CAShapeLayer layer];
-		maskLayer.frame = self.layer.bounds;
-		maskLayer.path = self.path.CGPath;
-		self.layer.mask = maskLayer;
-
-		self.backgroundColor = [UIColor tableSelectionColor];
-	}else{
-		self.shadowColor = [UIColor blackColor];
-		self.layer.shadowColor = [[UIColor blackColor] CGColor];
-		self.layer.mask = nil;
-		self.backgroundColor = [UIColor clearColor];
 	}
+
+	_selected = selected;
 
 	[self setNeedsDisplay];
 }

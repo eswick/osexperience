@@ -1,6 +1,6 @@
 
 
-@class OSFileGridTileLabel;
+@class OSFileGridTileLabel, OSPathFillView;
 
 @interface OSFileGridTile : UIView
 

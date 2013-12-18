@@ -26,6 +26,7 @@
 - (void)loadView{
 	self.view = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 0, 0)];
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	self.view.clipsToBounds = false;
 
 	UIPanGestureRecognizer *selectGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleSelectGesture:)];
 	selectGesture.maximumNumberOfTouches = 1;
