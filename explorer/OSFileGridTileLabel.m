@@ -40,118 +40,7 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	return rectForLine;
 }
 
-- (void) drawRect:(CGRect)rect{
-	CGContextRef context = UIGraphicsGetCurrentContext();
- 
-	// Flip the coordinate system
-	CGContextSetTextMatrix(context, CGAffineTransformIdentity);
-	CGContextTranslateCTM(context, 0, self.bounds.size.height);
-	CGContextScaleCTM(context, 1.0, -1.0);
-
-
-	CGMutablePathRef path = CGPathCreateMutable();
-	CGPathAddRect(path, NULL, CGRectMake(widthMargin / 2, 0, self.bounds.size.width - widthMargin, self.bounds.size.height));
-
-	NSAttributedString *attributedText = [self attributedText];
-	CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedText);
-	CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [attributedText length]), path, NULL);
-	CFArrayRef lines = CTFrameGetLines(frame);
-
-
-	if(CFArrayGetCount(lines) == 2){
-		CFRange range = CTLineGetStringRange(CFArrayGetValueAtIndex(lines, 1));
-
-		/* Make new attributed string */
-		NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.text];
-		[string addAttribute:NSFontAttributeName value:self.font range:NSMakeRange(0, [string length])];
-		[string addAttribute:NSForegroundColorAttributeName value:self.textColor range:NSMakeRange(0, [string length])];
-
-		NSMutableParagraphStyle *secondLineStyle = [[NSMutableParagraphStyle alloc] init];
-		secondLineStyle.alignment = NSTextAlignmentCenter;
-		secondLineStyle.lineBreakMode = NSLineBreakByTruncatingMiddle;
-
-		NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
-		style.alignment = NSTextAlignmentCenter;
-
-		[string addAttribute:NSParagraphStyleAttributeName value:secondLineStyle range:NSMakeRangeFromCFRange(range)];
-		[string addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, range.location)];
-
-		[style release];
-		[secondLineStyle release];
-
-		/*Reset framesetter and frame */
-		CFRelease(framesetter);
-		CFRelease(frame);
-
-		framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)string);
-		CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedText length]), NULL, CGSizeMake(self.bounds.size.width - 50, self.bounds.size.height), NULL);
-		frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [string length]), path, NULL);
-	}
-
-
-
-	
-	if(self.selected){
-	/* Update text path */
-		self.path = [UIBezierPath bezierPath];
-
-
-		lines = CTFrameGetLines(frame);
-
-		CGPoint *lineOrigins = malloc(CFArrayGetCount(lines));
-		CTFrameGetLineOrigins(frame, CFRangeMake(0, 0), lineOrigins);
-
-		CGRect lineFrame1, lineFrame2;
-	//Line 1
-		if(CFArrayGetCount(lines) > 0){
-			CTLineRef line1 = CFArrayGetValueAtIndex(lines, 0);
-			lineFrame1 = rectFromLine(line1, frame, lineOrigins[0]);
-
-			fixLineRect(lineFrame1);
-
-
-		}
-
-		if(CFArrayGetCount(lines) == 2){
-			CTLineRef line2 = CFArrayGetValueAtIndex(lines, 1);
-			lineFrame2 = rectFromLine(line2, frame, lineOrigins[1]);
-			
-			fixLineRect(lineFrame2);
-
-			self.path = [self pathWithTopLine:lineFrame1 bottomLine:lineFrame2];
-
-		}else{
-			self.path = [self pathWithTopLine:lineFrame1 bottomLine:CGRectNull];
-		}
-
-	//end
-
-		free(lineOrigins);
-	}
-	
-	if(self.selected){
-
-		self.layer.shadowColor = [[UIColor clearColor] CGColor];
-
-		CGContextSetFillColorWithColor(context, [[UIColor tableSelectionColor] CGColor]);
-
-		[self.path applyTransform:CGAffineTransformMakeScale(1.0, -1.0)];
-		[self.path applyTransform:CGAffineTransformMakeTranslation(0, self.bounds.size.height)];
-		
-		[self.path fill];
-	}else{
-		self.layer.shadowColor = [[UIColor blackColor] CGColor];
-	}
-
-	/* Draw text */
-	CTFrameDraw(frame, context);
-
-	CFRelease(framesetter);
-	CFRelease(path);
-	CFRelease(frame);
-}
-
-- (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine{
++ (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine{
 	//float insideRadius = 10.0f;
 	float topLineRadius = topLine.size.height / 2;
 	float bottomLineRadius = bottomLine.size.height / 2;
@@ -195,6 +84,120 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	return path;
 }
 
+- (void) drawRect:(CGRect)rect{
+
+	CGContextRef context = UIGraphicsGetCurrentContext();
+ 
+	/* Flip the coordinate system */
+	CGContextSetTextMatrix(context, CGAffineTransformIdentity);
+	CGContextTranslateCTM(context, 0, self.bounds.size.height);
+	CGContextScaleCTM(context, 1.0, -1.0);
+
+	if(self.selected){
+
+		self.layer.shadowColor = [[UIColor clearColor] CGColor];
+
+		CGContextSetFillColorWithColor(context, [[UIColor tableSelectionColor] CGColor]);
+		
+		[self.path fill];
+	}else{
+		self.layer.shadowColor = [[UIColor blackColor] CGColor];
+	}
+
+	/* Draw text */
+	CTFrameDraw(self.textFrame, context);
+}
+
+- (void)redrawText{
+	/* Get bounds for drawing text */
+	CGMutablePathRef path = CGPathCreateMutable();
+	CGPathAddRect(path, NULL, CGRectMake(widthMargin / 2, 0, self.bounds.size.width - widthMargin, self.bounds.size.height));
+
+	NSAttributedString *attributedText = [self attributedText];
+	CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)attributedText);
+	CTFrameRef frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [attributedText length]), path, NULL);
+	CFArrayRef lines = CTFrameGetLines(frame);
+
+	if(CFArrayGetCount(lines) == 2){
+		CFRange range = CTLineGetStringRange(CFArrayGetValueAtIndex(lines, 1));
+
+		/* Make new attributed string to center bottom line */
+		NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.text];
+		[string addAttribute:NSFontAttributeName value:self.font range:NSMakeRange(0, [string length])];
+		[string addAttribute:NSForegroundColorAttributeName value:self.textColor range:NSMakeRange(0, [string length])];
+
+		NSMutableParagraphStyle *secondLineStyle = [[NSMutableParagraphStyle alloc] init];
+		secondLineStyle.alignment = NSTextAlignmentCenter;
+		secondLineStyle.lineBreakMode = NSLineBreakByTruncatingMiddle;
+
+		NSMutableParagraphStyle *style = [[NSMutableParagraphStyle alloc] init];
+		style.alignment = NSTextAlignmentCenter;
+
+		[string addAttribute:NSParagraphStyleAttributeName value:secondLineStyle range:NSMakeRangeFromCFRange(range)];
+		[string addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, range.location)];
+
+		[style release];
+		[secondLineStyle release];
+
+		/* Reset framesetter and frame */
+		CFRelease(framesetter);
+		CFRelease(frame);
+
+		framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)string);
+		CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedText length]), NULL, CGSizeMake(self.bounds.size.width - 50, self.bounds.size.height), NULL);
+		frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [string length]), path, NULL);
+	}
+
+	if(self.textFrame != NULL){
+		CFRelease(self.textFrame);
+	}
+
+	self.textFrame = frame;
+
+	CFRelease(framesetter);
+	CFRelease(path);
+
+	[self updateSelectionPath];
+	[self setNeedsDisplay];
+}
+
+- (void)updateSelectionPath{
+	self.path = [UIBezierPath bezierPath];
+
+	CFArrayRef lines = CTFrameGetLines(self.textFrame);
+
+	CGPoint *lineOrigins = malloc(CFArrayGetCount(lines));
+	CTFrameGetLineOrigins(self.textFrame, CFRangeMake(0, 0), lineOrigins);
+
+	CGRect lineFrame1, lineFrame2;
+
+	//Line 1
+	if(CFArrayGetCount(lines) > 0){
+		CTLineRef line1 = CFArrayGetValueAtIndex(lines, 0);
+		lineFrame1 = rectFromLine(line1, self.textFrame, lineOrigins[0]);
+
+		fixLineRect(lineFrame1);
+	}
+
+	//Line 2
+	if(CFArrayGetCount(lines) == 2){
+		CTLineRef line2 = CFArrayGetValueAtIndex(lines, 1);
+		lineFrame2 = rectFromLine(line2, self.textFrame, lineOrigins[1]);
+
+		fixLineRect(lineFrame2);
+
+		self.path = [OSFileGridTileLabel pathWithTopLine:lineFrame1 bottomLine:lineFrame2];
+
+	}else{
+		self.path = [OSFileGridTileLabel pathWithTopLine:lineFrame1 bottomLine:CGRectNull];
+	}
+
+	free(lineOrigins);
+
+	[self.path applyTransform:CGAffineTransformMakeScale(1.0, -1.0)];
+	[self.path applyTransform:CGAffineTransformMakeTranslation(0, self.bounds.size.height)];
+}
+
 - (NSAttributedString*)attributedText{
 	NSMutableAttributedString *string = [[NSMutableAttributedString alloc] initWithString:self.text];
 
@@ -217,7 +220,7 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	}
 
 	_selected = selected;
-
+	
 	[self setNeedsDisplay];
 }
 

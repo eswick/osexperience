@@ -37,20 +37,36 @@
 }
 
 - (void)layoutView{
-	for(UIView *view in self.view.subviews)
-		[view removeFromSuperview];
-
 	int ix = 0;
 	int iy = 0;
 
 	NSError *error = nil;
 
 	for(NSURL *url in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.path includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:&error]){
-		OSFileGridTile *tile = [self tileForFileAtPath:url];
+		
+		OSFileGridTile *tile = nil;
 
-		if(tile.frame.size.height * (iy + 1) > self.view.bounds.size.height){
-			iy = 0;
-			ix++;
+		for(OSFileGridTile *_tile in self.view.subviews){
+			if(![_tile isKindOfClass:[OSFileGridTile class]])
+				continue;
+			if([[[_tile url] path] isEqualToString:url.path]){
+				tile = _tile;
+				ix = tile.gridLocation.x;
+				iy = tile.gridLocation.y;
+			}
+		}
+
+		if(!tile){
+			tile = [self tileForFileAtURL:url];
+
+			if(tile.frame.size.height * (iy + 1) > self.view.bounds.size.height){
+				iy = 0;
+				ix++;
+			}
+
+			tile.url = url;
+			tile.gridLocation = CGPointMake(ix, iy);
+			[self.view addSubview:tile];
 		}
 
 		CGPoint origin = CGPointMake(self.view.bounds.size.width - (tile.bounds.size.width * (ix + 1)), 0 + (tile.bounds.size.height * iy));
@@ -58,10 +74,6 @@
 		CGRect frame = tile.frame;
 		frame.origin = origin;
 		tile.frame = frame;
-
-		[tile setURL:url];
-
-		[self.view addSubview:tile];
 
 		iy++;
 	}
@@ -106,10 +118,10 @@
     }
 }
 
-- (OSFileGridTile *)tileForFileAtPath:(NSURL*)path{
+- (OSFileGridTile *)tileForFileAtURL:(NSURL*)url{
 	OSFileGridTile *tile = [[OSFileGridTile alloc] initWithIconSize:self.iconSize gridSpacing:self.gridSpacing];
 
-	UIDocumentInteractionController *documentController = [UIDocumentInteractionController interactionControllerWithURL:path];
+	UIDocumentInteractionController *documentController = [UIDocumentInteractionController interactionControllerWithURL:url];
 	[tile setIcon:[[documentController icons] objectAtIndex:0]];
 
 	return [tile autorelease];

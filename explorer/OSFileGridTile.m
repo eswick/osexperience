@@ -65,11 +65,17 @@
 	[self.label setSelected:selected];
 }
 
-- (void)setURL:(NSURL*)url{
-	_URL = url;
+- (void)setUrl:(NSURL*)url{
+	if(_url)
+		[_url release];
+
+	[url retain];
+	_url = url;
 
 	NSString *text = [[url path] lastPathComponent];
 	self.label.text = text;
+
+	[self.label redrawText];
 }
 
 - (void)setIcon:(UIImage*)icon{
