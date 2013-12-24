@@ -6,6 +6,7 @@
 
 @property (nonatomic, retain) UIImageView *iconView;
 @property (retain) OSFileGridTileLabel *label;
+@property (retain) UIView *selectionBackdrop;
 @property (nonatomic, retain) NSURL *url;
 @property CGPoint gridLocation;
 @property CGSize iconSize;

@@ -58,10 +58,27 @@
 	self.label.layer.shouldRasterize = true;
 	[self addSubview:self.label];
 
+	self.selectionBackdrop = [[UIView alloc] initWithFrame:self.iconView.frame];
+	self.selectionBackdrop.backgroundColor = [UIColor darkGrayColor];
+	self.selectionBackdrop.layer.cornerRadius = 5;
+	self.selectionBackdrop.alpha = 0.5;
+	self.selectionBackdrop.layer.borderColor = [UIColor lightGrayColor].CGColor;
+	self.selectionBackdrop.layer.borderWidth = 2.0f;
+	self.selectionBackdrop.hidden = true;
+	[self addSubview:self.selectionBackdrop];
+	[self sendSubviewToBack:self.selectionBackdrop];
+
 	return self;
 }
 
 - (void)setSelected:(BOOL)selected{
+	_selected = selected;
+
+	if(selected)
+		self.selectionBackdrop.hidden = false;
+	else
+		self.selectionBackdrop.hidden = true;
+
 	[self.label setSelected:selected];
 }
 
