@@ -22,6 +22,8 @@ typedef enum{
 
 - (void)addTile:(OSFileGridTile*)tile atIndex:(CGPoint)index;
 - (void)moveTile:(OSFileGridTile*)tile toIndex:(CGPoint)index;
+- (CGPoint)indexOfTile:(OSFileGridTile*)tile;
+- (BOOL)containsTile:(OSFileGridTile*)tile;
 
 
 @end

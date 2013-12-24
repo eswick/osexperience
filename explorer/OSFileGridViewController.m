@@ -82,6 +82,26 @@
 	}
 }
 
+- (BOOL)containsTile:(OSFileGridTile*)tile{
+	for(NSString *key in self.tileMap){
+		OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
+		if(_tile == tile){
+			return true;
+		}
+	}
+	return false;
+}
+
+- (CGPoint)indexOfTile:(OSFileGridTile*)tile{
+	for(NSString *key in self.tileMap){
+		OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
+		if(_tile == tile){
+			return CGPointFromString(key);
+		}
+	}
+	return CGPointZero;
+}
+
 - (void)addTile:(OSFileGridTile*)tile atIndex:(CGPoint)index{
 	[self.tileMap setObject:tile forKey:NSStringFromCGPoint(CGPointMake(index.x, index.y))];
 	[self.view addSubview:tile];
