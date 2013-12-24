@@ -6,11 +6,14 @@
 #define fixLineRect(rect) rect.origin.y = self.bounds.size.height - rect.origin.y - rect.size.height * 2; rect.size.height += -self.font.descender;
 
 #define widthMargin 10
+#define cornerInset 2
 
-#define CGRectTopLeft(rect) rect.origin
-#define CGRectTopRight(rect) CGPointMake(rect.origin.x + rect.size.width, rect.origin.y)
-#define CGRectBottomLeft(rect) CGPointMake(rect.origin.x, rect.origin.y + rect.size.height)
-#define CGRectBottomRight(rect) CGPointMake(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height)
+#define concaveRadius (self.font.pointSize * 0.25)
+
+#define CGRectTopLeft(rect) CGPointMake(rect.origin.x + cornerInset, rect.origin.y)
+#define CGRectTopRight(rect) CGPointMake(rect.origin.x + rect.size.width - cornerInset, rect.origin.y)
+#define CGRectBottomLeft(rect) CGPointMake(rect.origin.x + cornerInset, rect.origin.y + rect.size.height)
+#define CGRectBottomRight(rect) CGPointMake(rect.origin.x + rect.size.width - cornerInset, rect.origin.y + rect.size.height)
 
 #define deg2rad(degrees)  ((M_PI * degrees)/ 180)
 
@@ -40,10 +43,8 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	return rectForLine;
 }
 
-+ (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine{
-	//float insideRadius = 10.0f;
+- (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine{
 	float topLineRadius = topLine.size.height / 2;
-	float bottomLineRadius = bottomLine.size.height / 2;
 
 	UIBezierPath *path = [UIBezierPath bezierPath];
 
@@ -53,32 +54,58 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	[path addLineToPoint:CGRectTopRight(topLine)];
 
 	//First line top right arc
-	[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, topLine.size.height / 2) radius:topLineRadius startAngle:deg2rad(270) endAngle:deg2rad(0) clockwise:true];
+	[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, topLineRadius) radius:topLineRadius startAngle:deg2rad(270) endAngle:deg2rad(0) clockwise:true];
 
 	if(CGRectIsNull(bottomLine)){
 		//First line bottom right arc
-		[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, topLine.size.height / 2) radius:topLineRadius startAngle:deg2rad(0) endAngle:deg2rad(90) clockwise:true];
+		[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, topLineRadius) radius:topLineRadius startAngle:deg2rad(0) endAngle:deg2rad(90) clockwise:true];
 
 		[path addLineToPoint:CGRectBottomLeft(topLine)];
 		//First line left arc
-		[path addArcWithCenter:CGPointMake(CGRectTopLeft(topLine).x, topLine.size.height / 2) radius:topLineRadius startAngle:deg2rad(90) endAngle:deg2rad(270) clockwise:true];
+		[path addArcWithCenter:CGPointMake(CGRectTopLeft(topLine).x, topLineRadius) radius:topLineRadius startAngle:deg2rad(90) endAngle:deg2rad(270) clockwise:true];
 
 		[path closePath];
 		return path;
-	}else 
-		return nil;
-
-	if(CGRectTopRight(bottomLine).x >= CGRectTopRight(topLine).x){
-		[path addLineToPoint:CGPointMake(CGRectTopRight(topLine).x + topLineRadius, bottomLine.origin.y)];
-		//[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x + topLineRadius + insideRadius, bottomLine.origin.y - insideRadius) radius:insideRadius startAngle:deg2rad(180) endAngle:deg2rad(90) clockwise:false];
-		
-		[path addLineToPoint:CGRectTopRight(bottomLine)];
-
-		[path addArcWithCenter:CGPointMake(CGRectTopRight(bottomLine).x, bottomLine.origin.y + bottomLine.size.height / 2) radius:bottomLineRadius startAngle:deg2rad(270) endAngle:deg2rad(90) clockwise:true];
-		[path addLineToPoint:CGPointMake(CGRectBottomLeft(bottomLine).x, CGRectBottomLeft(bottomLine).y)];
 	}
 
+	if(CGRectTopRight(bottomLine).x >= CGRectTopRight(topLine).x){ //Top line smaller than bottom
+		float difference = (CGRectTopRight(bottomLine).x - CGRectTopRight(topLine).x);
+		NSLog(@"Diff: %f", difference);
+		
+	}else if(CGRectTopRight(bottomLine).x <= CGRectTopRight(topLine).x){ //Top line larger than bottom
+		//First line bottom right arc
+		[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, (topLineRadius) + (bottomLine.origin.y - topLine.size.height)) radius:topLineRadius startAngle:deg2rad(0) endAngle:deg2rad(90) clockwise:true];
+		
+		//Line to bottom line top right concave arc 
+		[path addLineToPoint:CGPointMake(CGRectTopRight(bottomLine).x + (topLineRadius) + concaveRadius, bottomLine.origin.y)];
 
+		//Bottom line top right concave arc
+		[path addArcWithCenter:CGPointMake(CGRectTopRight(bottomLine).x + topLineRadius + concaveRadius, bottomLine.origin.y + concaveRadius) radius:concaveRadius startAngle:deg2rad(270) endAngle:deg2rad(180) clockwise:false];
+		
+		//Line to bottom right
+		[path addLineToPoint:CGPointMake(path.currentPoint.x, bottomLine.origin.y + (bottomLine.size.height / 2))];
+
+		//Bottom line bottom right arc
+		[path addArcWithCenter:CGPointMake(CGRectTopRight(bottomLine).x, bottomLine.origin.y + topLineRadius) radius:topLineRadius startAngle:deg2rad(0) endAngle:deg2rad(90) clockwise:true];
+
+		//Line to bottom left
+		[path addLineToPoint:CGPointMake(CGRectBottomLeft(bottomLine).x + topLineRadius, CGRectBottomLeft(bottomLine).y)];
+
+		//Bottom line bottom left arc
+		[path addArcWithCenter:CGPointMake(CGRectBottomLeft(bottomLine).x, bottomLine.origin.y + topLineRadius) radius:topLineRadius startAngle:deg2rad(90) endAngle:deg2rad(180) clockwise:true];
+
+		//Line to concave left arc
+		[path addLineToPoint:CGPointMake(CGRectTopLeft(bottomLine).x - topLineRadius, CGRectTopLeft(bottomLine).y + concaveRadius)];
+
+		//Concave left arc
+		[path addArcWithCenter:CGPointMake(CGRectTopLeft(bottomLine).x - topLineRadius - concaveRadius, bottomLine.origin.y + concaveRadius) radius:concaveRadius startAngle:deg2rad(0) endAngle:deg2rad(270) clockwise:false];
+	
+		//Line to top line left convex
+		[path addLineToPoint:CGRectBottomLeft(topLine)];
+
+		//Top line left convex
+		[path addArcWithCenter:CGPointMake(CGRectTopLeft(topLine).x, topLine.size.height / 2) radius:topLineRadius startAngle:deg2rad(90) endAngle:deg2rad(270) clockwise:true];
+	}
 
 	[path closePath];
 	return path;
@@ -186,10 +213,10 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 
 		fixLineRect(lineFrame2);
 
-		self.path = [OSFileGridTileLabel pathWithTopLine:lineFrame1 bottomLine:lineFrame2];
+		self.path = [self pathWithTopLine:lineFrame1 bottomLine:lineFrame2];
 
 	}else{
-		self.path = [OSFileGridTileLabel pathWithTopLine:lineFrame1 bottomLine:CGRectNull];
+		self.path = [self pathWithTopLine:lineFrame1 bottomLine:CGRectNull];
 	}
 
 	free(lineOrigins);

@@ -7,7 +7,7 @@
 @property (nonatomic, assign) BOOL selected;
 @property (assign) CTFrameRef textFrame;
 
-+ (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine;
+- (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine;
 
 - (void)redrawText;
 - (void)updateSelectionPath;
