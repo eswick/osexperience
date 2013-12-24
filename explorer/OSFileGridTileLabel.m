@@ -232,6 +232,11 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 		CTLineRef line1 = CFArrayGetValueAtIndex(lines, 0);
 		lineFrame1 = rectFromLine(line1, self.textFrame, lineOrigins[0]);
 
+		
+		if([[self.text substringWithRange:NSMakeRange(CTLineGetStringRange(line1).location + CTLineGetStringRange(line1).length - 1, 1)] isEqualToString:@" "]){
+			lineFrame1.size.width -= [@" " sizeWithFont:self.font].width;
+		}
+
 		fixLineRect(lineFrame1);
 	}
 
