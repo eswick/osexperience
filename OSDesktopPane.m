@@ -2,6 +2,8 @@
 #import "missioncontrol/OSMCWindowLayoutManager.h"
 
 #define desktopPath @"/var/mobile/Desktop"
+#define widthPercentage 0.99
+#define heightPercentage 0.99
 
 @implementation OSDesktopPane
 @synthesize wallpaperView = _wallpaperView;
@@ -27,7 +29,6 @@
 
 
 	self.desktopViewContainer = [[UIView alloc] initWithFrame:[self desktopViewContainerFrame]];
-	//self.desktopViewContainer.backgroundColor = [UIColor redColor];
 	[self addSubview:self.desktopViewContainer];
 
 	self.fileGridViewController = [[OSFileGridViewController alloc] init];
@@ -52,12 +53,17 @@
 }
 
 - (CGRect)desktopViewContainerFrame{
-	CGRect frame = self.frame;
+	CGRect frame = self.bounds;
 	frame.origin.x = 0;
 	frame.origin.y = self.statusBar.frame.size.height;
-	frame.size.height = self.frame.size.height - [[[OSViewController sharedInstance] dock] frame].size.height;
+	frame.size.height -= self.statusBar.frame.size.height;
+	frame.size.height -= [[[OSViewController sharedInstance] dock] frame].size.height;
 
-	frame = CGRectApplyAffineTransform(frame, CGAffineTransformMakeScale(0.90, 1));
+	frame.origin.x += (frame.size.width * (1 - widthPercentage)) / 2;
+	frame.origin.y += (frame.size.height * (1 - heightPercentage)) / 2;
+
+	frame = CGRectApplyAffineTransform(frame, CGAffineTransformMakeScale(widthPercentage, heightPercentage));
+
 	return frame;
 }
 

@@ -20,6 +20,8 @@
 	self.iconSize = CGSizeMake(72, 72);
 	self.gridSpacing = 20;
 
+	self.tileMap = [[NSMutableDictionary alloc] init];
+
 	return self;
 }
 
@@ -46,27 +48,28 @@
 		
 		OSFileGridTile *tile = nil;
 
-		for(OSFileGridTile *_tile in self.view.subviews){
+		for(NSString *key in self.tileMap){
+			OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
 			if(![_tile isKindOfClass:[OSFileGridTile class]])
 				continue;
 			if([[[_tile url] path] isEqualToString:url.path]){
 				tile = _tile;
-				ix = tile.gridLocation.x;
-				iy = tile.gridLocation.y;
+				ix = CGPointFromString(key).x;
+				iy = CGPointFromString(key).y;
 			}
 		}
 
 		if(!tile){
 			tile = [self tileForFileAtURL:url];
 
-			if(tile.frame.size.height * (iy + 1) > self.view.bounds.size.height){
-				iy = 0;
-				ix++;
-			}
-
 			tile.url = url;
+			[self addTile:tile atIndex:CGPointMake(ix, iy)];
+		}
+
+		if(tile.frame.size.height * (iy + 1) > self.view.bounds.size.height){
+			iy = 0;
+			ix++;
 			tile.gridLocation = CGPointMake(ix, iy);
-			[self.view addSubview:tile];
 		}
 
 		CGPoint origin = CGPointMake(self.view.bounds.size.width - (tile.bounds.size.width * (ix + 1)), 0 + (tile.bounds.size.height * iy));
@@ -76,6 +79,31 @@
 		tile.frame = frame;
 
 		iy++;
+	}
+}
+
+- (void)addTile:(OSFileGridTile*)tile atIndex:(CGPoint)index{
+	[self.tileMap setObject:tile forKey:NSStringFromCGPoint(CGPointMake(index.x, index.y))];
+	[self.view addSubview:tile];
+}
+
+- (void)moveTile:(OSFileGridTile*)tile toIndex:(CGPoint)index{
+	BOOL foundTile = false;
+
+	for(NSString *key in self.tileMap){
+		OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
+		if(_tile == tile){
+			foundTile = true;
+			[self.tileMap removeObjectForKey:key];
+			[self.tileMap setObject:tile forKey:NSStringFromCGPoint(CGPointMake(index.x, index.y))];
+			[self layoutView];
+			break;
+		}
+	}
+
+	if(!foundTile){
+		NSLog(@"Cannot move tile: %@. (Not found)", tile);
+		return;
 	}
 }
 
