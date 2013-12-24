@@ -44,6 +44,7 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 }
 
 - (UIBezierPath*)pathWithTopLine:(CGRect)topLine bottomLine:(CGRect)bottomLine{
+
 	float topLineRadius = topLine.size.height / 2;
 
 	UIBezierPath *path = [UIBezierPath bezierPath];
@@ -69,9 +70,37 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	}
 
 	if(CGRectTopRight(bottomLine).x >= CGRectTopRight(topLine).x){ //Top line smaller than bottom
-		float difference = (CGRectTopRight(bottomLine).x - CGRectTopRight(topLine).x);
-		NSLog(@"Diff: %f", difference);
-		
+
+		//Line to right concave
+		[path addLineToPoint:CGPointMake(CGRectTopRight(topLine).x + topLineRadius, CGRectTopRight(bottomLine).y - concaveRadius)];
+
+		//Right concave
+		[path addArcWithCenter:CGPointMake(CGRectBottomRight(topLine).x + topLineRadius + concaveRadius, CGRectTopRight(bottomLine).y - concaveRadius) radius:concaveRadius startAngle:deg2rad(180) endAngle:deg2rad(90) clockwise:false];
+
+		//Line to bottom line right convex
+		[path addLineToPoint:CGRectTopRight(bottomLine)];
+
+		//Bottom line right convex
+		[path addArcWithCenter:CGPointMake(CGRectTopRight(bottomLine).x, CGRectTopRight(bottomLine).y + topLineRadius) radius:topLineRadius startAngle:deg2rad(270) endAngle:deg2rad(90) clockwise:true];
+
+		//Line to bottom line left convex
+		[path addLineToPoint:CGRectBottomLeft(bottomLine)];
+
+		//Bottom line left convex
+		[path addArcWithCenter:CGPointMake(CGRectBottomLeft(bottomLine).x, CGRectBottomRight(bottomLine).y - topLineRadius) radius:topLineRadius startAngle:deg2rad(90) endAngle:deg2rad(270) clockwise:true];
+
+		//Line to left concave
+		[path addLineToPoint:CGPointMake(CGRectBottomLeft(topLine).x - topLineRadius - concaveRadius, CGRectTopLeft(bottomLine).y)];
+
+		//Left concave
+		[path addArcWithCenter:CGPointMake(CGRectBottomLeft(topLine).x - topLineRadius - concaveRadius, CGRectBottomLeft(topLine).y - concaveRadius) radius:concaveRadius startAngle:deg2rad(90) endAngle:deg2rad(0) clockwise:false];
+
+		//Line to top line left convex
+		[path addLineToPoint:CGPointMake(CGRectTopLeft(topLine).x - topLineRadius, CGRectTopLeft(topLine).y + topLineRadius)];
+
+		//Top line top left convex
+		[path addArcWithCenter:CGPointMake(CGRectTopLeft(topLine).x, CGRectTopLeft(topLine).y + topLineRadius) radius:topLineRadius startAngle:deg2rad(180) endAngle:deg2rad(270) clockwise:true];
+
 	}else if(CGRectTopRight(bottomLine).x <= CGRectTopRight(topLine).x){ //Top line larger than bottom
 		//First line bottom right arc
 		[path addArcWithCenter:CGPointMake(CGRectTopRight(topLine).x, (topLineRadius) + (bottomLine.origin.y - topLine.size.height)) radius:topLineRadius startAngle:deg2rad(0) endAngle:deg2rad(90) clockwise:true];
