@@ -50,8 +50,35 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	UIBezierPath *path = [UIBezierPath bezierPath];
 
 	[path moveToPoint:CGRectTopLeft(topLine)];
-
 	[path addLineToPoint:CGRectTopLeft(topLine)];
+
+	if(fabs(CGRectTopRight(topLine).x - CGRectTopRight(bottomLine).x) < topLineRadius + concaveRadius){ //If difference is less than both radii
+		BOOL topLarger = CGRectTopRight(topLine).x > CGRectTopRight(bottomLine).x;
+
+		//Top Right
+		[path addLineToPoint:(topLarger ? CGRectTopRight(topLine) : CGPointMake(CGRectTopRight(bottomLine).x, CGRectTopRight(topLine).y))];
+
+		[path addArcWithCenter:CGPointMake(CGRectTopRight((topLarger ? topLine : bottomLine)).x, topLineRadius) radius:topLineRadius startAngle:deg2rad(270) endAngle:deg2rad(0) clockwise:true];
+
+		//Bottom Right
+		[path addLineToPoint:(topLarger ? CGPointMake(CGRectBottomRight(topLine).x + topLineRadius, CGRectBottomRight(bottomLine).y - concaveRadius) : CGPointMake(CGRectBottomRight(bottomLine).x + topLineRadius, CGRectBottomRight(bottomLine).y - topLineRadius))];
+
+		[path addArcWithCenter:CGPointMake(CGRectBottomRight((topLarger ? topLine : bottomLine)).x, CGRectBottomRight(bottomLine).y - topLineRadius) radius:topLineRadius startAngle:deg2rad(0) endAngle:deg2rad(90) clockwise:true];
+
+		//Bottom Left
+		[path addLineToPoint:(topLarger ? CGPointMake(CGRectBottomLeft(topLine).x, CGRectBottomLeft(bottomLine).y) : CGPointMake(CGRectBottomLeft(bottomLine).x, CGRectBottomLeft(bottomLine).y))];
+
+		[path addArcWithCenter:CGPointMake(CGRectBottomLeft((topLarger ? topLine : bottomLine)).x, CGRectBottomRight(bottomLine).y - topLineRadius) radius:topLineRadius startAngle:deg2rad(90) endAngle:deg2rad(180) clockwise:true];
+
+		//Top Left
+		[path addLineToPoint:(topLarger ? CGPointMake(CGRectTopLeft(topLine).x - topLineRadius, CGRectTopLeft(topLine).y + concaveRadius) : CGPointMake(CGRectTopLeft(bottomLine).x - topLineRadius, CGRectTopLeft(topLine).y + concaveRadius))];
+
+		[path addArcWithCenter:CGPointMake(CGRectTopLeft((topLarger ? topLine : bottomLine)).x, topLineRadius) radius:topLineRadius startAngle:deg2rad(180) endAngle:deg2rad(270) clockwise:true];
+
+		[path closePath];
+		return path;
+	}
+
 	[path addLineToPoint:CGRectTopRight(topLine)];
 
 	//First line top right arc
