@@ -225,13 +225,6 @@
 		self.transform = CGAffineTransformScale(CGAffineTransformIdentity, transform, transform);
 }
 
-- (void)dealloc{
-	[self.title release];
-	[self.windowBar release];
-	[self.expandButton release];
-	[super dealloc];
-}
-
 - (void)layoutSubviews{
 	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 }
@@ -254,6 +247,13 @@
 
 - (CGRect) CGRectFromCGPoints:(CGPoint)p1 p2:(CGPoint)p2{
 	return CGRectMake(MIN(p1.x, p2.x), MIN(p1.y, p2.y), fabs(p1.x - p2.x), fabs(p1.y - p2.y));
+}
+
+- (void)dealloc{
+	[self.title release];
+	[self.windowBar release];
+	[self.expandButton release];
+	[super dealloc];
 }
 
 @end

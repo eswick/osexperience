@@ -81,13 +81,16 @@
 }
 
 -(void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
-	if([[self currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] missionControlIsActive]){
+	if([[OSViewController sharedInstance] missionControlIsActive]){
+		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
+		return;
+	}
+
+	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
 		if(![(OSAppPane*)[self currentPane] windowBarIsOpen]){
 			[(OSAppPane*)[self currentPane] setWindowBarVisible];
 		}
 	}
-
-	[[OSViewController sharedInstance] setMissionControlActive:false animated:true]; 
 }
 
 
