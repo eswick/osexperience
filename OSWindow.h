@@ -27,8 +27,10 @@
 	float _scale;
 	float _maxScale;
 	UIBarButtonItem *_expandButton;
+	NSString *_title;
 }
 
+@property (retain) NSString *title;
 @property (nonatomic, retain) UIToolbar *windowBar;
 @property (nonatomic, assign) id<OSWindowDelegate> delegate; 
 @property (nonatomic, readwrite) CGPoint resizeAnchor;

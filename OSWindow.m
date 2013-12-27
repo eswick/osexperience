@@ -78,16 +78,19 @@
 	[self.expandButton.view addGestureRecognizer:resizePanRecognizer];
 	[resizePanRecognizer release];
 
+	self.title = title;
 
-	[title release];
 	[closeButton release];
 	[flexibleSpace1 release];
 	[flexibleSpace2 release];
 	[items release];
 	[gestureBackdrop release];
 	
-
 	return self;
+}
+
+- (NSString*)description{
+	return [NSString stringWithFormat:@"%@ title: %@", [super description], self.title];
 }
 
 - (void)handleMCPanGesture:(UIPanGestureRecognizer*)gesture{
@@ -223,6 +226,7 @@
 }
 
 - (void)dealloc{
+	[self.title release];
 	[self.windowBar release];
 	[self.expandButton release];
 	[super dealloc];
