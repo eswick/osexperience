@@ -206,7 +206,7 @@
 	}
 }
 
-- (int) desktopPaneIndex{
+- (int)desktopPaneIndex{
 	int count = 0;
 	for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
 		if(![pane isKindOfClass:[OSDesktopPane class]])

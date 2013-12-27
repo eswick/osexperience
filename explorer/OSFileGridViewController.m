@@ -21,8 +21,8 @@
 	self.gridSpacing = 20;
 
 	self.tileMap = [[NSMutableDictionary alloc] init];
-
 	[self.tileMap release];
+
 	return self;
 }
 

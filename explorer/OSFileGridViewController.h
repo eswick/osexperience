@@ -13,7 +13,7 @@ typedef enum{
 
 }
 
-@property (nonatomic, retain) UIScrollView *view;
+@property (retain) UIScrollView *view;
 @property (retain) NSMutableDictionary *tileMap;
 @property (assign) OSSelectionDragView *dragView;
 @property (nonatomic) OSFileGridViewType type;

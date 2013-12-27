@@ -46,7 +46,9 @@
 - (void)paneIndexDidChange{}
 
 - (void)setName:(NSString*)name{
+	[_name release];
 	_name = name;
+	[_name retain];
 
 	bool found = false;
 
@@ -80,6 +82,13 @@
         return true;
     }
     return false;
+}
+
+- (void)dealloc{
+	[self.name release];
+	[self.thumbnail release];
+
+	[super dealloc];
 }
 
 

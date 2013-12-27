@@ -3,8 +3,8 @@
 
 @interface OSFileViewController : NSObject
 
-@property (nonatomic, retain) UIView *view;
-@property (nonatomic, retain) NSURL *path;
+@property (retain) UIView *view;
+@property (retain) NSURL *path;
 @property (nonatomic) BOOL loaded;
 @property (nonatomic) NSDirectoryEnumerationOptions enumerationOptions;
 
