@@ -2,6 +2,8 @@
 #import "OSFileViewController.h"
 #import "OSFileGridTile.h"
 #import "OSSelectionDragView.h"
+#import "OSFileGridTileGhostView.h"
+#import "CGPointExtension.h"
 
 #define tilesPerColumn self.bounds.size.height / self.gridSpacing.y
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
@@ -130,6 +132,14 @@
 	}
 }
 
+- (void)deselectAll{
+	for(OSFileGridTile *tile in self.view.subviews){
+		if(![tile isKindOfClass:[OSFileGridTile class]])
+			continue;
+		[tile setSelected:false];
+	}
+}
+
 -(void)handleSelectGesture:(UIPanGestureRecognizer *)gesture{
     if([gesture state] == UIGestureRecognizerStateChanged){
 
@@ -169,11 +179,48 @@
     }
 }
 
+- (void)handleFileMoveGesture:(UIPanGestureRecognizer *)gesture{
+	OSFileGridTile *tile = (OSFileGridTile*)[gesture view];
+
+	if([gesture state] == UIGestureRecognizerStateBegan){
+		if(!tile.selected){
+			[self deselectAll];
+			[tile setSelected:true];
+		}
+
+		tile.ghostView = [[OSFileGridTileGhostView alloc] initWithTile:tile];
+		tile.ghostView.dragOffset = CGPointSub(tile.center, [gesture locationInView:self.view]);
+		tile.ghostView.center = tile.center;
+
+		[self.view addSubview:tile.ghostView];
+		[self.view bringSubviewToFront:tile.ghostView];
+
+		[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseOut animations:^{
+			tile.ghostView.center = CGPointAdd(tile.ghostView.dragOffset, [gesture locationInView:self.view]);
+		} completion:^(BOOL finished){ }];
+
+	}else if([gesture state] == UIGestureRecognizerStateChanged){
+
+		tile.ghostView.center = CGPointAdd(tile.ghostView.dragOffset, [gesture locationInView:self.view]);
+
+	}else if([gesture state] == UIGestureRecognizerStateEnded){
+		tile.center = tile.ghostView.center;
+		[self.view bringSubviewToFront:tile];
+
+		[tile.ghostView removeFromSuperview];
+		[tile.ghostView release];
+	}
+}
+
 - (OSFileGridTile *)tileForFileAtURL:(NSURL*)url{
 	OSFileGridTile *tile = [[OSFileGridTile alloc] initWithIconSize:self.iconSize gridSpacing:self.gridSpacing];
 
 	UIDocumentInteractionController *documentController = [UIDocumentInteractionController interactionControllerWithURL:url];
 	[tile setIcon:[[documentController icons] objectAtIndex:0]];
+
+	UIPanGestureRecognizer *fileMoveGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFileMoveGesture:)];
+	[tile addGestureRecognizer:fileMoveGesture];
+	[fileMoveGesture release];
 
 	return [tile autorelease];
 }

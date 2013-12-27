@@ -1,6 +1,6 @@
 
 
-@class OSFileGridTileLabel, OSPathFillView;
+@class OSFileGridTileLabel, OSPathFillView, OSFileGridTileGhostView;
 
 @interface OSFileGridTile : UIView
 
@@ -12,6 +12,7 @@
 @property CGSize iconSize;
 @property float gridSpacing;
 @property (nonatomic) BOOL selected;
+@property (assign) OSFileGridTileGhostView *ghostView;
 
 - (id)initWithIconSize:(CGSize)iconSize gridSpacing:(float)spacing;
 - (void)setIcon:(UIImage*)icon;
