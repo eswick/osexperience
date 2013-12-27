@@ -426,7 +426,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 -(void)willActivate{
 	%orig;
 	[self addToSlider];
- 
 }
 
 - (void)didLaunch:(BKSApplicationProcessInfo*)arg1{
@@ -436,7 +435,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	}
 
 	[self addToSlider];
-
 }
 
 
@@ -444,12 +442,29 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 -(void)addToSlider{
 	BOOL found = false;
 
+	OSAppPane *foundPane = nil;
+	OSAppWindow *foundWindow = nil;
+
 	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
 		if(![pane isKindOfClass:[OSAppPane class]]){
 			continue;
 		}
 		if(pane.application == self){
 			found = true;
+			foundPane = pane;
+		}
+	}
+
+	for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
+		if(![desktopPane isKindOfClass:[OSDesktopPane class]])
+			continue;
+		for(OSAppWindow *window in desktopPane.windows){
+			if(![window isKindOfClass:[OSAppWindow class]])
+				continue;
+			if(window.application == self){
+				found = true;
+				foundWindow = window;
+			}
 		}
 	}
 
@@ -482,7 +497,19 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 		[[OSPaneModel sharedInstance] addPaneToBack:appPane];
 		[self activate];
+
+		[[OSSlider sharedInstance] scrollToPane:appPane animated:true];
+
 		[appPane release];
+	}
+
+	if(found){
+		if(foundPane){
+			[[OSSlider sharedInstance] scrollToPane:foundPane animated:true];
+		}
+		if(foundWindow){
+			[[OSSlider sharedInstance] scrollToPane:[[OSPaneModel sharedInstance] desktopPaneContainingWindow:foundWindow] animated:true];
+		}
 	}
 
 }
@@ -568,17 +595,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	}else{
 		[[arg1 application] addToSlider];
 	}
-
-
-	for(OSAppPane *pane in [[OSSlider sharedInstance] subviews]){
-		if(![pane isKindOfClass:[OSAppPane class]])
-			continue;
-
-		if(pane.application == arg1.application){
-			[[OSSlider sharedInstance] scrollToPane:pane animated:true];
-		}
-	}
-
 }
 
 

@@ -93,8 +93,6 @@
 	}
 }
 
-
-
 -(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
 	int appViewDegrees;
 
