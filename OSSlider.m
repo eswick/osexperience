@@ -63,6 +63,9 @@
 
 	[self setDelegate:self];
 
+	[self.switcherUpGesture release];
+	[self.switcherDownGesture release];
+
 	return self;
 }
 
@@ -306,6 +309,13 @@
         	}completion:^(BOOL finished){}
         ];
 	}
+}
+
+- (void)dealloc{
+	[self.switcherUpGesture release];
+	[self.switcherDownGesture release];
+
+	[super dealloc];
 }
 
 

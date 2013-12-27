@@ -23,7 +23,7 @@
 	UIView *_shadowOverlayView;
 }
 
-@property (nonatomic, retain) OSPane *pane;
+@property (nonatomic, assign) OSPane *pane;
 @property (nonatomic, retain) UILabel *label;
 @property (nonatomic, retain) UIImageView *icon;
 @property (nonatomic, retain) UIImageView *imageView;

@@ -22,6 +22,7 @@
 
 	self.tileMap = [[NSMutableDictionary alloc] init];
 
+	[self.tileMap release];
 	return self;
 }
 
@@ -36,6 +37,8 @@
 	[selectGesture release];
 
 	self.loaded = true;
+
+	[self.view release];
 }
 
 - (void)layoutView{
@@ -173,6 +176,13 @@
 	[tile setIcon:[[documentController icons] objectAtIndex:0]];
 
 	return [tile autorelease];
+}
+
+- (void)dealloc{
+	[self.tileMap release];
+	[self.view release];
+
+	[super dealloc];
 }
 
 @end

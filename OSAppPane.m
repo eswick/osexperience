@@ -29,11 +29,6 @@
 	self.appView = [self.application contextHostViewForRequester:@"WindowManager" enableAndOrderFront:true];
 	[self addSubview:self.appView];
 
-	UIView *overlayView = [[UIView alloc] initWithFrame:self.frame];
-	overlayView.alpha = 0.1;
-	overlayView.backgroundColor = [UIColor grayColor];
-	overlayView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
 	self.windowBar = [[UIToolbar alloc] init];
 	self.windowBar.frame = CGRectMake(0, -44, self.frame.size.width, 44);
 	self.windowBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -77,7 +72,8 @@
 	[self addSubview:self.windowBarShadowView];
 	[self bringSubviewToFront:self.windowBar];
 
-
+	[self.windowBar release];
+	[self.windowBarShadowView release];
 	return self;
 }
 
@@ -117,8 +113,12 @@
 }
 
 - (void)dealloc{
+	self.application = nil;
+	self.appView = nil;
+
 	[self.windowBar release];
 	[self.windowBarShadowView release];
+
 	[super dealloc];
 }
 

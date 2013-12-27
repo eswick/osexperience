@@ -5,11 +5,7 @@
 
 @class OSPaneThumbnail;
 
-@interface OSThumbnailPlaceholder : OSPaneThumbnail{
-
-}
-
-- (id)initWithPane:(OSPane*)pane;
+@interface OSThumbnailPlaceholder : OSPaneThumbnail
 
 
 @end

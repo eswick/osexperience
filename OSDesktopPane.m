@@ -49,6 +49,12 @@
 	
 	self.windows = [[NSMutableArray alloc] init];
 
+	[self.wallpaperView release];
+	[self.desktopViewContainer release];
+	[self.fileGridViewController release];
+	[self.statusBar release];
+	[self.windows release];
+
 	return self;
 }
 
@@ -213,8 +219,8 @@
 }
 
 -(void)dealloc{
-	[self.statusBar release];
 	[self.wallpaperView release];
+	[self.desktopViewContainer release];
 	[self.fileGridViewController release];
 	[self.statusBar release];
 	[self.windows release];

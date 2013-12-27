@@ -84,6 +84,8 @@
 	[flexibleSpace1 release];
 	[flexibleSpace2 release];
 	[items release];
+	[gestureBackdrop release];
+	
 
 	return self;
 }

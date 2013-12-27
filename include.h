@@ -3,7 +3,6 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-
 @interface SBIcon : NSObject
 
 
@@ -20,7 +19,7 @@
 
 @end
 
-@interface SBApplicationIcon
+@interface SBApplicationIcon : NSObject
 {
     NSString *_displayIdentifier;
     unsigned int _appIsBeingCleaned:1;

@@ -23,8 +23,6 @@
 
 	self.pane = pane;
 
-	//self.backgroundColor = [UIColor redColor];
-	//self.alpha = 1;
 	self.hidden = true;
 	self.userInteractionEnabled = false;
 

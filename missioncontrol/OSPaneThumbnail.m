@@ -54,9 +54,12 @@
 	if([self.pane isKindOfClass:[OSAppPane class]]){
 		self.icon = [[UIImageView alloc] init];
 		
-		UIImage *icon = [[[objc_getClass("SBApplicationIcon") alloc] initWithApplication:[(OSAppPane*)self.pane application]] generateIconImage:2];
-		self.icon.image = icon;
-		[icon release];
+		SBApplicationIcon *sbAppIcon = [[objc_getClass("SBApplicationIcon") alloc] initWithApplication:[(OSAppPane*)self.pane application]];
+
+		UIImage *appIcon = [sbAppIcon generateIconImage:2];
+		self.icon.image = appIcon;
+
+		[sbAppIcon release];
 
 		float size = [[OSThumbnailView sharedInstance] isPortrait] ? self.frame.size.width : self.frame.size.height;
 		self.icon.frame = CGRectMake(0, 0, size / 2, size / 2);
@@ -66,6 +69,7 @@
 		self.icon.layer.shadowOpacity = 0.5;
 		self.icon.layer.shouldRasterize = true;
 		[self addSubview:self.icon];
+		[self.icon release];
 	}
 
 
@@ -121,8 +125,13 @@
 	self.shadowOverlayView.hidden = true;
 	[self addSubview:self.shadowOverlayView];
 
-	return self;
+	[self.imageView release];
+	[self.label release];
+	[self.selectionView release];
+	[self.placeholder release];
+	[self.shadowOverlayView release];
 
+	return self;
 }
 
 - (void)setCloseboxVisible:(BOOL)visible animated:(BOOL)animated{
@@ -159,17 +168,15 @@
 }
 
 - (void)dealloc{
+
 	[self.label release];
 	[self.imageView release];
 	[self.selectionView release];
 	[self.placeholder release];
 	[self.closebox release];
 	[self.shadowOverlayView release];
-
-	if(self.icon)
-		[self.icon release];
-
-
+	[self.icon release];
+	
 	[super dealloc];
 }
 

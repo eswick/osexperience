@@ -68,6 +68,10 @@
 	[self addSubview:self.selectionBackdrop];
 	[self sendSubviewToBack:self.selectionBackdrop];
 
+	[self.selectionBackdrop release];
+	[self.iconView release];
+	[self.label release];
+
 	return self;
 }
 
@@ -101,6 +105,9 @@
 
 - (void)dealloc{
 	[self.iconView release];
+	[self.label release];
+	[self.selectionBackdrop release];
+	[self.url release];
 	[super dealloc];
 }
 

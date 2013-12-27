@@ -20,7 +20,8 @@
 	self.view.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin | UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	[self layoutView];
 	self.loaded = true;
-	//self.view.backgroundColor = [UIColor greenColor];
+
+	[self.view release];
 }
 
 - (void)pathChanged{
@@ -33,6 +34,7 @@
 
 - (void)dealloc{
 	[self.view release];
+	[self.path release];
 	[super dealloc];
 }
 

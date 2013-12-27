@@ -229,5 +229,11 @@
 	[self.application suspend];
 }
 
+- (void)dealloc{
+	self.application = nil;
+	self.appView = nil;
+
+	[super dealloc];
+}
 
 @end

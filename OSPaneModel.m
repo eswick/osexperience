@@ -26,6 +26,8 @@
 
 	self.panes = [[NSMutableArray alloc] init];
 
+	[self.panes release];
+
 	return self;
 }
 

@@ -219,9 +219,6 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 		[string addAttribute:NSParagraphStyleAttributeName value:secondLineStyle range:NSMakeRangeFromCFRange(range)];
 		[string addAttribute:NSParagraphStyleAttributeName value:style range:NSMakeRange(0, range.location)];
 
-		[style release];
-		[secondLineStyle release];
-
 		/* Reset framesetter and frame */
 		CFRelease(framesetter);
 		CFRelease(frame);
@@ -229,6 +226,10 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 		framesetter = CTFramesetterCreateWithAttributedString((CFAttributedStringRef)string);
 		CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedText length]), NULL, CGSizeMake(self.bounds.size.width - 50, self.bounds.size.height), NULL);
 		frame = CTFramesetterCreateFrame(framesetter, CFRangeMake(0, [string length]), path, NULL);
+
+		[style release];
+		[secondLineStyle release];
+		[string release];
 	}
 
 	if(self.textFrame != NULL){
@@ -310,6 +311,11 @@ CGRect rectFromLine(CTLineRef line, CTFrameRef frame, CGPoint origin){
 	_selected = selected;
 	
 	[self setNeedsDisplay];
+}
+
+- (void)dealloc{
+	[self.path release];
+	[super dealloc];
 }
 
 @end

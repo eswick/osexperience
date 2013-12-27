@@ -28,7 +28,7 @@
 	UIView *_tempView;
 }
 
-@property (nonatomic, retain) OSSlider *slider;
+@property (nonatomic, assign) OSSlider *slider;
 @property (nonatomic, retain) SBDockIconListView *dock;
 @property (nonatomic, retain) OSIconContentView *iconContentView;
 @property (nonatomic, readwrite, getter=launchpadIsActive) BOOL launchpadActive;

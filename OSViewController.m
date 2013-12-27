@@ -41,6 +41,8 @@
     self.pinchOutGesture.minimumNumberOfTouches = 5;
     self.pinchOutGesture.type = OSPinchGestureRecognizerTypeOutwards;
 
+    [self.pinchOutGesture release];
+    [self.pinchInGesture release];
     return self;
 }
 
@@ -320,6 +322,11 @@
     self.missionControlAnimating = false;
     self.missionControlActive = false;
 
+    [self.view release];
+    [self.switcherBackgroundView release];
+    [self.iconContentView release];
+
+
 }
 
 -(void)handlePinchGesture:(OSPinchGestureRecognizer*)gesture{
@@ -348,7 +355,7 @@
 }
 
 
--(void)animateIconLaunch:(SBIconView*)iconView{
+- (void)animateIconLaunch:(SBIconView*)iconView{
 
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
 	launchZoomView.image = [[iconView iconImageView] image];
@@ -359,9 +366,7 @@
 
 	[launchZoomView setFrame:zoomViewFrame];
 
-
 	[self.view addSubview:launchZoomView];
-
 
 	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
         launchZoomView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 2.0f, 2.0f);
@@ -383,9 +388,7 @@
 }
 
 
--(void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated{
-
-
+- (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated{
 
 	if(activated){
 		[self.iconContentView prepareForDisplay];
