@@ -60,8 +60,6 @@
 
 			tile.url = url;
 			[self addTile:tile atIndex:i];
-			tile.backgroundColor = [UIColor greenColor];
-			self.view.backgroundColor = [UIColor redColor];
 		}
 
 		location = [self coordinatesOfTile:tile];
@@ -182,9 +180,47 @@
 		tile.center = tile.ghostView.center;
 		[self.view bringSubviewToFront:tile];
 
+		[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
+			[self alignTileToGrid:tile];
+		}completion:^(BOOL finished){ }];
+
 		[tile.ghostView removeFromSuperview];
 		[tile.ghostView release];
 	}
+}
+
+- (void)alignTileToGrid:(OSFileGridTile*)tile{
+	CGRect frame = tile.frame;
+
+	if(frame.origin.x + frame.size.width > self.view.bounds.size.width)
+		frame.origin.x = self.view.bounds.size.width - frame.size.width;
+	else if(frame.origin.x < 0)
+		frame.origin.x = fmod(self.view.bounds.size.width, frame.size.width);
+
+	if(frame.origin.y + frame.size.height > self.view.bounds.size.height)
+		frame.origin.y = floor(self.view.bounds.size.height / frame.size.height) * frame.size.height;
+	else if(frame.origin.y < 0)
+		frame.origin.y = 0;
+
+	float xmod = fmod(self.view.bounds.size.width - tile.frame.origin.x, tile.frame.size.width);
+	float ymod = fmod(tile.frame.origin.y, tile.frame.size.height);
+
+	if(xmod < frame.size.width / 2)
+		frame.origin.x += xmod;
+	else
+		frame.origin.x -= frame.size.width - xmod;
+
+	if(ymod < frame.size.height / 2)
+		frame.origin.y -= ymod;
+	else
+		frame.origin.y += frame.size.height - ymod;
+
+	int ix = ((self.view.bounds.size.width - frame.origin.x) / tile.frame.size.width) - 1;
+	int iy = frame.origin.y / tile.frame.size.height;
+
+	float maxY = floor(self.view.bounds.size.height / tile.frame.size.height);
+
+	[self moveTile:tile toIndex:(ix * maxY) + iy];
 }
 
 - (OSFileGridTile *)tileForFileAtURL:(NSURL*)url{
