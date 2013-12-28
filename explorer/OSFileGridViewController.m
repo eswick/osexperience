@@ -4,6 +4,7 @@
 #import "OSSelectionDragView.h"
 #import "OSFileGridTileGhostView.h"
 #import "CGPointExtension.h"
+#import "OSFileGridTileMap.h"
 
 #define tilesPerColumn self.bounds.size.height / self.gridSpacing.y
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
@@ -22,7 +23,7 @@
 	self.iconSize = CGSizeMake(72, 72);
 	self.gridSpacing = 20;
 
-	self.tileMap = [[NSMutableDictionary alloc] init];
+	self.tileMap = [[OSFileGridTileMap alloc] init];
 	[self.tileMap release];
 
 	return self;
@@ -44,91 +45,65 @@
 }
 
 - (void)layoutView{
-	int ix = 0;
-	int iy = 0;
-
 	NSError *error = nil;
+
+	int i = 0;
 
 	for(NSURL *url in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.path includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:&error]){
 		
-		OSFileGridTile *tile = nil;
+		OSFileGridTile *tile = [self.tileMap tileWithURL:url];
 
-		for(NSString *key in self.tileMap){
-			OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
-			if(![_tile isKindOfClass:[OSFileGridTile class]])
-				continue;
-			if([[[_tile url] path] isEqualToString:url.path]){
-				tile = _tile;
-				ix = CGPointFromString(key).x;
-				iy = CGPointFromString(key).y;
-			}
-		}
+		CGPoint location;
 
 		if(!tile){
 			tile = [self tileForFileAtURL:url];
 
 			tile.url = url;
-			[self addTile:tile atIndex:CGPointMake(ix, iy)];
+			[self addTile:tile atIndex:i];
+			tile.backgroundColor = [UIColor greenColor];
+			self.view.backgroundColor = [UIColor redColor];
 		}
 
-		if(tile.frame.size.height * (iy + 1) > self.view.bounds.size.height){
-			iy = 0;
-			ix++;
-			tile.gridLocation = CGPointMake(ix, iy);
-		}
+		location = [self coordinatesOfTile:tile];
 
-		CGPoint origin = CGPointMake(self.view.bounds.size.width - (tile.bounds.size.width * (ix + 1)), 0 + (tile.bounds.size.height * iy));
+		CGPoint origin = CGPointMake(self.view.bounds.size.width - (tile.bounds.size.width * (location.x + 1)), 0 + (tile.bounds.size.height * location.y));
 
 		CGRect frame = tile.frame;
 		frame.origin = origin;
 		tile.frame = frame;
 
-		iy++;
+		i++;
 	}
 }
 
-- (BOOL)containsTile:(OSFileGridTile*)tile{
-	for(NSString *key in self.tileMap){
-		OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
-		if(_tile == tile){
-			return true;
+- (CGPoint)coordinatesOfTile:(OSFileGridTile*)tile{
+	int index = [self.tileMap indexOfTile:tile];
+	int iy = 0;
+	int ix = 0;
+
+	for(int i = 0; i < index; i++){
+		if(tile.frame.size.height * (iy + 2) > self.view.bounds.size.height){
+			ix++;
+			iy = 0;
+		}else{
+			iy++;
 		}
 	}
-	return false;
+
+	return CGPointMake(ix, iy);
 }
 
-- (CGPoint)indexOfTile:(OSFileGridTile*)tile{
-	for(NSString *key in self.tileMap){
-		OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
-		if(_tile == tile){
-			return CGPointFromString(key);
-		}
-	}
-	return CGPointZero;
-}
-
-- (void)addTile:(OSFileGridTile*)tile atIndex:(CGPoint)index{
-	[self.tileMap setObject:tile forKey:NSStringFromCGPoint(CGPointMake(index.x, index.y))];
+- (void)addTile:(OSFileGridTile*)tile atIndex:(int)index{
+	[self.tileMap addTile:tile toIndex:index];
 	[self.view addSubview:tile];
 }
 
-- (void)moveTile:(OSFileGridTile*)tile toIndex:(CGPoint)index{
-	BOOL foundTile = false;
+- (void)moveTile:(OSFileGridTile*)tile toIndex:(int)index{
 
-	for(NSString *key in self.tileMap){
-		OSFileGridTile *_tile = (OSFileGridTile*)[self.tileMap objectForKey:key];
-		if(_tile == tile){
-			foundTile = true;
-			[self.tileMap removeObjectForKey:key];
-			[self.tileMap setObject:tile forKey:NSStringFromCGPoint(CGPointMake(index.x, index.y))];
-			[self layoutView];
-			break;
-		}
-	}
-
-	if(!foundTile){
-		NSLog(@"Cannot move tile: %@. (Not found)", tile);
-		return;
+	if([self.tileMap indexOfTile:tile] != -1){
+		[self.tileMap removeTile:tile];
+		[self.tileMap addTile:tile toIndex:index];
+		[self layoutView];
 	}
 }
 
