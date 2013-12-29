@@ -46,6 +46,17 @@
 	self.loaded = true;
 
 	[self.view release];
+
+	for(NSURL *url in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.path includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:nil]){
+		OSFileGridTile *tile = [self tileForFileAtURL:url];
+
+		tile.url = url;
+
+		[self.tileMap addTile:tile toIndex:0];
+		[self.view addSubview:tile];
+	}
+
+	[self loadMetadata];
 }
 
 - (void)layoutView{
@@ -98,6 +109,7 @@
 - (void)addTile:(OSFileGridTile*)tile atIndex:(int)index{
 	[self.tileMap addTile:tile toIndex:index];
 	[self.view addSubview:tile];
+	[self saveMetadata];
 }
 
 - (void)moveTile:(OSFileGridTile*)tile toIndex:(int)index{
@@ -107,6 +119,8 @@
 		[self.tileMap addTile:tile toIndex:index];
 		[self layoutView];
 	}
+
+	[self saveMetadata];
 }
 
 - (void)deselectAll{
@@ -286,7 +300,8 @@
 		for(NSString *path in tileStack){
 			OSFileGridTile *tile = [self.tileMap tileWithURL:[NSURL URLWithString:[path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
 			if(tile){
-				[self moveTile:tile toIndex:[key intValue]];
+				[self.tileMap removeTile:tile];
+				[self.tileMap addTile:tile toIndex:[key intValue]];
 			}
 		}
 	}
