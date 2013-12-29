@@ -57,11 +57,17 @@
 
 		tile.url = url;
 
-		[self.tileMap addTile:tile toIndex:0];
+		[self.tileMap addTile:tile toIndex:-1];
 		[self.view addSubview:tile];
 	}
 
 	[self loadMetadata];
+
+	NSArray *extraTiles = [NSArray arrayWithArray:[self.tileMap.map objectForKey:@(-1)]];
+	for(OSFileGridTile *tile in extraTiles){
+		[self.tileMap removeTile:tile];
+		[tile removeFromSuperview];
+	}
 }
 
 - (void)layoutView{
