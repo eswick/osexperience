@@ -9,5 +9,6 @@
 - (void)addTile:(OSFileGridTile*)tile toIndex:(int)index;
 - (void)removeTile:(OSFileGridTile*)tile;
 - (OSFileGridTile*)tileWithURL:(NSURL*)url;
+- (int)firstEmptyIndex;
 
 @end

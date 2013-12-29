@@ -77,4 +77,13 @@
 	return nil;
 }
 
+- (int)firstEmptyIndex{
+	int i = 0;
+	while(true){
+		if(![self.map objectForKey:@(i)])
+			return i;
+		i++;
+	}
+}
+
 @end

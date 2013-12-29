@@ -73,8 +73,6 @@
 - (void)layoutView{
 	NSError *error = nil;
 
-	int i = 0;
-
 	for(NSURL *url in [[NSFileManager defaultManager] contentsOfDirectoryAtURL:self.path includingPropertiesForKeys:nil options:NSDirectoryEnumerationSkipsHiddenFiles error:&error]){
 		
 		OSFileGridTile *tile = [self.tileMap tileWithURL:url];
@@ -85,7 +83,7 @@
 			tile = [self tileForFileAtURL:url];
 
 			tile.url = url;
-			[self addTile:tile atIndex:i];
+			[self addTile:tile atIndex:[self.tileMap firstEmptyIndex]];
 		}
 
 		location = [self coordinatesOfTile:tile];
@@ -95,8 +93,6 @@
 		CGRect frame = tile.frame;
 		frame.origin = origin;
 		tile.frame = frame;
-
-		i++;
 	}
 }
 
@@ -142,7 +138,7 @@
 	}
 }
 
--(void)handleSelectGesture:(UIPanGestureRecognizer *)gesture{
+- (void)handleSelectGesture:(UIPanGestureRecognizer *)gesture{
     if([gesture state] == UIGestureRecognizerStateChanged){
 
 		[self.dragView setFrame:CGRectFromCGPoints(self.dragView.dragStartPoint, [gesture locationInView:self.view])];
