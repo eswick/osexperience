@@ -5,6 +5,7 @@
 #import "OSFileGridTileGhostView.h"
 #import "CGPointExtension.h"
 #import "OSFileGridTileMap.h"
+#import <libfsmonitor/libfsmonitor.h>
 
 #define tilesPerColumn self.bounds.size.height / self.gridSpacing.y
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
@@ -25,7 +26,7 @@
 
 	self.tileMap = [[OSFileGridTileMap alloc] init];
 	[self.tileMap release];
-
+	
 	return self;
 }
 
