@@ -38,7 +38,13 @@
 }
 
 - (void)removeTile:(OSFileGridTile*)tile{
+	NSMutableArray *array = [self arrayForTile:tile];
+	int index = [self indexOfTile:tile];
+
 	[[self arrayForTile:tile] removeObject:tile];
+	
+	if([array count] == 0)
+		[self.map removeObjectForKey:@(index)];
 }
 
 - (OSFileGridTile*)tileWithURL:(NSURL*)url{
