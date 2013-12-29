@@ -10,7 +10,12 @@
 #define tilesPerColumn self.bounds.size.height / self.gridSpacing.y
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
 #define metadataSubkey @"layout_grid"
-#define metadataFileName @".OS_Store"
+
+#ifdef DEBUG
+	#define metadataFileName @".OS_Store.plist"
+#else
+	#define metadataFileName @".OS_Store"
+#endif
 
 #define CGRectFromCGPoints(p1, p2) CGRectMake(MIN(p1.x, p2.x), MIN(p1.y, p2.y), fabs(p1.x - p2.x), fabs(p1.y - p2.y))
 #define URL_STD(url) [[url path] stringByStandardizingPath]

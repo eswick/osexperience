@@ -1,5 +1,5 @@
 THEOS_BUILD_DIR = debs
-
+DEBUG = 1
 include theos/makefiles/common.mk
 
 TWEAK_NAME = OSExperience
