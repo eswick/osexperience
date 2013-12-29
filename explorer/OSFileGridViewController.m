@@ -215,6 +215,9 @@
 
 		[tile.ghostView removeFromSuperview];
 		[tile.ghostView release];
+	}else if([gesture state] == UIGestureRecognizerStateCancelled){
+		[tile.ghostView removeFromSuperview];
+		[tile.ghostView release];
 	}
 }
 
