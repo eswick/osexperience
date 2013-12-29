@@ -11,6 +11,7 @@
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
 
 #define CGRectFromCGPoints(p1, p2) CGRectMake(MIN(p1.x, p2.x), MIN(p1.y, p2.y), fabs(p1.x - p2.x), fabs(p1.y - p2.y))
+#define URL_STD(url) [[url path] stringByStandardizingPath]
 
 
 @implementation OSFileGridViewController
@@ -246,6 +247,29 @@
 			[self layoutView];
 			break;
 	}
+}
+
+- (void)saveMetadata{
+	NSMutableDictionary *metadata = [NSMutableDictionary new];
+	NSMutableDictionary *tileMetadata = [NSMutableDictionary new];
+
+	for(NSNumber *key in self.tileMap.map){
+		NSMutableArray *tileStack = [NSMutableArray new];
+		for(OSFileGridTile *tile in [self.tileMap.map objectForKey:key]){
+			[tileStack addObject:URL_STD(tile.url)];
+		}
+		[tileMetadata setObject:[NSArray arrayWithArray:tileStack] forKey:[key stringValue]];
+		[tileStack release];
+	}
+
+	[metadata setObject:[NSDictionary dictionaryWithDictionary:tileMetadata] forKey:@"layout_grid"];
+
+	if(![[NSDictionary dictionaryWithDictionary:metadata] writeToFile:[URL_STD(self.path) stringByAppendingPathComponent:@".OS_Store"] atomically:true]){
+		NSLog(@"Error saving metadata: %@", metadata);
+	}
+
+	[tileMetadata release];
+	[metadata release];
 }
 
 - (OSFileGridTile *)tileForFileAtURL:(NSURL*)url{
