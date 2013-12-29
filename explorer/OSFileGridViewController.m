@@ -9,6 +9,8 @@
 
 #define tilesPerColumn self.bounds.size.height / self.gridSpacing.y
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
+#define metadataSubkey @"layout_grid"
+#define metadataFileName @".OS_Store"
 
 #define CGRectFromCGPoints(p1, p2) CGRectMake(MIN(p1.x, p2.x), MIN(p1.y, p2.y), fabs(p1.x - p2.x), fabs(p1.y - p2.y))
 #define URL_STD(url) [[url path] stringByStandardizingPath]
@@ -262,14 +264,32 @@
 		[tileStack release];
 	}
 
-	[metadata setObject:[NSDictionary dictionaryWithDictionary:tileMetadata] forKey:@"layout_grid"];
+	[metadata setObject:[NSDictionary dictionaryWithDictionary:tileMetadata] forKey:metadataSubkey];
 
-	if(![[NSDictionary dictionaryWithDictionary:metadata] writeToFile:[URL_STD(self.path) stringByAppendingPathComponent:@".OS_Store"] atomically:true]){
+	if(![[NSDictionary dictionaryWithDictionary:metadata] writeToFile:[URL_STD(self.path) stringByAppendingPathComponent:metadataFileName] atomically:true]){
 		NSLog(@"Error saving metadata: %@", metadata);
 	}
 
 	[tileMetadata release];
 	[metadata release];
+}
+
+- (void)loadMetadata{
+	NSDictionary *metadata = [NSDictionary dictionaryWithContentsOfFile:[URL_STD(self.path) stringByAppendingPathComponent:metadataFileName]];
+	NSDictionary *tileMetadata = [metadata objectForKey:metadataSubkey];
+
+	if(!metadata || !tileMetadata)
+		return;
+
+	for(NSString *key in tileMetadata){
+		NSArray *tileStack = [tileMetadata objectForKey:key];
+		for(NSString *path in tileStack){
+			OSFileGridTile *tile = [self.tileMap tileWithURL:[NSURL URLWithString:[path stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+			if(tile){
+				[self moveTile:tile toIndex:[key intValue]];
+			}
+		}
+	}
 }
 
 - (OSFileGridTile *)tileForFileAtURL:(NSURL*)url{
