@@ -5,7 +5,9 @@
 #import "OSFileGridTileGhostView.h"
 #import "CGPointExtension.h"
 #import "OSFileGridTileMap.h"
+#import "OSFileGridTileLabel.h"
 #import <libfsmonitor/libfsmonitor.h>
+#import <math.h>
 
 #define tilesPerColumn self.bounds.size.height / self.gridSpacing.y
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
@@ -109,7 +111,6 @@
 			iy++;
 		}
 	}
-
 	return CGPointMake(ix, iy);
 }
 
@@ -225,13 +226,13 @@
 	else if(frame.origin.x < 0)
 		frame.origin.x = fmod(self.view.bounds.size.width, frame.size.width);
 
-	if(frame.origin.y + frame.size.height > self.view.bounds.size.height)
-		frame.origin.y = floor(self.view.bounds.size.height / frame.size.height) * frame.size.height;
-	else if(frame.origin.y < 0)
+	if(frame.origin.y + frame.size.height > self.view.bounds.size.height){
+		frame.origin.y = (floorf(self.view.bounds.size.height / frame.size.height) - 1) * frame.size.height;
+	}else if(frame.origin.y < 0)
 		frame.origin.y = 0;
 
-	float xmod = fmod(self.view.bounds.size.width - tile.frame.origin.x, tile.frame.size.width);
-	float ymod = fmod(tile.frame.origin.y, tile.frame.size.height);
+	float xmod = fmod(self.view.bounds.size.width - frame.origin.x, frame.size.width);
+	float ymod = fmod(frame.origin.y, frame.size.height);
 
 	if(xmod < frame.size.width / 2)
 		frame.origin.x += xmod;
@@ -247,7 +248,6 @@
 	int iy = frame.origin.y / tile.frame.size.height;
 
 	float maxY = floor(self.view.bounds.size.height / tile.frame.size.height);
-
 	[self moveTile:tile toIndex:(ix * maxY) + iy];
 }
 
