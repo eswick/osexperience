@@ -224,6 +224,30 @@
 	[self moveTile:tile toIndex:(ix * maxY) + iy];
 }
 
+- (void)monitor:(FSMonitor*)monitor recievedEventInfo:(NSDictionary*)info{
+	FSMonitorEventType type = [[info objectForKey:@"TYPE"] intValue];
+
+	switch(type){
+		case FSMonitorEventTypeRename:
+		{
+			OSFileGridTile *tile = [self.tileMap tileWithURL:[info objectForKey:@"FILE"]];
+			[tile setUrl:[info objectForKey:@"DEST_FILE"]];
+			break;
+		}
+		case FSMonitorEventTypeDeletion:
+		{
+			OSFileGridTile *tile = [self.tileMap tileWithURL:[info objectForKey:@"FILE"]];
+			[self.tileMap removeTile:tile];
+			[tile removeFromSuperview];
+			break;
+		}
+		case FSMonitorEventTypeFileCreation:
+		case FSMonitorEventTypeDirectoryCreation:
+			[self layoutView];
+			break;
+	}
+}
+
 - (OSFileGridTile *)tileForFileAtURL:(NSURL*)url{
 	OSFileGridTile *tile = [[OSFileGridTile alloc] initWithIconSize:self.iconSize gridSpacing:self.gridSpacing];
 
