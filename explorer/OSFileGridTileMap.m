@@ -1,6 +1,7 @@
 #import "OSFileGridTileMap.h"
 #import "OSFileGridTile.h"
 
+#define URL_STD(url) [[url path] stringByStandardizingPath]
 
 @implementation OSFileGridTileMap
 
@@ -44,7 +45,7 @@
 	for(NSString *key in self.map){
 		NSMutableArray *array = [self.map objectForKey:key];
 		for(OSFileGridTile *tile in array){
-			if([[tile.url path] isEqualToString:url.path])
+			if([URL_STD(tile.url) isEqualToString:URL_STD(url)])
 				return tile;
 		}
 	}
