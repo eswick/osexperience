@@ -51,7 +51,8 @@
 	[items addObject:flexibleSpace1];
 	[items addObject:titleLabel];
 	[items addObject:flexibleSpace2];
-	[items addObject:self.expandButton];
+	if([self showsExpandButton])
+		[items addObject:self.expandButton];
 
 
 	[self.windowBar setItems:items animated:false];
@@ -85,6 +86,7 @@
 	[flexibleSpace2 release];
 	[items release];
 	[gestureBackdrop release];
+	[self.expandButton release];
 	
 	return self;
 }
@@ -247,6 +249,10 @@
 
 - (CGRect) CGRectFromCGPoints:(CGPoint)p1 p2:(CGPoint)p2{
 	return CGRectMake(MIN(p1.x, p2.x), MIN(p1.y, p2.y), fabs(p1.x - p2.x), fabs(p1.y - p2.y));
+}
+
+- (BOOL)showsExpandButton{
+	return false;
 }
 
 - (void)dealloc{

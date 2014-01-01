@@ -229,6 +229,10 @@
 	[self.application suspend];
 }
 
+- (BOOL)showsExpandButton{
+	return true;
+}
+
 - (void)dealloc{
 	self.application = nil;
 	self.appView = nil;

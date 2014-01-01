@@ -46,6 +46,7 @@
 - (void)stopButtonPressed;
 - (CGRect) CGRectFromCGPoints:(CGPoint)p1 p2:(CGPoint)p2;
 - (void)switchToDesktopPane:(id)pane;
+- (BOOL)showsExpandButton;
 
 
 @end
