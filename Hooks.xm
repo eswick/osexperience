@@ -292,13 +292,13 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
 			if(![pane isKindOfClass:[OSDesktopPane class]])
 				continue;
-			for(OSAppWindow *appWindow in pane.subviews){
-				if(![appWindow isKindOfClass:[OSAppWindow class]])
+			for(OSWindow *window in pane.subviews){
+				if(![window isKindOfClass:[OSWindow class]])
 					continue;
-				CGPoint point = [[[OSViewController sharedInstance] view] convertPoint:arg1[0].location toView:appWindow];
-				if([appWindow pointInside:point withEvent:nil]){
-					[pane bringSubviewToFront:appWindow];
-					[pane setActiveWindow:appWindow];
+				CGPoint point = [[[OSViewController sharedInstance] view] convertPoint:arg1[0].location toView:window];
+				if([window pointInside:point withEvent:nil]){
+					[pane bringSubviewToFront:window];
+					[pane setActiveWindow:window];
 				}
 			}
 		}
