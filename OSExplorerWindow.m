@@ -74,7 +74,11 @@
 
 		self.frame = frame;
 	}
+}
 
+- (void)stopButtonPressed{
+	[[[[OSPaneModel sharedInstance] desktopPaneContainingWindow:self] windows] removeObject:self];
+	[self removeFromSuperview];
 }
 
 - (void)dealloc{
