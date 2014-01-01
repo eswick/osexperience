@@ -9,11 +9,15 @@ typedef enum{
 
 @class OSSelectionDragView, OSFileGridTile, OSFileGridTileMap;
 
-@interface OSDesktopFileGridViewController : OSFileViewController{
+@interface OSDesktopFileGridViewController : NSObject <FSMonitorDelegate>{
 
 }
-
 @property (retain) UIView *view;
+@property (retain, nonatomic) NSURL *path;
+@property (retain) FSMonitor *monitor;
+@property (nonatomic) BOOL loaded;
+@property (nonatomic) NSDirectoryEnumerationOptions enumerationOptions;
+
 @property (retain) OSFileGridTileMap *tileMap;
 @property (assign) OSSelectionDragView *dragView;
 @property (nonatomic) OSFileGridViewType type;
@@ -22,5 +26,8 @@ typedef enum{
 
 - (void)addTile:(OSFileGridTile*)tile atIndex:(int)index;
 - (void)moveTile:(OSFileGridTile*)tile toIndex:(int)index;
+
+- (void)loadView;
+- (void)layoutView;
 
 @end

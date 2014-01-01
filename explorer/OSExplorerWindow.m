@@ -52,6 +52,8 @@
 	frame.size.width = self.bounds.size.width;
 
 	self.viewController.view.frame = frame;
+
+	[self.viewController layoutView];
 }
 
 

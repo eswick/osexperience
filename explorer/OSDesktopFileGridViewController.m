@@ -30,6 +30,13 @@
 	if(![super init])
 		return nil;
 
+	self.loaded = false;
+	self.enumerationOptions = NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles | NSDirectoryEnumerationSkipsPackageDescendants;
+
+	self.monitor = [FSMonitor new];
+	self.monitor.delegate = self;
+	[self.monitor release];
+
 	self.type = OSFileGridViewTypeWindowed;
 	self.iconSize = CGSizeMake(72, 72);
 	self.gridSpacing = 20;
@@ -137,6 +144,18 @@
 			continue;
 		[tile setSelected:false];
 	}
+}
+
+- (void)setPath:(NSURL*)path{
+	if(_path){
+		[self.monitor removeDirectoryFilter:_path];
+		[_path release];
+	}
+
+	_path = path;
+	[_path retain];
+
+	[self.monitor addDirectoryFilter:_path recursive:false];
 }
 
 - (void)handleSelectGesture:(UIPanGestureRecognizer *)gesture{
