@@ -14,12 +14,18 @@
 
 
 - (id)init{
-	if(![super initWithFrame:CGRectApplyAffineTransform([[UIScreen mainScreen] bounds], CGAffineTransformMakeScale(0.5, 0.5)) title:@"OS Explorer"])
+	CGRect frame = [[UIScreen mainScreen] bounds];
+	
+	if(UIInterfaceOrientationIsLandscape([UIApp statusBarOrientation])){
+		float height = frame.size.height;
+		frame.size.height = frame.size.width;
+		frame.size.width = height;
+	}
+
+	frame = CGRectApplyAffineTransform(frame, CGAffineTransformMakeScale(0.5, 0.5));
+
+	if(![super initWithFrame:frame title:@"OS Explorer"])
 		return nil;
-
-	CGRect frame = self.frame;
-	frame.origin.y = self.windowBar.bounds.size.height;
-
 
 	self.backgroundColor = [UIColor whiteColor];
 

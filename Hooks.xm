@@ -43,7 +43,10 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 - (void)launch{
 	OSExplorerWindow *window = [[OSExplorerWindow alloc] init];
-	[[[OSPaneModel sharedInstance] firstDesktopPane] addSubview:window];
+	OSDesktopPane *desktopPane = [[OSPaneModel sharedInstance] firstDesktopPane];
+
+	[desktopPane addSubview:window];
+	window.center = CGPointMake(desktopPane.bounds.size.width / 2, desktopPane.bounds.size.height / 2);
 	[window release];
 }
 
