@@ -31,7 +31,7 @@
 	self.desktopViewContainer = [[UIView alloc] initWithFrame:[self desktopViewContainerFrame]];
 	[self addSubview:self.desktopViewContainer];
 
-	self.fileGridViewController = [[OSFileGridViewController alloc] init];
+	self.fileGridViewController = [[OSDesktopFileGridViewController alloc] init];
 	self.fileGridViewController.type = OSFileGridViewTypeDesktop;
 	self.fileGridViewController.path = [NSURL URLWithString:desktopPath];
 	[self.fileGridViewController loadView];

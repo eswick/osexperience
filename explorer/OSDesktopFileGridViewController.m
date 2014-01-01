@@ -1,4 +1,4 @@
-#import "OSFileGridViewController.h"
+#import "OSDesktopFileGridViewController.h"
 #import "OSFileViewController.h"
 #import "OSFileGridTile.h"
 #import "OSSelectionDragView.h"
@@ -23,7 +23,7 @@
 #define URL_STD(url) [[url path] stringByStandardizingPath]
 
 
-@implementation OSFileGridViewController
+@implementation OSDesktopFileGridViewController
 @synthesize type = _type;
 
 - (id)init{

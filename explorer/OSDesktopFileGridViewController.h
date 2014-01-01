@@ -9,11 +9,11 @@ typedef enum{
 
 @class OSSelectionDragView, OSFileGridTile, OSFileGridTileMap;
 
-@interface OSFileGridViewController : OSFileViewController{
+@interface OSDesktopFileGridViewController : OSFileViewController{
 
 }
 
-@property (retain) UIScrollView *view;
+@property (retain) UIView *view;
 @property (retain) OSFileGridTileMap *tileMap;
 @property (assign) OSSelectionDragView *dragView;
 @property (nonatomic) OSFileGridViewType type;
