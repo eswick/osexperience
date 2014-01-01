@@ -9,7 +9,7 @@
 #import <IOKit/hid/IOHIDEventSystem.h>
 #import <substrate.h>
 #import "OSRemoteRenderLayer.h"
-#import "OSExplorerWindow.h"
+#import "explorer/OSExplorerWindow.h"
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);

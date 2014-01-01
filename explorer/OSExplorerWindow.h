@@ -1,4 +1,4 @@
-#import "OSWindow.h"
+#import "../OSWindow.h"
 
 
 @interface OSExplorerWindow : OSWindow{

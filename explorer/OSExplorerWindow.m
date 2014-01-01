@@ -1,7 +1,7 @@
 #import "OSExplorerWindow.h"
-#import "OSViewController.h"
-#import "OSPaneModel.h"
-#import "include.h"
+#import "../OSViewController.h"
+#import "../OSPaneModel.h"
+#import "../include.h"
 
 
 #define desktopPane [[OSPaneModel sharedInstance] desktopPaneContainingWindow:self]
