@@ -29,7 +29,29 @@
 
 	self.backgroundColor = [UIColor whiteColor];
 
+	self.viewController = [[OSExplorerViewController alloc] init];
+	[self.viewController loadView];
+
+	frame = self.viewController.view.frame;
+	frame.origin.x = 0; frame.origin.y = self.windowBar.frame.size.height;
+	self.viewController.view.frame = frame;
+
+	[self addSubview:self.viewController.view];
+
+	[self.viewController release];
+
 	return self;
+}
+
+- (void)layoutSubviews{
+	[super layoutSubviews];
+
+	CGRect frame = self.viewController.view.frame;
+
+	frame.size.height = self.bounds.size.height - self.windowBar.frame.size.height;
+	frame.size.width = self.bounds.size.width;
+
+	self.viewController.view.frame = frame;
 }
 
 
@@ -82,6 +104,7 @@
 }
 
 - (void)dealloc{
+	[self.viewController release];
 	[super dealloc];
 }
 
