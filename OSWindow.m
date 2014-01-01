@@ -252,7 +252,7 @@
 }
 
 - (BOOL)showsExpandButton{
-	return false;
+	return true;
 }
 
 - (void)dealloc{
