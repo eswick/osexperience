@@ -31,17 +31,20 @@
 	self.backgroundColor = [UIColor whiteColor];
 
 	self.viewController = [[OSExplorerViewController alloc] init];
-	[self addSubview:self.viewController.view];
 
 	frame = self.viewController.view.frame;
 	frame.origin.x = 0;
 	frame.origin.y = self.windowBar.frame.size.height;
 	frame.size.height = self.bounds.size.height - self.windowBar.frame.size.height;
 	frame.size.width = self.bounds.size.width;
-	self.viewController.view.frame = frame;
 
+	self.viewController.view.frame = frame;
 	self.viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	
+	[self addSubview:self.viewController.view];
+
+	//self.viewController.fileViewController
+
 	[self.viewController release];
 	return self;
 }

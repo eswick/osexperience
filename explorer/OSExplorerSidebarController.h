@@ -1,0 +1,8 @@
+
+
+
+@interface OSExplorerSidebarController : UIViewController
+
+
+
+@end

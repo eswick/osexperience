@@ -14,9 +14,6 @@
 - (void)loadView{
 	self.view = [[UIView alloc] init];
 
-	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	self.view.backgroundColor = [UIColor greenColor];
-
 	[self.view release];
 }
 
