@@ -2,54 +2,27 @@
 
 @implementation OSFileViewController
 
-- (id)init{
+- (id)initWithPath:(NSURL*)path{
 	if(![super init])
 		return nil;
 
-	self.path = nil;
-	self.view = nil;
-	self.loaded = false;
-	self.enumerationOptions = NSDirectoryEnumerationSkipsSubdirectoryDescendants | NSDirectoryEnumerationSkipsHiddenFiles | NSDirectoryEnumerationSkipsPackageDescendants;
-
-	self.monitor = [FSMonitor new];
-	self.monitor.delegate = self;
-	[self.monitor release];
+	self.path = path;
 
 	return self;
 }
 
 - (void)loadView{
+	self.view = [[UIView alloc] init];
 
-}
+	self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	self.view.backgroundColor = [UIColor greenColor];
 
-- (void)pathChanged{
-
-}
-
-- (void)layoutView{
-	
-}
-
-- (void)setPath:(NSURL*)path{
-	if(_path){
-		[self.monitor removeDirectoryFilter:_path];
-		[_path release];
-	}
-
-	_path = path;
-	[_path retain];
-
-	[self.monitor addDirectoryFilter:_path recursive:false];
-	[self pathChanged];
-}
-
-- (void)monitor:(FSMonitor*)monitor recievedEventInfo:(NSDictionary*)info{
-	NSLog(@"Not implemented.");
+	[self.view release];
 }
 
 - (void)dealloc{
 	[self.path release];
-	[self.monitor release];
+	[self.view release];
 	[super dealloc];
 }
 

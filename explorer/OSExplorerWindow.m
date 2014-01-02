@@ -27,19 +27,17 @@
 	if(![super initWithFrame:frame title:@"OS Explorer"])
 		return nil;
 
+
 	self.backgroundColor = [UIColor whiteColor];
+	self.autoresizesSubviews = true;
 
 	self.viewController = [[OSExplorerViewController alloc] init];
-	[self.viewController loadView];
-
-	frame = self.viewController.view.frame;
-	frame.origin.x = 0; frame.origin.y = self.windowBar.frame.size.height;
-	self.viewController.view.frame = frame;
-
 	[self addSubview:self.viewController.view];
 
-	[self.viewController release];
+	NSArray *widthConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[view]-0-|" options:0 metrics:nil views:@{@"view" : self.viewController.view}];
+	[self addConstraints:widthConstraints];
 
+	[self.viewController release];
 	return self;
 }
 
@@ -51,9 +49,9 @@
 	frame.size.height = self.bounds.size.height - self.windowBar.frame.size.height;
 	frame.size.width = self.bounds.size.width;
 
-	self.viewController.view.frame = frame;
+	//self.viewController.view.frame = frame;
 
-	[self.viewController layoutView];
+	//[self.viewController layoutView];
 }
 
 
