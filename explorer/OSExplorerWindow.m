@@ -29,29 +29,29 @@
 
 
 	self.backgroundColor = [UIColor whiteColor];
-	self.autoresizesSubviews = true;
 
 	self.viewController = [[OSExplorerViewController alloc] init];
 	[self addSubview:self.viewController.view];
 
-	NSArray *widthConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"|-0-[view]-0-|" options:0 metrics:nil views:@{@"view" : self.viewController.view}];
-	[self addConstraints:widthConstraints];
+	frame = self.viewController.view.frame;
+	frame.origin.x = 0;
+	frame.origin.y = self.windowBar.frame.size.height;
+	frame.size.height = self.bounds.size.height - self.windowBar.frame.size.height;
+	frame.size.width = self.bounds.size.width;
+	self.viewController.view.frame = frame;
 
+	self.viewController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	
 	[self.viewController release];
 	return self;
 }
 
 - (void)layoutSubviews{
 	[super layoutSubviews];
-
 	CGRect frame = self.viewController.view.frame;
 
 	frame.size.height = self.bounds.size.height - self.windowBar.frame.size.height;
 	frame.size.width = self.bounds.size.width;
-
-	//self.viewController.view.frame = frame;
-
-	//[self.viewController layoutView];
 }
 
 
