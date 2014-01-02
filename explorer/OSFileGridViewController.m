@@ -26,7 +26,7 @@
 	[self.view addGestureRecognizer:selectGesture];
 	[selectGesture release];
 
-	self.view.backgroundColor = [UIColor greenColor];
+	self.view.backgroundColor = [UIColor whiteColor];
 
 	[self.view release];
 }
