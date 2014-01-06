@@ -23,6 +23,12 @@
 	return self;
 }
 
+- (void)setColor:(UIColor*)color{
+	_color = color;
+	self.whiteView.backgroundColor = color;
+	self.layer.borderColor = color.CGColor;
+}
+
 - (void)layoutSubviews{
 	self.whiteView.frame = CGRectMake(0, 0, self.bounds.size.width, self.bounds.size.height);
 }

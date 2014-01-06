@@ -47,6 +47,7 @@
 	}else if([gesture state] == UIGestureRecognizerStateBegan){
 
 		self.dragView = [[OSSelectionDragView alloc] init];
+		self.dragView.color = [UIColor lightGrayColor];
 		[self.view addSubview:self.dragView];
         [self.view bringSubviewToFront:self.dragView];
         self.dragView.hidden = false;
