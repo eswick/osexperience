@@ -8,6 +8,7 @@
 #import "OSFileGridTileLabel.h"
 #import <libfsmonitor/libfsmonitor.h>
 #import <math.h>
+#import <icns.h>
 
 #define tilesPerColumn self.bounds.size.height / self.gridSpacing.y
 #define tilesPerRow self.bounds.size.width / self.gridSpacing.x
@@ -339,8 +340,19 @@
 - (OSFileGridTile *)tileForFileAtURL:(NSURL*)url{
 	OSFileGridTile *tile = [[OSFileGridTile alloc] initWithIconSize:self.iconSize gridSpacing:self.gridSpacing];
 
-	UIDocumentInteractionController *documentController = [UIDocumentInteractionController interactionControllerWithURL:url];
-	[tile setIcon:[[documentController icons] objectAtIndex:0]];
+	BOOL isDirectory;
+
+	[[NSFileManager defaultManager] fileExistsAtPath:[url path] isDirectory:&isDirectory];
+
+	if(isDirectory){
+		AIImage *icon = [[AIImage alloc] initWithPath:@"/Library/Application Support/OS Experience/GenericFolderIcon.icns"];
+		[tile setIcon:[icon bestImageRepresentationForSize:tile.iconView.bounds.size.height]];
+		[icon release];
+	}else{
+		AIImage *icon = [[AIImage alloc] initWithPath:@"/Library/Application Support/OS Experience/GenericDocumentIcon.icns"];
+		[tile setIcon:[icon bestImageRepresentationForSize:tile.iconView.bounds.size.height]];
+		[icon release];
+	}
 
 	UIPanGestureRecognizer *fileMoveGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleFileMoveGesture:)];
 	[tile addGestureRecognizer:fileMoveGesture];

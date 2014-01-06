@@ -21,6 +21,7 @@
 	CGRect iconViewFrame = CGRectMake(0, 0, self.iconSize.width, self.iconSize.height);
 
 	self.iconView = [[UIImageView alloc] initWithFrame:iconViewFrame];
+	self.iconView.contentMode = UIViewContentModeScaleAspectFit;
 	[self addSubview:self.iconView];
 
 	CGPoint center = self.iconView.center;
