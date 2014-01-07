@@ -11,15 +11,8 @@
 	return self;
 }
 
-- (void)loadView{
-	self.view = [[UIView alloc] init];
-
-	[self.view release];
-}
-
 - (void)dealloc{
 	[self.path release];
-	[self.view release];
 	[super dealloc];
 }
 
