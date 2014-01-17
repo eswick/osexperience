@@ -23,7 +23,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 
 /*----- Icon to open file explorer ----*/
-%subclass OSExplorerIcon : SBIcon
+/*%subclass OSExplorerIcon : SBIcon
 
 - (id)displayName{
 	return explorerIconDisplayName;
@@ -54,9 +54,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	[self launch];
 }
 
-%end
+%end*/
 
-%hook SBIconModel
+/*%hook SBIconModel
 
 - (void)loadAllIcons{
 	%orig;
@@ -66,7 +66,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	return;
 }
 
-%end
+%end*/
 
 /* ------------------------------ */
 

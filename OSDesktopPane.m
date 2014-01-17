@@ -28,14 +28,14 @@
 	[self addSubview:self.wallpaperView];
 
 
-	self.desktopViewContainer = [[UIView alloc] initWithFrame:[self desktopViewContainerFrame]];
-	[self addSubview:self.desktopViewContainer];
+	//self.desktopViewContainer = [[UIView alloc] initWithFrame:[self desktopViewContainerFrame]];
+	//[self addSubview:self.desktopViewContainer];
 
-	self.fileGridViewController = [[OSDesktopFileGridViewController alloc] init];
+	/*self.fileGridViewController = [[OSDesktopFileGridViewController alloc] init];
 	self.fileGridViewController.type = OSFileGridViewTypeDesktop;
 	self.fileGridViewController.path = [NSURL URLWithString:desktopPath];
 	[self.fileGridViewController loadView];
-	[self.desktopViewContainer addSubview:self.fileGridViewController.view];
+	[self.desktopViewContainer addSubview:self.fileGridViewController.view];*/
 
 
 	CGRect statusBarFrame = CGRectZero;
@@ -50,8 +50,8 @@
 	self.windows = [[NSMutableArray alloc] init];
 
 	[self.wallpaperView release];
-	[self.desktopViewContainer release];
-	[self.fileGridViewController release];
+	//[self.desktopViewContainer release];
+	//[self.fileGridViewController release];
 	[self.statusBar release];
 	[self.windows release];
 
