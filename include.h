@@ -1,4 +1,4 @@
-#define UIApp [UIApplication sharedApplication]
+#define UIApp ((SpringBoard*)[UIApplication sharedApplication])
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 
 #import <QuartzCore/QuartzCore.h>
@@ -260,6 +260,7 @@ typedef struct {
 - (UIWindow*)statusBarWindow;
 - (UIWindow*)keyWindow;
 - (void)clearMenuButtonTimer;
+- (BOOL)isLocked;
 
 @end
 

@@ -93,15 +93,12 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %hook SBUIController
 
-
-
-- (BOOL)activateSwitcher{
+- (void)_toggleSwitcher{
 
 	if([[OSViewController sharedInstance] missionControlIsActive])
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
 	else
 		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
-	return true;
 }
 
 
@@ -256,8 +253,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_handleMenuButtonEvent{
-	if([[%c(SBAwayController) sharedAwayController] isLocked])
+	if([UIApp isLocked]){
 		return;
+	}
 	if([[OSViewController sharedInstance] launchpadIsActive])
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
 	else
