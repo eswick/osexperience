@@ -63,9 +63,9 @@
 		}
 
 		if(UIDeviceOrientationIsPortrait([self.application statusBarOrientation])){
-			frame.size.width = (UIScreen.mainScreen.bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.height;
+			frame.size.width = ([UIScreen mainScreen].bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / [UIScreen mainScreen].bounds.size.height;
 		}else{
-			frame.size.width = (UIScreen.mainScreen.bounds.size.height * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.width;
+			frame.size.width = ([UIScreen mainScreen].bounds.size.height * (frame.size.height - self.windowBar.bounds.size.height)) / [UIScreen mainScreen].bounds.size.width;
 		}
 
 		self.frame = frame;
@@ -101,9 +101,9 @@
 		}
 
 		if (UIDeviceOrientationIsPortrait([self.application statusBarOrientation])){
-			frame.size.width = (UIScreen.mainScreen.bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.height;
+			frame.size.width = ([UIScreen mainScreen].bounds.size.width * (frame.size.height - self.windowBar.bounds.size.height)) / [UIScreen mainScreen].bounds.size.height;
 		}else{
-			frame.size.width = (UIScreen.mainScreen.bounds.size.height * (frame.size.height - self.windowBar.bounds.size.height)) / UIScreen.mainScreen.bounds.size.width;
+			frame.size.width = ([UIScreen mainScreen].bounds.size.height * (frame.size.height - self.windowBar.bounds.size.height)) / [UIScreen mainScreen].bounds.size.width;
 		}
 
 		self.frame = frame;
