@@ -108,7 +108,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 -(id)init{
 	self = %orig;
 
-	[[self rootView] removeFromSuperview];
+	[[self contentView] removeFromSuperview];
 
 	OSViewController *viewController = [OSViewController sharedInstance];
 
@@ -169,10 +169,10 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	[[OSThumbnailView sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 
 
-	[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
+	//[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
 
 
-	[[[[OSViewController sharedInstance] iconContentView] wallpaperView] setOrientation:arg2 duration:arg3];
+	//[[[[OSViewController sharedInstance] iconContentView] wallpaperView] setOrientation:arg2 duration:arg3];
 }
 
 
@@ -217,6 +217,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %hook SpringBoard
 
 -(void)sendEvent:(id)arg1{
+	%orig;
+	return;
+
 	if([arg1 isKindOfClass:[%c(UIMotionEvent) class]]){
 		%orig;
 		return;
@@ -557,7 +560,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 	[[self valueForKey:@"dockView"] setHidden:true];
 	[[self valueForKey:@"outgoingDockView"] setHidden:true];
-	[[self valueForKey:@"wallpaperView"] setImage:[[[[OSViewController sharedInstance] iconContentView] wallpaperView] image]];
+	//[[self valueForKey:@"wallpaperView"] setImage:[[[[OSViewController sharedInstance] iconContentView] wallpaperView] image]];
 
 
 	return self;
@@ -594,7 +597,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
 	if(![[arg1 application] isRunning]){
-		[arg1 launchFromViewSwitcher];
+		[[arg1 application] icon:arg1 launchFromLocation:0];
+		//[arg1 launchFromViewSwitcher];
 	}else{
 		[[arg1 application] addToSlider];
 	}
@@ -633,14 +637,14 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %end
 
 
-%hook SBUIAnimationZoomUpApp
+/*%hook SBUIAnimationZoomUpApp
 
 - (void)_startAnimation{
 	[self animationDidStop:@"AnimateResumption" finished:[NSNumber numberWithInt:1] context:0x0];
 	[self _cleanupAnimation];
 }
 
-%end
+%end*/
 
 //Multitasking things
 %hook BKSWorkspace
@@ -699,9 +703,10 @@ static BOOL missionControlActive;
 	
 		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
 
-		BKWorkspaceServer *server = [self workspaceForApplication:application];
+		[application _activate:nil];
+		//BKWorkspaceServer *server = [self workspaceForApplication:application];
 	
-		[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
+		//[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
 	
 	}else if([name isEqualToString:@"setApplicationPerformOriginals"]){
 		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];

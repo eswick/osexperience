@@ -32,7 +32,7 @@
 	self.application = application;
 
 
-	self.appView = [self.application contextHostViewForRequester:@"WindowManager" enableAndOrderFront:true];
+	self.appView = [[self.application mainScreenContextHostManager] hostViewForRequester:@"WindowManager" enableAndOrderFront:true];
 
 	CGRect frame = self.appView.frame;
 	frame.origin.y += self.windowBar.bounds.size.height;

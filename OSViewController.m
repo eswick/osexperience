@@ -296,21 +296,21 @@
 	self.iconContentView.alpha = 0.0f;
 
 
-    UIView *stockWallpaperView = [[[objc_getClass("SBUIController") sharedInstance] wallpaperView] superview];
-    stockWallpaperView.hidden = true;
-    stockWallpaperView.alpha = 0.0f;
-    [self.iconContentView addSubview:stockWallpaperView];
+    //UIView *stockWallpaperView = [[[objc_getClass("SBUIController") sharedInstance] wallpaperView] superview];
+    //stockWallpaperView.hidden = true;
+    //stockWallpaperView.alpha = 0.0f;
+    //[self.iconContentView addSubview:stockWallpaperView];
 
 
 	[self.view addSubview:self.iconContentView];
 	self.launchpadActive = false;
 
 
-	self.dock = [[objc_getClass("SBIconController") sharedInstance] dock];
-	CGRect dockFrame = self.dock.frame;
-	dockFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - dockFrame.size.height;
-	[self.dock setFrame:dockFrame];
-	[self.view addSubview:self.dock];
+	//self.dock = [[objc_getClass("SBIconController") sharedInstance] dock];
+	//CGRect dockFrame = self.dock.frame;
+	//dockFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - dockFrame.size.height;
+	//[self.dock setFrame:dockFrame];
+	//[self.view addSubview:self.dock];
 
 
     self.tempView = [[UIView alloc] init];
@@ -356,7 +356,7 @@
 
 
 - (void)animateIconLaunch:(SBIconView*)iconView{
-
+    return;
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
 	launchZoomView.image = [[iconView iconImageView] image];
 
@@ -393,8 +393,8 @@
 	if(activated){
 		[self.iconContentView prepareForDisplay];
 
-        if([[objc_getClass("SBIconController") sharedInstance] isShowingSearch])
-            [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:true];
+        //if([[objc_getClass("SBIconController") sharedInstance] isShowingSearch])
+          //  [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:true];
 
 		if(animated){
 
@@ -430,7 +430,7 @@
     	}
 
 	}else{
-        [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:false];
+        //[[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:false];
 
 
 		if(animated){

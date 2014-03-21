@@ -22,10 +22,10 @@
 	self.backgroundColor = [UIColor clearColor];
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-	self.wallpaperView = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIApplication sharedApplication] statusBarOrientation] variant:1];
-	self.wallpaperView.clipsToBounds = true;
-	[self.wallpaperView setGradientAlpha:0.0];
-	[self addSubview:self.wallpaperView];
+	//self.wallpaperView = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIApplication sharedApplication] statusBarOrientation] variant:1];
+	//self.wallpaperView.clipsToBounds = true;
+	//[self.wallpaperView setGradientAlpha:0.0];
+	//[self addSubview:self.wallpaperView];
 
 
 	//self.desktopViewContainer = [[UIView alloc] initWithFrame:[self desktopViewContainerFrame]];
@@ -49,7 +49,7 @@
 	
 	self.windows = [[NSMutableArray alloc] init];
 
-	[self.wallpaperView release];
+	//[self.wallpaperView release];
 	//[self.desktopViewContainer release];
 	//[self.fileGridViewController release];
 	[self.statusBar release];

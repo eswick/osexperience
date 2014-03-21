@@ -274,6 +274,7 @@ typedef struct {
 - (void)_deactivate:(id)arg1;
 - (NSString*)bundleIdentifier;
 - (int)activationState;
+- (void)_activate:(id)arg1;
 //- (id)initWithBundleIdentifier:(id)arg1 queue:(dispatch_queue_s*)arg2;
 
 @end
@@ -293,6 +294,11 @@ typedef struct {
 
 @end
 
+@interface SBWindowContextHostManager : NSObject
+
+- (id)hostViewForRequester:(id)arg1 enableAndOrderFront:(BOOL)arg2;
+
+@end
 
 @interface UITouchesEvent : NSObject
 
@@ -319,12 +325,13 @@ typedef struct {
 
 }
 
+- (id)mainScreenContextHostManager;
+- (BOOL)icon:(id)arg1 launchFromLocation:(int)arg2;
 - (id)displayIdentifier;
 - (id)displayValue:(int)arg1;
 - (int)contextID;
 - (void)setContextID:(int)arg1;
 - (id)displayName;
-- (id)contextHostViewForRequester:(id)arg1 enableAndOrderFront:(BOOL)arg2;
 - (id)bundleIdentifier;
 - (void)activate; //New (Added functionality back; Original function simply returns.)
 - (BOOL)activationFlag:(unsigned int)arg1;
@@ -499,6 +506,7 @@ typedef struct {
 
 - (id)wallpaperView;
 - (id)rootView;
+- (id)contentView;
 - (void)activateApplicationAnimated:(id)arg1;
 - (id)systemGestureSnapshotWithIOSurfaceSnapshotOfApp:(id)arg1 includeStatusBar:(BOOL)arg2;
 - (id)systemGestureSnapshotForApp:(id)arg1 includeStatusBar:(BOOL)arg2 decodeImage:(BOOL)arg3;
