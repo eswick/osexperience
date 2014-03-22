@@ -9,7 +9,7 @@
 
 
 @interface OSDesktopPane : OSPane <OSWindowDelegate> {
-	SBWallpaperView *_wallpaperView;
+	SBFStaticWallpaperView *_wallpaperView;
 	OSDesktopFileGridViewController *_fileGridViewController;
 	SBFakeStatusBarView *_statusBar;
 	OSWindow *_activeWindow;
@@ -17,13 +17,11 @@
 	UIView *_desktopViewContainer;
 }
 
-@property (nonatomic, retain) SBWallpaperView *wallpaperView;
-@property (nonatomic, retain) OSDesktopFileGridViewController *fileGridViewController;
+@property (nonatomic, retain) SBWallpaperController *wallpaperController;
+@property (nonatomic, assign) SBFStaticWallpaperView *wallpaperView;
 @property (nonatomic, retain) SBFakeStatusBarView *statusBar;
 @property (nonatomic, assign) OSWindow *activeWindow;
 @property (nonatomic, retain) NSMutableArray *windows;
-@property (nonatomic, retain) UIView *desktopViewContainer;
-
 
 
 @end

@@ -7,11 +7,9 @@
 
 @implementation OSDesktopPane
 @synthesize wallpaperView = _wallpaperView;
-@synthesize fileGridViewController = _fileGridViewController;
 @synthesize statusBar = _statusBar;
 @synthesize activeWindow = _activeWindow;
 @synthesize windows = _windows;
-@synthesize desktopViewContainer = _desktopViewContainer;
 
 
 -(id)init{
@@ -22,21 +20,11 @@
 	self.backgroundColor = [UIColor clearColor];
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-	//self.wallpaperView = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIApplication sharedApplication] statusBarOrientation] variant:1];
-	//self.wallpaperView.clipsToBounds = true;
-	//[self.wallpaperView setGradientAlpha:0.0];
-	//[self addSubview:self.wallpaperView];
-
-
-	//self.desktopViewContainer = [[UIView alloc] initWithFrame:[self desktopViewContainerFrame]];
-	//[self addSubview:self.desktopViewContainer];
-
-	/*self.fileGridViewController = [[OSDesktopFileGridViewController alloc] init];
-	self.fileGridViewController.type = OSFileGridViewTypeDesktop;
-	self.fileGridViewController.path = [NSURL URLWithString:desktopPath];
-	[self.fileGridViewController loadView];
-	[self.desktopViewContainer addSubview:self.fileGridViewController.view];*/
-
+	self.wallpaperController = [[objc_getClass("SBWallpaperController") alloc] initWithOrientation:0 variant:0];
+	self.wallpaperView = [self.wallpaperController _wallpaperViewForVariant:0];
+	self.wallpaperView.clipsToBounds = true;
+	[self addSubview:self.wallpaperView];
+	[self.wallpaperController release];
 
 	CGRect statusBarFrame = CGRectZero;
 	statusBarFrame.size.width = self.bounds.size.width;
@@ -49,45 +37,10 @@
 	
 	self.windows = [[NSMutableArray alloc] init];
 
-	//[self.wallpaperView release];
-	//[self.desktopViewContainer release];
-	//[self.fileGridViewController release];
 	[self.statusBar release];
 	[self.windows release];
 
 	return self;
-}
-
-- (CGRect)desktopViewContainerFrame{
-	CGRect frame = self.bounds;
-	frame.origin.x = 0;
-	frame.origin.y = self.statusBar.frame.size.height;
-	frame.size.height -= self.statusBar.frame.size.height;
-	frame.size.height -= [[[OSViewController sharedInstance] dock] frame].size.height;
-
-	frame.origin.x += (frame.size.width * (1 - widthPercentage)) / 2;
-	frame.origin.y += (frame.size.height * (1 - heightPercentage)) / 2;
-
-	frame = CGRectApplyAffineTransform(frame, CGAffineTransformMakeScale(widthPercentage, heightPercentage));
-
-	return frame;
-}
-
-- (void)layoutSubviews{
-	self.desktopViewContainer.frame = [self desktopViewContainerFrame];
-
-	self.fileGridViewController.view.frame = [self.desktopViewContainer bounds];
-	[self.fileGridViewController layoutView];
-}
-
-- (void)addSubview:(UIView*)arg1{
-	[super addSubview:arg1];
-	if([arg1 isKindOfClass:[OSWindow class]]){
-		if(![self.windows containsObject:arg1]){
-			[self.windows addObject:arg1];
-			[(OSWindow*)arg1 setDelegate:self];
-		}
-	}
 }
 
 - (BOOL)showsDock{
@@ -219,9 +172,7 @@
 }
 
 -(void)dealloc{
-	[self.wallpaperView release];
-	[self.desktopViewContainer release];
-	[self.fileGridViewController release];
+	[self.wallpaperController release];
 	[self.statusBar release];
 	[self.windows release];
 

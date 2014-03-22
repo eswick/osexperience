@@ -30,7 +30,6 @@
 
 	self.alpha = 0.75;
 
-	//self.backgroundColor = [UIColor greenColor];
 	self.clipsToBounds = false;
 	self.layer.shadowOffset = CGSizeMake(0, 0);
 	self.layer.shadowRadius = 5;
@@ -38,9 +37,13 @@
 	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
 
 
-	self.wallpaper = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIApplication sharedApplication] statusBarOrientation] variant:1];
+	self.wallpaper = [[UIImageView alloc] init];
 	self.wallpaper.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 	self.wallpaper.clipsToBounds = true;
+
+	SBWallpaperImage *wallpaperImage = [[SBWallpaperImage alloc] initWithVariant:0];
+	[self.wallpaper setImage:wallpaperImage];
+	[wallpaperImage release];
 
 	self.wallpaper.frame = self.frame;
 	frame = self.wallpaper.frame;
@@ -48,10 +51,10 @@
 	[self.wallpaper setFrame:frame];
 	
 	self.wallpaper.contentMode = UIViewContentModeScaleAspectFill;
-	[self.wallpaper setGradientAlpha:0.0];
 	[self addSubview:self.wallpaper];
+	[self.wallpaper release];
 
-
+	
 
 	frame = self.frame;
 	frame.size.width = frame.size.width / 2;
@@ -68,6 +71,7 @@
 	self.plusIcon.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
 
 	[self addSubview:self.plusIcon];
+	[self.plusIcon release];
 
 
 
@@ -82,11 +86,13 @@
 	self.shadow.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.plusIcon.bounds].CGPath;
 
 	[self addSubview:self.shadow];
+	[self.shadow release];
 
 	UILongPressGestureRecognizer *tapGesture = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
 	tapGesture.minimumPressDuration = 0;
 	[self addGestureRecognizer:tapGesture];
 	[tapGesture release];
+
 
 	return self;
 }

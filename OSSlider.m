@@ -120,7 +120,7 @@
 			frame.origin = CGPointMake(0, 0);
 			[appView setFrame:frame];
  		}else if([pane isKindOfClass:[OSDesktopPane class]]){
- 			[[(OSDesktopPane*)pane wallpaperView] setOrientation:orientation duration:duration];
+ 			//[[(OSDesktopPane*)pane wallpaperView] setOrientation:orientation duration:duration];
  		}
  	}
 

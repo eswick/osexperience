@@ -227,15 +227,13 @@ typedef struct {
 
 - (void)setOrientation:(int)arg1 duration:(double)arg2;
 - (void)setGradientAlpha:(float)arg1;
-- (id)initWithOrientation:(int)arg1 variant:(int)arg2;
+- (id)initWithOrientation:(NSUInteger)arg1 variant:(NSUInteger)arg2;
 
 @end
 
 @interface UIToolbar (STFUACAdditions)
 
-
 - (UIView*)_backgroundView;
-
 
 @end
 
@@ -264,6 +262,30 @@ typedef struct {
 
 @end
 
+@interface SBWallpaperImage : UIImage
+
++ (id)cachedWallpaperDataForVariant:(long long)arg1;
+- (id)initWithVariant:(long long)arg1;
+
+@end
+
+@interface SBFStaticWallpaperView : UIView
+
+- (id)initWithFrame:(struct CGRect)arg1 wallpaperImage:(id)arg2;
+- (void)_startGeneratingBlurredImages;
+
+@end
+
+@interface SBWallpaperController : NSObject
+
++ (id)sharedInstance;
+
+- (id)_blurViewsForVariant:(NSUInteger)arg1;
+- (id)_wallpaperViewForVariant:(NSUInteger)arg1;
+- (id)_newFakeBlurViewForVariant:(NSUInteger)arg1;
+- (id)initWithOrientation:(NSUInteger)arg1 variant:(NSUInteger)arg2;
+
+@end
 
 @interface BKApplication : NSObject
 

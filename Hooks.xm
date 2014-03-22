@@ -4,7 +4,6 @@
 #import <dispatch/dispatch.h>
 #import <GraphicsServices/GraphicsServices.h>
 #import <UIKit/UIKit.h>
-#import "launchpad/UIImage+StackBlur.h"
 #import <mach/mach_time.h>
 #import <IOKit/hid/IOHIDEventSystem.h>
 #import <substrate.h>
@@ -253,9 +252,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_handleMenuButtonEvent{
-	if([UIApp isLocked]){
+	if([UIApp isLocked])
 		return;
-	}
 	if([[OSViewController sharedInstance] launchpadIsActive])
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
 	else
