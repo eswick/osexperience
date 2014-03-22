@@ -548,23 +548,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
-
-%hook SBFolderSlidingView
-
-- (id)initWithPosition:(int)arg1 folderView:(id)arg2{
-	self = %orig;
-
-	[[self valueForKey:@"dockView"] setHidden:true];
-	[[self valueForKey:@"outgoingDockView"] setHidden:true];
-	//[[self valueForKey:@"wallpaperView"] setImage:[[[[OSViewController sharedInstance] iconContentView] wallpaperView] image]];
-
-
-	return self;
-}
-
-
-%end
-
 %hook SBAwayController
 
 -(void)lock{
@@ -594,7 +577,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
 	if(![[arg1 application] isRunning]){
 		[[arg1 application] icon:arg1 launchFromLocation:0];
-		//[arg1 launchFromViewSwitcher];
 	}else{
 		[[arg1 application] addToSlider];
 	}
@@ -607,8 +589,10 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
         return;
     }
     
+    [arg1 setHighlighted:false];
+
     if([[arg1 icon] isFolderIcon] || [[arg1 icon] isNewsstandIcon]){
-        [[arg1 icon] launch];
+        [[arg1 icon] launchFromLocation:0];
     }else{
         [[OSViewController sharedInstance] deactivateLaunchpadWithIconView:arg1];
         %orig;
@@ -633,14 +617,14 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %end
 
 
-/*%hook SBUIAnimationZoomUpApp
+%hook SBUIAnimationZoomUpApp
 
 - (void)_startAnimation{
-	[self animationDidStop:@"AnimateResumption" finished:[NSNumber numberWithInt:1] context:0x0];
+	[self _noteAnimationDidFinish];
 	[self _cleanupAnimation];
 }
 
-%end*/
+%end
 
 //Multitasking things
 %hook BKSWorkspace

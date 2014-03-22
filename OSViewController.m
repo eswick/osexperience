@@ -356,9 +356,8 @@
 
 
 - (void)animateIconLaunch:(SBIconView*)iconView{
-    return;
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
-	launchZoomView.image = [[iconView iconImageView] image];
+	launchZoomView.image = [iconView iconImageSnapshot];
 
 	CGRect zoomViewFrame;
 	zoomViewFrame.origin = [iconView convertPoint:iconView.bounds.origin toView:self.view];
@@ -375,7 +374,6 @@
     	[launchZoomView removeFromSuperview];
     	[launchZoomView release];
     }];
-
 }
 
 

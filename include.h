@@ -8,7 +8,7 @@
 
 - (BOOL)isFolderIcon;
 - (BOOL)isNewsstandIcon;
-- (void)launch;
+- (void)launchFromLocation:(int)arg1;
 - (id)generateIconImage:(int)arg1;
 - (id)getIconImage:(int)arg1;
 
@@ -419,8 +419,8 @@ typedef struct {
 @interface SBUIAnimationZoomUpApp
 
 - (void)_noteAnimationDidFinish:(BOOL)arg1;
-- (void)animationDidStop:(id)arg1 finished:(id)arg2 context:(void *)arg3;
 - (void)_cleanupAnimation;
+- (void)_noteAnimationDidFinish;
 
 @end 
 
@@ -438,10 +438,12 @@ typedef struct {
 @interface SBIconView : UIImageView
 
 - (SBIcon*)icon;
-- (id)iconImageView;
+- (id)_iconImageView;
 - (BOOL)isGrabbed;
 - (BOOL)isInDock;
-
+- (id)iconImageSnapshot;
+- (BOOL)isHighlighted;
+- (void)setHighlighted:(BOOL)highlighted;
 
 @end
 
