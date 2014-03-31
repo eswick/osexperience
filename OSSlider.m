@@ -307,8 +307,8 @@
         		[self updateDockPosition];
         		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 
-        	}completion:^(BOOL finished){}
-        ];
+        	}completion:^(BOOL completed){
+        	}];
 	}
 }
 

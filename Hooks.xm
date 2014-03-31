@@ -569,10 +569,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
-
-
 %hook SBIconController
-
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
 	if(![[arg1 application] isRunning]){
@@ -584,12 +581,13 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 
 -(void)iconTapped:(SBIconView*)arg1{
+	%log;
+	[arg1 setHighlighted:false];
+
     if(![[OSViewController sharedInstance] launchpadIsActive]){
         %orig;
         return;
     }
-    
-    [arg1 setHighlighted:false];
 
     if([[arg1 icon] isFolderIcon] || [[arg1 icon] isNewsstandIcon]){
         [[arg1 icon] launchFromLocation:0];
@@ -599,29 +597,100 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
     }
 }
 
+- (void)_resetRootIconLists{
+	%orig;
 
-%end
+	[[[OSViewController sharedInstance] dock] removeFromSuperview];
 
-
-//App launch animations
-%hook SBAppToAppTransitionView
-
-
--(id)initWithFrame:(CGRect)arg1{
-	self = %orig;
-	[self setHidden:true];
-	return self;
+	[[OSViewController sharedInstance] setDock:[[[[objc_getClass("SBIconController") sharedInstance] _rootFolderController] contentView] dockView]];
+	CGRect dockFrame = [[[OSViewController sharedInstance] dock] frame];
+	dockFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - dockFrame.size.height;
+	[[[OSViewController sharedInstance] dock] setFrame:dockFrame];
+	[[[OSViewController sharedInstance] view] addSubview:[[OSViewController sharedInstance] dock]];
 }
 
+%end
+
+/* Block app launch animation */
+%hook SBIconAnimator
+
+- (void)_setAnimationFraction:(float)arg1{
+}
+
+- (void)setFraction:(float)arg1{
+}
+
+- (void)_prepareAnimation{
+}
+
+- (void)prepare{
+}
+
+- (void)_cleanupAnimation{
+}
+
+- (void)cleanup{
+}
 
 %end
 
+%hook SBUIAnimationZoomUpAppFromHome
 
-%hook SBUIAnimationZoomUpApp
+- (void)prepareZoom{
+}
 
-- (void)_startAnimation{
-	[self _noteAnimationDidFinish];
-	[self _cleanupAnimation];
+%end
+
+%hook SBUIAnimationController
+
+- (void)__cleanupAnimation{
+	[self _setAnimationState:3];
+	[self _releaseActivationAssertion];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"SBApplicationActivationStateDidChange" object:nil];
+	[[%c(SBAlertItemsController) sharedInstance] setForceAlertsToPend:false forReason:[self _animationIdentifier]];
+
+	[UIWindow _synchronizeDrawing];
+}
+
+- (void)dealloc{
+	[self _setAnimationState:4];
+	%orig;
+}
+
+%end
+
+%hook SBUIMainScreenAnimationController
+
+- (void)_cleanupAnimation{
+}
+
+%end
+
+%hook SBRootFolderController
+
+- (void)setDockOffscreenFraction:(double)arg1{
+}
+
+%end
+
+%hook SBAppToAppWorkspaceTransaction
+
+- (void)_commit{
+	[self _setupAnimation];
+	[self _kickOffActivation];
+
+	SBUIAnimationController *animationController = MSHookIvar<SBUIAnimationController*>(self, "_animationController");
+	[animationController beginAnimation];
+	
+	struct objc_super superInfo = {
+        self,
+        [self superclass]
+    };
+
+    objc_msgSendSuper(&superInfo, @selector(_commit));
+
+    [self animationController:nil willBeginAnimation:nil];
+    [self animationControllerDidFinishAnimation:nil];
 }
 
 %end

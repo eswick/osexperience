@@ -379,13 +379,7 @@ typedef struct {
 
 
 
-
-
 @interface CPDistributedMessagingCenter : NSObject
-{
-
-}
-
 + (id)centerNamed:(id)arg1;
 
 - (void)registerForMessageName:(id)arg1 target:(id)arg2 selector:(SEL)arg3;
@@ -397,22 +391,105 @@ typedef struct {
 
 @end
 
+@interface UIWindow()
+
++ (void)_synchronizeDrawing;
+
+@end
+
+@interface SBRootFolderView : UIView
+
+- (id)dockView;
+
+@end
+
+@interface SBIconAnimator : NSObject
+@property(nonatomic, assign) id delegate;
+
+
+@end
+
+@interface SBRootFolderController : NSObject
+
+@property(readonly, nonatomic) SBRootFolderView *contentView;
+
+- (void)setDockOffscreenFraction:(double)arg1;
+
+@end
+
+@interface SBAlertItemsController : NSObject
+
++ (id)sharedInstance;
+- (void)setForceAlertsToPend:(BOOL)arg1 forReason:(id)arg2;
+
+@end
+
+@interface SBUIAnimationController : NSObject
+
+- (void)beginAnimation;
+- (void)_setAnimationState:(int)arg1;
+- (id)_animationIdentifier;
+- (void)_releaseActivationAssertion;
+- (void)_cleanupAnimation;
+
+
+@end
+
+@interface SBRootFolder : NSObject
+
+- (id)dockModel;
+
+@end
+
+@interface SBAppToAppWorkspaceTransaction : NSObject
+
+@property(readonly, nonatomic) SBApplication *toApplication;
+
+- (void)_kickOffActivation;
+- (void)_endAnimation;
+- (void)animationControllerDidFinishAnimation:(id)arg1;
+- (void)_transactionComplete;
+- (void)animationController:(id)arg1 willBeginAnimation:(BOOL)arg2;
+- (id)_setupAnimationFrom:(id)arg1 to:(id)arg2;
+- (void)performToAppStateCleanup;
+- (void)_setupAnimation;
+
+@end
 
 @interface SBIconController
 
 + (id)sharedInstance;
 - (void)prepareToRotateFolderAndSlidingViewsToOrientation:(int)arg1;
-- (id)dock;
+- (id)dockListView;
 - (id)contentView;
 - (BOOL)hasOpenFolder;
 - (void)_showSearchKeyboardIfNecessary:(BOOL)arg1;
 - (BOOL)isShowingSearch;
+- (SBRootFolderController*)_rootFolderController;
+- (id)rootFolder;
+- (void)clearHighlightedIcon;
+- (void)_resetRootIconLists;
+
+//New
+- (void)addDockToOSViewController;
 
 @end
 
-
 @interface SBDockIconListView : UIView
 
+- (void)setModel:(id)model;
+- (void)layoutIconsNow;
+- (id)layoutDelegate;
+
+@end
+
+@interface SBDockView : UIView
+
+- (SBDockIconListView*)dockListView;
+
+@end
+
+@interface SBIconZoomAnimator : NSObject
 
 @end
 
@@ -421,6 +498,13 @@ typedef struct {
 - (void)_noteAnimationDidFinish:(BOOL)arg1;
 - (void)_cleanupAnimation;
 - (void)_noteAnimationDidFinish;
+- (void)_notifyDelegateOfCompletion;
+- (void)_setAnimationState:(int)arg1;
+- (int)_animationState;
+- (void)_cancelAnimation;
+- (void)_noteZoomDidFinish;
+- (void)_setHidden:(BOOL)arg1;
+
 
 @end 
 

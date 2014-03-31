@@ -58,14 +58,12 @@
         isPortrait = true;
     }
 
-
     CGRect dockFrame = self.dock.frame;
-
     float dockShownY = (isPortrait ? self.view.frame.size.height : self.view.frame.size.width) - dockFrame.size.height;
-
     dockFrame.origin.y = dockShownY + (percentage * dockFrame.size.height);
 
     [self.dock setFrame:dockFrame];
+
 }
 
 
@@ -295,23 +293,8 @@
 	self.iconContentView = [[OSIconContentView alloc] init];
 	self.iconContentView.alpha = 0.0f;
 
-
-    //UIView *stockWallpaperView = [[[objc_getClass("SBUIController") sharedInstance] wallpaperView] superview];
-    //stockWallpaperView.hidden = true;
-    //stockWallpaperView.alpha = 0.0f;
-    //[self.iconContentView addSubview:stockWallpaperView];
-
-
 	[self.view addSubview:self.iconContentView];
 	self.launchpadActive = false;
-
-
-	//self.dock = [[objc_getClass("SBIconController") sharedInstance] dock];
-	//CGRect dockFrame = self.dock.frame;
-	//dockFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - dockFrame.size.height;
-	//[self.dock setFrame:dockFrame];
-	//[self.view addSubview:self.dock];
-
 
     self.tempView = [[UIView alloc] init];
     self.tempView.backgroundColor = [UIColor greenColor];

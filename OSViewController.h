@@ -16,7 +16,7 @@
 
 @interface OSViewController : UIViewController{
 	OSSlider *_slider;
-	SBDockIconListView *_dock;
+	SBDockView *_dock;
 	OSIconContentView *_iconContentView;
 	BOOL _launchpadActive;
 	BOOL _launchpadAnimating;
@@ -29,7 +29,7 @@
 }
 
 @property (nonatomic, assign) OSSlider *slider;
-@property (nonatomic, retain) SBDockIconListView *dock;
+@property (nonatomic, assign) SBDockView *dock;
 @property (nonatomic, retain) OSIconContentView *iconContentView;
 @property (nonatomic, readwrite, getter=launchpadIsActive) BOOL launchpadActive;
 @property (nonatomic, readwrite, getter=launchpadIsAnimating) BOOL launchpadAnimating;
