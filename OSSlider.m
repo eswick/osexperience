@@ -289,6 +289,42 @@
 	}
 }
 
+- (void)beginPaging{
+	self.pageOffsetBefore = self.contentOffset.x;
+}
+
+- (void)updatePaging:(float)percentage{
+	CGPoint velocity = [self.swipeGestureRecognizer movementVelocityInPointsPerSecond];
+
+	Ivar horizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_horizontalVelocity");
+	Ivar previousHorizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_previousHorizontalVelocity");
+	if (!horizontalVelocity_ivar || !previousHorizontalVelocity_ivar) return;
+
+	double *horizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(horizontalVelocity_ivar)));
+	double *previousHorizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(previousHorizontalVelocity_ivar)));
+	
+	*previousHorizontalVelocity = *horizontalVelocity;
+	*horizontalVelocity = -(velocity.x / 300);
+
+	float pageWidth = self.frame.size.width;
+
+	float newContentOffset = 0;
+	newContentOffset = (-percentage * pageWidth) + self.pageOffsetBefore;
+
+	BOOL outsideX;
+
+	self.contentOffset = [self _rubberBandContentOffsetForOffset:CGPointMake(newContentOffset, self.contentOffset.y) outsideX:&outsideX outsideY:NULL];
+}
+
+- (void)swipeGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
+	Ivar horizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_horizontalVelocity");
+	if (!horizontalVelocity_ivar) return;
+	double *horizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(horizontalVelocity_ivar)));
+
+	[self _prepareToPageWithHorizontalVelocity:*horizontalVelocity verticalVelocity:0];
+	[self _endPanNormal:true];
+}
+
 - (void)dealloc{
 	[super dealloc];
 }

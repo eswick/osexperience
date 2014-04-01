@@ -43,7 +43,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
-
 %hook SBAppSliderController
 
 - (void)forceDismissAnimated:(BOOL)arg1{
@@ -56,7 +55,33 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
+%hook SBPanGestureRecognizer
+
+- (id)initForHorizontalPanning{
+	self = %orig;
+	[[OSSlider sharedInstance] setSwipeGestureRecognizer:self];
+	return self;
+}
+
+%end
+
 %hook SBUIController
+
+- (void)_switchAppGestureBegan:(double)arg1{
+	[[OSSlider sharedInstance] beginPaging];
+}
+
+- (void)_switchAppGestureChanged:(double)arg1{
+	[[OSSlider sharedInstance] updatePaging:arg1];
+}
+
+- (void)_switchAppGestureCancelled{
+	[[OSSlider sharedInstance] swipeGestureEndedWithCompletionType:0 cumulativePercentage:0];
+}
+
+- (void)_switchAppGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
+	[[OSSlider sharedInstance] swipeGestureEndedWithCompletionType:arg1 cumulativePercentage:arg2];
+}
 
 - (void)_setToggleSwitcherAfterLaunchApp:(id)arg1{
 }

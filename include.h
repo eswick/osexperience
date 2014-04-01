@@ -15,6 +15,16 @@
 
 @end
 
+@interface UIScrollView()
+
+- (void)_endPanNormal:(BOOL)arg1;
+- (struct CGPoint)_pageDecelerationTarget;
+- (void)_prepareToPageWithHorizontalVelocity:(double)arg1 verticalVelocity:(double)arg2;
+- (struct CGPoint)_rubberBandContentOffsetForOffset:(struct CGPoint)arg1 outsideX:(BOOL *)arg2 outsideY:(BOOL *)arg3;
+
+
+@end
+
 @interface OSExplorerIcon : SBIcon
 
 @end

@@ -19,6 +19,8 @@
 @property (nonatomic, readonly) OSPane *currentPane;
 @property (nonatomic, readwrite) UIInterfaceOrientation currentOrientation;
 @property (nonatomic, readwrite) int pageIndexPlaceholder;
+@property (nonatomic, readwrite) float pageOffsetBefore;
+@property (nonatomic, assign) SBPanGestureRecognizer *swipeGestureRecognizer;
 
 
 + (id)sharedInstance;
@@ -27,6 +29,9 @@
 - (BOOL)isPortrait;
 - (void)alignPanes;
 - (void)scrollToPane:(OSPane*)pane animated:(BOOL)animated;
+- (void)updatePaging:(float)percentage;
+- (void)beginPaging;
+- (void)swipeGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2;
 
 
 
