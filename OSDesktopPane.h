@@ -2,7 +2,6 @@
 #import <UIKit/UIKit.h>
 #import "OSPane.h"
 #import "OSWallpaperView.h"
-#import "explorer/OSDesktopFileGridViewController.h"
 #import "include.h"
 #import "OSWindow.h"
 #import "OSSlider.h"
@@ -10,7 +9,6 @@
 
 @interface OSDesktopPane : OSPane <OSWindowDelegate> {
 	SBFStaticWallpaperView *_wallpaperView;
-	OSDesktopFileGridViewController *_fileGridViewController;
 	SBFakeStatusBarView *_statusBar;
 	OSWindow *_activeWindow;
 	NSMutableArray *_windows;

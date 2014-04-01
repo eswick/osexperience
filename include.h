@@ -185,6 +185,29 @@ typedef struct{
 
 @end
 
+@interface SBGestureRecognizer : NSObject
+
+@property(nonatomic) int state;
+@property(copy, nonatomic) id handler;
+
+- (int)templateMatch;
+
+@end
+
+@interface SBFluidSlideGestureRecognizer : SBGestureRecognizer
+
+@property(readonly, nonatomic) struct CGPoint movementVelocityInPointsPerSecond;
+@property(readonly, nonatomic) float cumulativePercentage;
+
+- (void)updateForBeganOrMovedTouches:(void*)arg1;
+- (float)computeIncrementalGestureMotion:(void*)arg1;
+
+@end
+
+@interface SBPanGestureRecognizer : SBFluidSlideGestureRecognizer
+
+@end
+
 @interface UIStatusBarServer : NSObject
 
 + (UIStatusBarData*) getStatusBarData;
@@ -621,14 +644,5 @@ typedef struct {
 - (id)systemGestureSnapshotForApp:(id)arg1 includeStatusBar:(BOOL)arg2 decodeImage:(BOOL)arg3;
 - (void)createFakeSpringBoardStatusBar;
 - (id)_fakeSpringBoardStatusBar;
-
-@end
-
-
-@interface SBFluidSlideGestureRecognizer : NSObject
-
--(float)cumulativePercentage;
--(CGPoint)centroidPoint;
-
 
 @end

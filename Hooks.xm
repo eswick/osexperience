@@ -20,53 +20,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %group SpringBoard //Springboard hooks
 
-
-/*----- Icon to open file explorer ----*/
-/*%subclass OSExplorerIcon : SBIcon
-
-- (id)displayName{
-	return explorerIconDisplayName;
-}
-
-- (id)leafIdentifier{
-	return explorerIconIdentifier;
-}
-
-- (BOOL)isLeafIcon{
-	return true;
-}
-
-- (NSString*)representation{
-	return explorerIconIdentifier;
-}
-
-- (void)launch{
-	OSExplorerWindow *window = [[OSExplorerWindow alloc] init];
-	OSDesktopPane *desktopPane = [[OSPaneModel sharedInstance] firstDesktopPane];
-
-	[desktopPane addSubview:window];
-	window.center = CGPointMake(desktopPane.bounds.size.width / 2, desktopPane.bounds.size.height / 2);
-	[window release];
-}
-
-- (void)launchFromViewSwitcher{
-	[self launch];
-}
-
-%end*/
-
-/*%hook SBIconModel
-
-- (void)loadAllIcons{
-	%orig;
-	OSExplorerIcon *explorerIcon = [[%c(OSExplorerIcon) alloc] init];
-	[self addIcon:explorerIcon];
-	[explorerIcon release];
-	return;
-}
-
-%end*/
-
 /* ------------------------------ */
 
 %hook SBWallpaperView
@@ -90,7 +43,36 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
+
+%hook SBAppSliderController
+
+- (void)forceDismissAnimated:(BOOL)arg1{
+	[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
+}
+
+- (void)animatePresentationFromDisplayIdentifier:(id)arg1 withViews:(id)arg2 fromSide:(int)arg3 withCompletion:(id)arg4{
+	MSHookIvar<BOOL>([%c(SBUIController) sharedInstance], "_switcherAnimationInProgress") = false;
+}
+
+%end
+
 %hook SBUIController
+
+- (void)_setToggleSwitcherAfterLaunchApp:(id)arg1{
+}
+
+- (BOOL)isAppSwitcherShowing{
+	return [[OSViewController sharedInstance] missionControlIsActive];
+}
+
+- (BOOL)_activateAppSwitcherFromSide:(int)arg1{
+	[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
+	return true;
+}
+
+- (void)dismissSwitcherAnimated:(BOOL)arg1{
+	[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
+}
 
 - (void)_toggleSwitcher{
 
@@ -112,7 +94,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	[[UIApp keyWindow] setRootViewController:viewController];
 	[viewController.view setFrame:[[UIScreen mainScreen] bounds]];
 
-
 	CPDistributedMessagingCenter *messagingCenter;
 	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
 
@@ -121,6 +102,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
 
 	[messagingCenter sendMessageAndReceiveReplyName:@"setKeyWindowContext" userInfo:dictionary];
+
 	return self;
 }
 
@@ -171,48 +153,19 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	//[[[[OSViewController sharedInstance] iconContentView] wallpaperView] setOrientation:arg2 duration:arg3];
 }
 
-
-%end
-
-
-
-
-%hook SBScaleGestureRecognizer
-
-
--(BOOL)sendsTouchesCancelledToApplication{
+- (BOOL)hasPendingAppActivatedByGesture{
 	return true;
 }
 
--(BOOL)shouldReceiveTouches{
-	return false;
-}
-
 %end
-
-
-%hook SBPanGestureRecognizer
-
--(BOOL)sendsTouchesCancelledToApplication{
-	return true;
-}
-
--(BOOL)shouldReceiveTouches{
-	if([self isKindOfClass:[%c(SBOffscreenSwipeGestureRecognizer) class]])
-		return true;
-	else
-		return false;
-
-
-}
-
-%end
-
-
 
 %hook SpringBoard
 
--(void)sendEvent:(id)arg1{
+- (id)_accessibilityFrontMostApplication{
+	return @"LOL";
+}
+
+- (void)sendEvent:(id)arg1{
 	%orig;
 	return;
 
@@ -280,8 +233,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 %end
-
-
 
 %hook SBHandMotionExtractor
 
@@ -854,65 +805,6 @@ static BOOL OSGestureInProgress = false;
 }
 %end
 
-static IOHIDEventSystemCallback eventCallback = NULL;
-
-void resetTouches(void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event){
-	IOHIDEventRef eventNegator = IOHIDEventCreateCopy(kCFAllocatorDefault, event);
-
-	CFArrayRef children = IOHIDEventGetChildren(eventNegator);
-
-	for(int i = 0; i < CFArrayGetCount(children); i++){
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch, 0);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerRange, 0);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerEventMask, 3);
-	}
-
-	eventCallback(target, refcon, service, eventNegator);
-
-	for(int i = 0; i < CFArrayGetCount(children); i++){
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch, 1);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerRange, 1);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerEventMask, 3);
-	}
-
-	eventCallback(target, refcon, service, eventNegator);
-
-	CFRelease(eventNegator);
-}
-
-void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event) {
-	if(IOHIDEventGetType(event) == kIOHIDEventTypeDigitizer){
-		CFArrayRef children = IOHIDEventGetChildren(event);
-
-		if(children != NULL){
-			int count = 0;
-
-			for(int i = 0; i < CFArrayGetCount(children); i++){
-				int value = IOHIDEventGetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch);
-				if(value == 1)
-					count++;
-			}
-
-			if(count >= 4){
-				if(!OSGestureInProgress == true){
-					OSGestureInProgress = true;
-					[[[%c(BKWorkspaceServerManager) sharedInstance] currentWorkspace] cancelAllTouches];
-					resetTouches(target, refcon, service, event);
-					return;
-				}
-			}else if(count == 0){
-				OSGestureInProgress = false;
-			}
-		}
-	}
-	eventCallback(target, refcon, service, event);
-}
-
-MSHook(Boolean, IOHIDEventSystemOpen, IOHIDEventSystemRef system, IOHIDEventSystemCallback callback, void* target, void* refcon, void* unused){
-	eventCallback = callback;
-	return _IOHIDEventSystemOpen(system, handle_event, target, refcon, unused);
-}
-
 %end
 //End (gesture fix)
 
@@ -966,12 +858,10 @@ static BOOL networkActivity;
 
 %end
 
-
 __attribute__((constructor))
 static void initialize() {
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){
 		%init(Backboard);
-		MSHookFunction(&IOHIDEventSystemOpen, MSHake(IOHIDEventSystemOpen));
 
 		center = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
   		[center runServer];

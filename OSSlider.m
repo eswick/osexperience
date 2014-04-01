@@ -13,8 +13,6 @@
 @synthesize currentPane = _currentPane;
 @synthesize currentOrientation = _currentOrientation;
 @synthesize pageIndexPlaceholder = _pageIndexPlaceholder;
-@synthesize switcherUpGesture = _switcherUpGesture;
-@synthesize switcherDownGesture = _switcherDownGesture;
 
 
 + (id)sharedInstance
@@ -44,31 +42,10 @@
 	self.clipsToBounds = false;
 	self.showsHorizontalScrollIndicator = false;
 
-	self.panGestureRecognizer.minimumNumberOfTouches = 4;
-	self.panGestureRecognizer.cancelsTouchesInView = false;
-
-	self.switcherUpGesture = [[OSSwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpSwitcherGesture:)];
-	self.switcherUpGesture.direction = UISwipeGestureRecognizerDirectionUp;
-	self.switcherUpGesture.numberOfTouchesRequired = 4;
-	[self addGestureRecognizer:self.switcherUpGesture];
-
-	self.switcherDownGesture = [[OSSwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleDownSwitcherGesture:)];
-	self.switcherDownGesture.direction = UISwipeGestureRecognizerDirectionDown;
-	self.switcherDownGesture.numberOfTouchesRequired = 4;
-	[self addGestureRecognizer:self.switcherDownGesture];	
-
-	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherUpGesture];
-	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherDownGesture];
-
-
 	[self setDelegate:self];
-
-	[self.switcherUpGesture release];
-	[self.switcherDownGesture release];
 
 	return self;
 }
-
 
 -(void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
@@ -313,9 +290,6 @@
 }
 
 - (void)dealloc{
-	[self.switcherUpGesture release];
-	[self.switcherDownGesture release];
-
 	[super dealloc];
 }
 

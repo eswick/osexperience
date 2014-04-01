@@ -11,8 +11,6 @@
 @synthesize missionControlActive = _missionControlActive;
 @synthesize missionControlAnimating = _missionControlAnimating;
 @synthesize switcherBackgroundView = _switcherBackgroundView;
-@synthesize pinchInGesture = _pinchInGesture;
-@synthesize pinchOutGesture = _pinchOutGesture;
 @synthesize tempView = _tempView;
 
 
@@ -32,17 +30,6 @@
     if(![super init])
         return nil;
 
-    self.pinchInGesture = [[OSPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
-    self.pinchInGesture.minimumNumberOfTouches = 5;
-    self.pinchInGesture.type = OSPinchGestureRecognizerTypeInwards;
-
-
-    self.pinchOutGesture = [[OSPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
-    self.pinchOutGesture.minimumNumberOfTouches = 5;
-    self.pinchOutGesture.type = OSPinchGestureRecognizerTypeOutwards;
-
-    [self.pinchOutGesture release];
-    [self.pinchInGesture release];
     return self;
 }
 
@@ -285,11 +272,6 @@
     [desktopPane release];
 
 
-
-    [self.view addGestureRecognizer:self.pinchInGesture];
-    [self.view addGestureRecognizer:self.pinchOutGesture];
-
-
 	self.iconContentView = [[OSIconContentView alloc] init];
 	self.iconContentView.alpha = 0.0f;
 
@@ -311,21 +293,6 @@
 
 
 }
-
--(void)handlePinchGesture:(OSPinchGestureRecognizer*)gesture{
-
-    if(gesture.state == UIGestureRecognizerStateRecognized){
-        if(gesture.type == OSPinchGestureRecognizerTypeInwards){
-            if(!self.launchpadIsActive)
-                [self setLaunchpadActive:true animated:true];
-        }else if(gesture.type == OSPinchGestureRecognizerTypeOutwards){
-            if(self.launchpadIsActive)
-                [self setLaunchpadActive:false animated:true];
-        }
-    }
-
-}
-
 
 - (void)menuButtonPressed{
 
@@ -459,8 +426,6 @@
     [self.view release];
     [self.iconContentView release];
     [self.switcherBackgroundView release];
-    [self.pinchInGesture release];
-    [self.pinchOutGesture release];
     [super dealloc];
 }
 

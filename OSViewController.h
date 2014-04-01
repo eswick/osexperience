@@ -6,7 +6,6 @@
 #import "launchpad/OSIconContentView.h"
 #import "missioncontrol/OSThumbnailView.h"
 #import "missioncontrol/OSMCWindowLayoutManager.h"
-#import "OSPinchGestureRecognizer.h"
 #import "OSSwitcherBackgroundView.h"
 
 #define windowConstraintsTopMargin 7
@@ -23,8 +22,6 @@
 	BOOL _missionControlActive;
 	BOOL _missionControlAnimating;
 	OSSwitcherBackgroundView *_switcherBackgroundView;
-	OSPinchGestureRecognizer *_pinchOutGesture;
-	OSPinchGestureRecognizer *_pinchInGesture;
 	UIView *_tempView;
 }
 
@@ -36,8 +33,6 @@
 @property (nonatomic, readwrite, getter=missionControlIsActive) BOOL missionControlActive;
 @property (nonatomic, readwrite, getter=missionControlIsAnimating) BOOL missionControlAnimating;
 @property (nonatomic, retain) OSSwitcherBackgroundView *switcherBackgroundView;
-@property (nonatomic, retain) OSPinchGestureRecognizer *pinchOutGesture;
-@property (nonatomic, retain) OSPinchGestureRecognizer *pinchInGesture;
 @property (nonatomic, retain) UIView *tempView;
 
 
