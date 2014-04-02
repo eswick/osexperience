@@ -82,6 +82,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 			options: UIViewAnimationOptionCurveEaseOut 
 			animations:^{
 				[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
+				[[OSViewController sharedInstance] setDockPercentage:0.0];
 		}completion:^(BOOL completed){
 				[[OSViewController sharedInstance] setLaunchpadActive:true];
 				[[OSViewController sharedInstance] setLaunchpadAnimating:false];
@@ -102,6 +103,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 - (void)_suspendGestureChanged:(float)arg1{
 	[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:arg1];
+
+	if(![[[OSSlider sharedInstance] currentPane] showsDock])
+		[[OSViewController sharedInstance] setDockPercentage:1 - arg1];
 }
 
 - (void)_suspendGestureBegan{
@@ -110,11 +114,13 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_switchAppGestureBegan:(double)arg1{
-	[[OSSlider sharedInstance] beginPaging];
+	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
+		[[OSSlider sharedInstance] beginPaging];
 }
 
 - (void)_switchAppGestureChanged:(double)arg1{
-	[[OSSlider sharedInstance] updatePaging:arg1];
+	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
+		[[OSSlider sharedInstance] updatePaging:arg1];
 }
 
 - (void)_switchAppGestureCancelled{
@@ -122,7 +128,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_switchAppGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
-	[[OSSlider sharedInstance] swipeGestureEndedWithCompletionType:arg1 cumulativePercentage:arg2];
+	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
+		[[OSSlider sharedInstance] swipeGestureEndedWithCompletionType:arg1 cumulativePercentage:arg2];
 }
 
 - (void)_setToggleSwitcherAfterLaunchApp:(id)arg1{
@@ -133,7 +140,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (BOOL)_activateAppSwitcherFromSide:(int)arg1{
-	[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
+	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
+		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
 	return true;
 }
 
