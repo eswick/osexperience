@@ -67,6 +67,48 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %hook SBUIController
 
+- (void)_suspendGestureCleanUpState{
+}
+
+- (void)_suspendGestureCancelled{
+	[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+}
+
+- (void)_suspendGestureEndedWithCompletionType:(long long)arg1{
+	if(arg1 == 1){
+
+		[UIView animateWithDuration:0.25
+			delay:0
+			options: UIViewAnimationOptionCurveEaseOut 
+			animations:^{
+				[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
+		}completion:^(BOOL completed){
+				[[OSViewController sharedInstance] setLaunchpadActive:true];
+				[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+		}];
+		
+	}else{
+		[UIView animateWithDuration:0.25
+			delay:0
+			options: UIViewAnimationOptionCurveEaseOut 
+			animations:^{
+				[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
+		}completion:^(BOOL completed){
+				[[OSViewController sharedInstance] setLaunchpadActive:false];
+				[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+		}];
+	}
+}
+
+- (void)_suspendGestureChanged:(float)arg1{
+	[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:arg1];
+}
+
+- (void)_suspendGestureBegan{
+	[[[OSViewController sharedInstance] iconContentView] prepareForDisplay];
+	[[OSViewController sharedInstance] setLaunchpadAnimating:true];
+}
+
 - (void)_switchAppGestureBegan:(double)arg1{
 	[[OSSlider sharedInstance] beginPaging];
 }

@@ -1,6 +1,7 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
 
+#define LP_VARIANCE 0.1
 
 @implementation OSViewController
 @synthesize slider = _slider;
@@ -278,6 +279,8 @@
 	[self.view addSubview:self.iconContentView];
 	self.launchpadActive = false;
 
+    [self setLaunchpadVisiblePercentage:0.0];
+
     self.tempView = [[UIView alloc] init];
     self.tempView.backgroundColor = [UIColor greenColor];
     self.tempView.alpha = 0.25;
@@ -335,6 +338,14 @@
 	[self setLaunchpadActive:false animated:true];
 }
 
+- (void)setLaunchpadVisiblePercentage:(float)percentage{
+    self._launchpadVisiblePercentage = percentage;
+
+    float variance = LP_VARIANCE - (LP_VARIANCE * percentage);
+
+    self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1 + variance, 1 + variance);
+    self.iconContentView.alpha = percentage;
+}
 
 - (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated{
 
@@ -349,17 +360,14 @@
 			if(self.launchpadIsAnimating)
 				return;
 
-			self.iconContentView.alpha = 0.0f;
-        	self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
-
             self.launchpadAnimating = true;
             self.launchpadActive = true;
 
         	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
 
                 [self setDockPercentage:0.0];
-                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
-                self.iconContentView.alpha = 1.0f;
+                
+                [self setLaunchpadVisiblePercentage:1];
 
             } completion:^(BOOL finished){
                 self.launchpadAnimating = false;
@@ -373,32 +381,25 @@
     		self.iconContentView.alpha = 1.0f;
     		self.launchpadActive = true;
             [[[objc_getClass("SBIconController") sharedInstance] contentView] addSubview:[[OSViewController sharedInstance] dock]];
-
-   
     	}
 
 	}else{
         //[[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:false];
 
-
 		if(animated){
 
 			if(self.launchpadIsAnimating)
 				return;
+
             self.launchpadAnimating = true;
             self.launchpadActive = false;
 
             [[[OSViewController sharedInstance] view] addSubview:[[OSViewController sharedInstance] dock]];
 
-			self.iconContentView.alpha = 1.0f;
-        	self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
-
         	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [[OSSlider sharedInstance] updateDockPosition];
-                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
-                self.iconContentView.alpha = 0.0f;
+                [self setLaunchpadVisiblePercentage:0];
             } completion:^(BOOL finished){
-                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
                 self.launchpadAnimating = false;
                 [(SpringBoard*)UIApp clearMenuButtonTimer];
             }];

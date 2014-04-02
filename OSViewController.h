@@ -34,6 +34,7 @@
 @property (nonatomic, readwrite, getter=missionControlIsAnimating) BOOL missionControlAnimating;
 @property (nonatomic, retain) OSSwitcherBackgroundView *switcherBackgroundView;
 @property (nonatomic, retain) UIView *tempView;
+@property (nonatomic, readwrite) float _launchpadVisiblePercentage;
 
 
 
@@ -45,6 +46,7 @@
 - (void)setDockPercentage:(float)percentage;
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated;
 - (CGRect)missionControlWindowConstraints;
+- (void)setLaunchpadVisiblePercentage:(float)percentage;
 
 
 @end
