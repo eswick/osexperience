@@ -144,8 +144,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				[[OSViewController sharedInstance] setDockPercentage:1 - (-percentage)];
 		}else{
 			[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1 - (percentage)];
-			//if(![[[OSSlider sharedInstance] currentPane] showsDock])
-			//	[[OSViewController sharedInstance] setDockPercentage:1 - arg1];
+			if(![[[OSSlider sharedInstance] currentPane] showsDock])
+				[[OSViewController sharedInstance] setDockPercentage:percentage];
 		}
 	}else if([arg1 state] == UIGestureRecognizerStateEnded){
 		[[OSViewController sharedInstance] setLaunchpadAnimating:false];
@@ -168,9 +168,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 					options: UIViewAnimationOptionCurveEaseOut 
 					animations:^{
 						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
+						[[OSViewController sharedInstance] setLaunchpadActive:false];
 						[[OSSlider sharedInstance] updateDockPosition];
 					}completion:^(BOOL completed){
-						[[OSViewController sharedInstance] setLaunchpadActive:false];
 						[[OSViewController sharedInstance] setLaunchpadAnimating:false];
 					}];
 			}
@@ -179,6 +179,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				delay:0
 				options: UIViewAnimationOptionCurveEaseOut 
 				animations:^{
+					[[OSSlider sharedInstance] updateDockPosition];
 					[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
 				}completion:^(BOOL completed){
 					[[OSViewController sharedInstance] setLaunchpadActive:false];

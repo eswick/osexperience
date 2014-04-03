@@ -211,19 +211,13 @@
 -(void)updateDockPosition{
 
 	OSPane *intrudingPane;
-
 	CGRect currentPaneRect = CGRectIntersection(self.currentPane.frame, self.bounds);
-
 	CGRect intrudingPaneRect;
 
 	if(self.contentOffset.x >= self.currentPane.frame.origin.x){
-
 		intrudingPane = [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex + 1];
-
 	}else{
-
 		intrudingPane = [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex - 1];
-		
 	}
 
 	if(!intrudingPane && self.currentPane.showsDock){
