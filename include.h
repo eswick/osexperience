@@ -212,6 +212,7 @@ typedef struct{
 @property(readonly, nonatomic) double incrementalMotion;
 @property(readonly, nonatomic) double cumulativeMotion;
 @property(readonly, nonatomic) double skippedCumulativePercentage;
+@property(nonatomic) double animationDistance;
 
 - (void)updateForBeganOrMovedTouches:(void*)arg1;
 - (float)computeIncrementalGestureMotion:(void*)arg1;

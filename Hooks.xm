@@ -43,18 +43,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
-%hook SBAppSliderController
-
-- (void)forceDismissAnimated:(BOOL)arg1{
-	[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
-}
-
-- (void)animatePresentationFromDisplayIdentifier:(id)arg1 withViews:(id)arg2 fromSide:(int)arg3 withCompletion:(id)arg4{
-	MSHookIvar<BOOL>([%c(SBUIController) sharedInstance], "_switcherAnimationInProgress") = false;
-}
-
-%end
-
 %hook SBPanGestureRecognizer
 
 - (id)initForHorizontalPanning{
@@ -66,6 +54,34 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %end
 
 %hook SBUIController
+
+static BOOL upGestureWasRecognized = false;
+static BOOL downGestureWasRecognized = false;
+
+- (void)handleFluidVerticalSystemGesture:(SBPanGestureRecognizer*)arg1{
+
+	if([arg1 state] == UIGestureRecognizerStateEnded || [arg1 state] == UIGestureRecognizerStateCancelled){
+		upGestureWasRecognized = false;
+		downGestureWasRecognized = false;
+		return;
+	}
+
+	if([arg1 cumulativeMotion] == [arg1 animationDistance]){
+		upGestureWasRecognized = false;
+		if(!downGestureWasRecognized){
+			[[OSViewController sharedInstance] handleDownGesture];
+			downGestureWasRecognized = true;
+		}
+	}else if([arg1 cumulativeMotion] == -[arg1 animationDistance]){
+		downGestureWasRecognized = false;
+		if(!upGestureWasRecognized){
+			[[OSViewController sharedInstance] handleUpGesture];
+			upGestureWasRecognized = true;
+		}
+
+	}
+
+}
 
 - (void)_suspendGestureCleanUpState{
 }
@@ -140,8 +156,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (BOOL)_activateAppSwitcherFromSide:(int)arg1{
-	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
-		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
+	[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
 	return true;
 }
 

@@ -47,6 +47,7 @@
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated;
 - (CGRect)missionControlWindowConstraints;
 - (void)setLaunchpadVisiblePercentage:(float)percentage;
-
+- (void)handleUpGesture;
+- (void)handleDownGesture;
 
 @end

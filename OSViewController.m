@@ -54,6 +54,26 @@
 
 }
 
+- (void)handleUpGesture{
+    if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
+        return;
+
+    if(![self missionControlIsActive]){
+        [self setMissionControlActive:true animated:true];
+        return;
+    }
+}
+
+- (void)handleDownGesture{
+    if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
+        return;
+
+    if([self missionControlIsActive]){
+        [self setMissionControlActive:false animated:true];
+        return;
+    }
+}
+
 
 /*----- Mission Control -------*/
 
