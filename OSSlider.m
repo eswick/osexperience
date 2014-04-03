@@ -13,8 +13,6 @@
 @synthesize currentPane = _currentPane;
 @synthesize currentOrientation = _currentOrientation;
 @synthesize pageIndexPlaceholder = _pageIndexPlaceholder;
-@synthesize switcherUpGesture = _switcherUpGesture;
-@synthesize switcherDownGesture = _switcherDownGesture;
 
 
 + (id)sharedInstance
@@ -44,31 +42,12 @@
 	self.clipsToBounds = false;
 	self.showsHorizontalScrollIndicator = false;
 
-	self.panGestureRecognizer.minimumNumberOfTouches = 4;
-	self.panGestureRecognizer.cancelsTouchesInView = false;
-
-	self.switcherUpGesture = [[OSSwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleUpSwitcherGesture:)];
-	self.switcherUpGesture.direction = UISwipeGestureRecognizerDirectionUp;
-	self.switcherUpGesture.numberOfTouchesRequired = 4;
-	[self addGestureRecognizer:self.switcherUpGesture];
-
-	self.switcherDownGesture = [[OSSwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleDownSwitcherGesture:)];
-	self.switcherDownGesture.direction = UISwipeGestureRecognizerDirectionDown;
-	self.switcherDownGesture.numberOfTouchesRequired = 4;
-	[self addGestureRecognizer:self.switcherDownGesture];	
-
-	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherUpGesture];
-	[self.panGestureRecognizer requireGestureRecognizerToFail:self.switcherDownGesture];
-
+	self.backgroundColor = [UIColor blackColor];
 
 	[self setDelegate:self];
 
-	[self.switcherUpGesture release];
-	[self.switcherDownGesture release];
-
 	return self;
 }
-
 
 -(void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
@@ -120,7 +99,7 @@
 			frame.origin = CGPointMake(0, 0);
 			[appView setFrame:frame];
  		}else if([pane isKindOfClass:[OSDesktopPane class]]){
- 			[[(OSDesktopPane*)pane wallpaperView] setOrientation:orientation duration:duration];
+ 			//[[(OSDesktopPane*)pane wallpaperView] setOrientation:orientation duration:duration];
  		}
  	}
 
@@ -234,19 +213,13 @@
 -(void)updateDockPosition{
 
 	OSPane *intrudingPane;
-
 	CGRect currentPaneRect = CGRectIntersection(self.currentPane.frame, self.bounds);
-
 	CGRect intrudingPaneRect;
 
 	if(self.contentOffset.x >= self.currentPane.frame.origin.x){
-
 		intrudingPane = [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex + 1];
-
 	}else{
-
 		intrudingPane = [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex - 1];
-		
 	}
 
 	if(!intrudingPane && self.currentPane.showsDock){
@@ -307,15 +280,48 @@
         		[self updateDockPosition];
         		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 
-        	}completion:^(BOOL finished){}
-        ];
+        	}completion:^(BOOL completed){
+        	}];
 	}
 }
 
-- (void)dealloc{
-	[self.switcherUpGesture release];
-	[self.switcherDownGesture release];
+- (void)beginPaging{
+	self.pageOffsetBefore = self.contentOffset.x;
+}
 
+- (void)updatePaging:(float)percentage{
+	CGPoint velocity = [self.swipeGestureRecognizer movementVelocityInPointsPerSecond];
+
+	Ivar horizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_horizontalVelocity");
+	Ivar previousHorizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_previousHorizontalVelocity");
+	if (!horizontalVelocity_ivar || !previousHorizontalVelocity_ivar) return;
+
+	double *horizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(horizontalVelocity_ivar)));
+	double *previousHorizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(previousHorizontalVelocity_ivar)));
+	
+	*previousHorizontalVelocity = *horizontalVelocity;
+	*horizontalVelocity = -(velocity.x / 300);
+
+	float pageWidth = self.frame.size.width;
+
+	float newContentOffset = 0;
+	newContentOffset = (-percentage * pageWidth) + self.pageOffsetBefore;
+
+	BOOL outsideX;
+
+	self.contentOffset = [self _rubberBandContentOffsetForOffset:CGPointMake(newContentOffset, self.contentOffset.y) outsideX:&outsideX outsideY:NULL];
+}
+
+- (void)swipeGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
+	Ivar horizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_horizontalVelocity");
+	if (!horizontalVelocity_ivar) return;
+	double *horizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(horizontalVelocity_ivar)));
+
+	[self _prepareToPageWithHorizontalVelocity:*horizontalVelocity verticalVelocity:0];
+	[self _endPanNormal:true];
+}
+
+- (void)dealloc{
 	[super dealloc];
 }
 

@@ -14,7 +14,7 @@
 + (id)sharedInstance;
 
 
-- (unsigned int)count;
+- (NSUInteger)count;
 - (void)insertPane:(OSPane*)pane atIndex:(unsigned int)index;
 - (void)addPaneToFront:(OSPane*)pane;
 - (void)addPaneToBack:(OSPane*)pane;

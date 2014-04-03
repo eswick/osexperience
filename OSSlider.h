@@ -4,10 +4,6 @@
 #import "UIView+FrameExtensions.h"
 #import "OSViewController.h"
 #import "OSPaneModel.h"
-#import "OSSwipeGestureRecognizer.h"
-
-
-
 
 
 @interface OSSlider : UIScrollView <UIScrollViewDelegate> {
@@ -16,8 +12,6 @@
 	OSPane *_currentPane;
 	UIInterfaceOrientation _currentOrientation;
 	int _pageIndexPlaceholder;
-	OSSwipeGestureRecognizer *_switcherUpGesture;
-	OSSwipeGestureRecognizer *_switcherDownGesture;
 }
 
 @property (nonatomic) CGPoint startingOffset;
@@ -25,8 +19,8 @@
 @property (nonatomic, readonly) OSPane *currentPane;
 @property (nonatomic, readwrite) UIInterfaceOrientation currentOrientation;
 @property (nonatomic, readwrite) int pageIndexPlaceholder;
-@property (nonatomic, retain) OSSwipeGestureRecognizer *switcherUpGesture;
-@property (nonatomic, retain) OSSwipeGestureRecognizer *switcherDownGesture;
+@property (nonatomic, readwrite) float pageOffsetBefore;
+@property (nonatomic, assign) SBPanGestureRecognizer *swipeGestureRecognizer;
 
 
 + (id)sharedInstance;
@@ -35,6 +29,9 @@
 - (BOOL)isPortrait;
 - (void)alignPanes;
 - (void)scrollToPane:(OSPane*)pane animated:(BOOL)animated;
+- (void)updatePaging:(float)percentage;
+- (void)beginPaging;
+- (void)swipeGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2;
 
 
 

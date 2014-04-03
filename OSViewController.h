@@ -6,7 +6,6 @@
 #import "launchpad/OSIconContentView.h"
 #import "missioncontrol/OSThumbnailView.h"
 #import "missioncontrol/OSMCWindowLayoutManager.h"
-#import "OSPinchGestureRecognizer.h"
 #import "OSSwitcherBackgroundView.h"
 
 #define windowConstraintsTopMargin 7
@@ -16,29 +15,27 @@
 
 @interface OSViewController : UIViewController{
 	OSSlider *_slider;
-	SBDockIconListView *_dock;
+	SBDockView *_dock;
 	OSIconContentView *_iconContentView;
 	BOOL _launchpadActive;
 	BOOL _launchpadAnimating;
 	BOOL _missionControlActive;
 	BOOL _missionControlAnimating;
 	OSSwitcherBackgroundView *_switcherBackgroundView;
-	OSPinchGestureRecognizer *_pinchOutGesture;
-	OSPinchGestureRecognizer *_pinchInGesture;
 	UIView *_tempView;
 }
 
 @property (nonatomic, assign) OSSlider *slider;
-@property (nonatomic, retain) SBDockIconListView *dock;
+@property (nonatomic, assign) SBDockView *dock;
 @property (nonatomic, retain) OSIconContentView *iconContentView;
 @property (nonatomic, readwrite, getter=launchpadIsActive) BOOL launchpadActive;
 @property (nonatomic, readwrite, getter=launchpadIsAnimating) BOOL launchpadAnimating;
 @property (nonatomic, readwrite, getter=missionControlIsActive) BOOL missionControlActive;
 @property (nonatomic, readwrite, getter=missionControlIsAnimating) BOOL missionControlAnimating;
 @property (nonatomic, retain) OSSwitcherBackgroundView *switcherBackgroundView;
-@property (nonatomic, retain) OSPinchGestureRecognizer *pinchOutGesture;
-@property (nonatomic, retain) OSPinchGestureRecognizer *pinchInGesture;
 @property (nonatomic, retain) UIView *tempView;
+@property (nonatomic, readwrite) float _launchpadVisiblePercentage;
+@property (nonatomic, readwrite) BOOL desktopShowsDock;
 
 
 
@@ -50,6 +47,8 @@
 - (void)setDockPercentage:(float)percentage;
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated;
 - (CGRect)missionControlWindowConstraints;
-
+- (void)setLaunchpadVisiblePercentage:(float)percentage;
+- (void)handleUpGesture;
+- (void)handleDownGesture;
 
 @end

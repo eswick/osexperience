@@ -1,8 +1,6 @@
 #import "OSIconContentView.h"
 
 
-
-
 @implementation OSIconContentView
 @synthesize wallpaperView = _wallpaperView;
 @synthesize contentView = _contentView;
@@ -15,12 +13,6 @@
 	}
 
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
-
-	self.wallpaperView = [[objc_getClass("SBWallpaperView") alloc] initWithOrientation:[[UIApplication sharedApplication] statusBarOrientation] variant:1];
-	self.wallpaperView.image = [self.wallpaperView.image stackBlur:50.0];
-	[self addSubview:self.wallpaperView];
-
 
     self.contentView = [[objc_getClass("SBIconController") sharedInstance] contentView];
 	[self addSubview:self.contentView];
@@ -36,13 +28,14 @@
 	[self addSubview:self.statusBar];
 
 	return self;
-
-
 }
 
 
 -(void)prepareForDisplay{
+	self.wallpaperView = [[[objc_getClass("SBWallpaperController") sharedInstance] _blurViewsForVariant:0] anyObject];
+	[self addSubview:self.wallpaperView];
 	[self bringSubviewToFront:self.wallpaperView];
+
 	[self addSubview:self.contentView];
 	[self bringSubviewToFront:self.statusBar];
 }

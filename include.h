@@ -1,4 +1,4 @@
-#define UIApp [UIApplication sharedApplication]
+#define UIApp ((SpringBoard*)[UIApplication sharedApplication])
 #define DegreesToRadians(x) ((x) * M_PI / 180.0)
 
 #import <QuartzCore/QuartzCore.h>
@@ -8,9 +8,19 @@
 
 - (BOOL)isFolderIcon;
 - (BOOL)isNewsstandIcon;
-- (void)launch;
+- (void)launchFromLocation:(int)arg1;
 - (id)generateIconImage:(int)arg1;
 - (id)getIconImage:(int)arg1;
+
+
+@end
+
+@interface UIScrollView()
+
+- (void)_endPanNormal:(BOOL)arg1;
+- (struct CGPoint)_pageDecelerationTarget;
+- (void)_prepareToPageWithHorizontalVelocity:(double)arg1 verticalVelocity:(double)arg2;
+- (struct CGPoint)_rubberBandContentOffsetForOffset:(struct CGPoint)arg1 outsideX:(BOOL *)arg2 outsideY:(BOOL *)arg3;
 
 
 @end
@@ -185,6 +195,38 @@ typedef struct{
 
 @end
 
+@interface SBGestureRecognizer : NSObject
+
+@property(nonatomic) int state;
+@property(copy, nonatomic) id handler;
+
+- (int)templateMatch;
+
+@end
+
+@interface SBFluidSlideGestureRecognizer : SBGestureRecognizer
+
+@property(readonly, nonatomic) struct CGPoint movementVelocityInPointsPerSecond;
+@property(readonly, nonatomic) float cumulativePercentage;
+@property(readonly, nonatomic) double activeRecognitionDuration;
+@property(readonly, nonatomic) double incrementalMotion;
+@property(readonly, nonatomic) double cumulativeMotion;
+@property(readonly, nonatomic) double skippedCumulativePercentage;
+@property(nonatomic) double animationDistance;
+
+- (void)updateForBeganOrMovedTouches:(void*)arg1;
+- (float)computeIncrementalGestureMotion:(void*)arg1;
+- (long long)completionTypeProjectingMomentumForInterval:(double)arg1;
+
+@end
+
+@interface SBPanGestureRecognizer : SBFluidSlideGestureRecognizer
+
+@end
+
+@interface SBScaleGestureRecognizer : SBFluidSlideGestureRecognizer
+@end
+
 @interface UIStatusBarServer : NSObject
 
 + (UIStatusBarData*) getStatusBarData;
@@ -227,15 +269,13 @@ typedef struct {
 
 - (void)setOrientation:(int)arg1 duration:(double)arg2;
 - (void)setGradientAlpha:(float)arg1;
-- (id)initWithOrientation:(int)arg1 variant:(int)arg2;
+- (id)initWithOrientation:(NSUInteger)arg1 variant:(NSUInteger)arg2;
 
 @end
 
 @interface UIToolbar (STFUACAdditions)
 
-
 - (UIView*)_backgroundView;
-
 
 @end
 
@@ -260,9 +300,34 @@ typedef struct {
 - (UIWindow*)statusBarWindow;
 - (UIWindow*)keyWindow;
 - (void)clearMenuButtonTimer;
+- (BOOL)isLocked;
 
 @end
 
+@interface SBWallpaperImage : UIImage
+
++ (id)cachedWallpaperDataForVariant:(long long)arg1;
+- (id)initWithVariant:(long long)arg1;
+
+@end
+
+@interface SBFStaticWallpaperView : UIView
+
+- (id)initWithFrame:(struct CGRect)arg1 wallpaperImage:(id)arg2;
+- (void)_startGeneratingBlurredImages;
+
+@end
+
+@interface SBWallpaperController : NSObject
+
++ (id)sharedInstance;
+
+- (id)_blurViewsForVariant:(NSUInteger)arg1;
+- (id)_wallpaperViewForVariant:(NSUInteger)arg1;
+- (id)_newFakeBlurViewForVariant:(NSUInteger)arg1;
+- (id)initWithOrientation:(NSUInteger)arg1 variant:(NSUInteger)arg2;
+
+@end
 
 @interface BKApplication : NSObject
 
@@ -274,6 +339,7 @@ typedef struct {
 - (void)_deactivate:(id)arg1;
 - (NSString*)bundleIdentifier;
 - (int)activationState;
+- (void)_activate:(id)arg1;
 //- (id)initWithBundleIdentifier:(id)arg1 queue:(dispatch_queue_s*)arg2;
 
 @end
@@ -293,6 +359,11 @@ typedef struct {
 
 @end
 
+@interface SBWindowContextHostManager : NSObject
+
+- (id)hostViewForRequester:(id)arg1 enableAndOrderFront:(BOOL)arg2;
+
+@end
 
 @interface UITouchesEvent : NSObject
 
@@ -319,12 +390,13 @@ typedef struct {
 
 }
 
+- (id)mainScreenContextHostManager;
+- (BOOL)icon:(id)arg1 launchFromLocation:(int)arg2;
 - (id)displayIdentifier;
 - (id)displayValue:(int)arg1;
 - (int)contextID;
 - (void)setContextID:(int)arg1;
 - (id)displayName;
-- (id)contextHostViewForRequester:(id)arg1 enableAndOrderFront:(BOOL)arg2;
 - (id)bundleIdentifier;
 - (void)activate; //New (Added functionality back; Original function simply returns.)
 - (BOOL)activationFlag:(unsigned int)arg1;
@@ -349,13 +421,7 @@ typedef struct {
 
 
 
-
-
 @interface CPDistributedMessagingCenter : NSObject
-{
-
-}
-
 + (id)centerNamed:(id)arg1;
 
 - (void)registerForMessageName:(id)arg1 target:(id)arg2 selector:(SEL)arg3;
@@ -367,30 +433,120 @@ typedef struct {
 
 @end
 
+@interface UIWindow()
+
++ (void)_synchronizeDrawing;
+
+@end
+
+@interface SBRootFolderView : UIView
+
+- (id)dockView;
+
+@end
+
+@interface SBIconAnimator : NSObject
+@property(nonatomic, assign) id delegate;
+
+
+@end
+
+@interface SBRootFolderController : NSObject
+
+@property(readonly, nonatomic) SBRootFolderView *contentView;
+
+- (void)setDockOffscreenFraction:(double)arg1;
+
+@end
+
+@interface SBAlertItemsController : NSObject
+
++ (id)sharedInstance;
+- (void)setForceAlertsToPend:(BOOL)arg1 forReason:(id)arg2;
+
+@end
+
+@interface SBUIAnimationController : NSObject
+
+- (void)beginAnimation;
+- (void)_setAnimationState:(int)arg1;
+- (id)_animationIdentifier;
+- (void)_releaseActivationAssertion;
+- (void)_cleanupAnimation;
+
+
+@end
+
+@interface SBRootFolder : NSObject
+
+- (id)dockModel;
+
+@end
+
+@interface SBAppToAppWorkspaceTransaction : NSObject
+
+@property(readonly, nonatomic) SBApplication *toApplication;
+
+- (void)_kickOffActivation;
+- (void)_endAnimation;
+- (void)animationControllerDidFinishAnimation:(id)arg1;
+- (void)_transactionComplete;
+- (void)animationController:(id)arg1 willBeginAnimation:(BOOL)arg2;
+- (id)_setupAnimationFrom:(id)arg1 to:(id)arg2;
+- (void)performToAppStateCleanup;
+- (void)_setupAnimation;
+
+@end
 
 @interface SBIconController
 
 + (id)sharedInstance;
 - (void)prepareToRotateFolderAndSlidingViewsToOrientation:(int)arg1;
-- (id)dock;
+- (id)dockListView;
 - (id)contentView;
 - (BOOL)hasOpenFolder;
 - (void)_showSearchKeyboardIfNecessary:(BOOL)arg1;
 - (BOOL)isShowingSearch;
+- (SBRootFolderController*)_rootFolderController;
+- (id)rootFolder;
+- (void)clearHighlightedIcon;
+- (void)_resetRootIconLists;
+
+//New
+- (void)addDockToOSViewController;
 
 @end
 
-
 @interface SBDockIconListView : UIView
 
+- (void)setModel:(id)model;
+- (void)layoutIconsNow;
+- (id)layoutDelegate;
+
+@end
+
+@interface SBDockView : UIView
+
+- (SBDockIconListView*)dockListView;
+
+@end
+
+@interface SBIconZoomAnimator : NSObject
 
 @end
 
 @interface SBUIAnimationZoomUpApp
 
 - (void)_noteAnimationDidFinish:(BOOL)arg1;
-- (void)animationDidStop:(id)arg1 finished:(id)arg2 context:(void *)arg3;
 - (void)_cleanupAnimation;
+- (void)_noteAnimationDidFinish;
+- (void)_notifyDelegateOfCompletion;
+- (void)_setAnimationState:(int)arg1;
+- (int)_animationState;
+- (void)_cancelAnimation;
+- (void)_noteZoomDidFinish;
+- (void)_setHidden:(BOOL)arg1;
+
 
 @end 
 
@@ -408,10 +564,12 @@ typedef struct {
 @interface SBIconView : UIImageView
 
 - (SBIcon*)icon;
-- (id)iconImageView;
+- (id)_iconImageView;
 - (BOOL)isGrabbed;
 - (BOOL)isInDock;
-
+- (id)iconImageSnapshot;
+- (BOOL)isHighlighted;
+- (void)setHighlighted:(BOOL)highlighted;
 
 @end
 
@@ -499,19 +657,15 @@ typedef struct {
 
 - (id)wallpaperView;
 - (id)rootView;
+- (id)contentView;
 - (void)activateApplicationAnimated:(id)arg1;
 - (id)systemGestureSnapshotWithIOSurfaceSnapshotOfApp:(id)arg1 includeStatusBar:(BOOL)arg2;
 - (id)systemGestureSnapshotForApp:(id)arg1 includeStatusBar:(BOOL)arg2 decodeImage:(BOOL)arg3;
 - (void)createFakeSpringBoardStatusBar;
 - (id)_fakeSpringBoardStatusBar;
 
-@end
-
-
-@interface SBFluidSlideGestureRecognizer : NSObject
-
--(float)cumulativePercentage;
--(CGPoint)centroidPoint;
-
+//New
+- (void)setScaleGestureRecognizer:(SBFluidSlideGestureRecognizer*)recognizer;
+- (SBFluidSlideGestureRecognizer*)scaleGestureRecognizer;
 
 @end

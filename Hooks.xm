@@ -4,7 +4,6 @@
 #import <dispatch/dispatch.h>
 #import <GraphicsServices/GraphicsServices.h>
 #import <UIKit/UIKit.h>
-#import "launchpad/UIImage+StackBlur.h"
 #import <mach/mach_time.h>
 #import <IOKit/hid/IOHIDEventSystem.h>
 #import <substrate.h>
@@ -20,53 +19,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 #define explorerIconIdentifier @"com.eswick.osexperience.osexplorer"
 
 %group SpringBoard //Springboard hooks
-
-
-/*----- Icon to open file explorer ----*/
-/*%subclass OSExplorerIcon : SBIcon
-
-- (id)displayName{
-	return explorerIconDisplayName;
-}
-
-- (id)leafIdentifier{
-	return explorerIconIdentifier;
-}
-
-- (BOOL)isLeafIcon{
-	return true;
-}
-
-- (NSString*)representation{
-	return explorerIconIdentifier;
-}
-
-- (void)launch{
-	OSExplorerWindow *window = [[OSExplorerWindow alloc] init];
-	OSDesktopPane *desktopPane = [[OSPaneModel sharedInstance] firstDesktopPane];
-
-	[desktopPane addSubview:window];
-	window.center = CGPointMake(desktopPane.bounds.size.width / 2, desktopPane.bounds.size.height / 2);
-	[window release];
-}
-
-- (void)launchFromViewSwitcher{
-	[self launch];
-}
-
-%end*/
-
-/*%hook SBIconModel
-
-- (void)loadAllIcons{
-	%orig;
-	OSExplorerIcon *explorerIcon = [[%c(OSExplorerIcon) alloc] init];
-	[self addIcon:explorerIcon];
-	[explorerIcon release];
-	return;
-}
-
-%end*/
 
 /* ------------------------------ */
 
@@ -91,31 +43,219 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
+%hook SBPanGestureRecognizer
+
+- (id)initForHorizontalPanning{
+	self = %orig;
+	[[OSSlider sharedInstance] setSwipeGestureRecognizer:self];
+	return self;
+}
+
+%end
+
+%hook SBScaleGestureRecognizer
+
+- (void)setRequiredDirectionality:(int)directionality{
+	%orig(0);
+}
+
+%end
+
 %hook SBUIController
 
+- (void)handleFluidVerticalSystemGesture:(SBPanGestureRecognizer*)arg1{
+	static BOOL upGestureWasRecognized = false;
+	static BOOL downGestureWasRecognized = false;
+
+	if([arg1 state] == UIGestureRecognizerStateEnded || [arg1 state] == UIGestureRecognizerStateCancelled){
+		upGestureWasRecognized = false;
+		downGestureWasRecognized = false;
+		return;
+	}
+
+	if([arg1 cumulativeMotion] == [arg1 animationDistance]){
+		upGestureWasRecognized = false;
+		if(!downGestureWasRecognized){
+			[[OSViewController sharedInstance] handleDownGesture];
+			downGestureWasRecognized = true;
+		}
+	}else if([arg1 cumulativeMotion] == -[arg1 animationDistance]){
+		downGestureWasRecognized = false;
+		if(!upGestureWasRecognized){
+			[[OSViewController sharedInstance] handleUpGesture];
+			upGestureWasRecognized = true;
+		}
+
+	}
+
+}
+
+- (void)_suspendGestureCleanUpState{
+}
+
+- (void)_suspendGestureCancelled{
+	[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+}
+
+- (void)_suspendGestureEndedWithCompletionType:(long long)arg1{
+	if(arg1 == 1){
+
+		[UIView animateWithDuration:0.25
+			delay:0
+			options: UIViewAnimationOptionCurveEaseOut 
+			animations:^{
+				[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
+				[[OSViewController sharedInstance] setDockPercentage:0.0];
+		}completion:^(BOOL completed){
+				[[OSViewController sharedInstance] setLaunchpadActive:true];
+				[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+		}];
+		
+	}else{
+		[UIView animateWithDuration:0.25
+			delay:0
+			options: UIViewAnimationOptionCurveEaseOut 
+			animations:^{
+				[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
+		}completion:^(BOOL completed){
+				[[OSViewController sharedInstance] setLaunchpadActive:false];
+				[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+		}];
+	}
+}
+
+- (void)handleFluidScaleSystemGesture:(SBScaleGestureRecognizer*)arg1{
+	static BOOL launchpadClosing = false;
+
+	float percentage = [arg1 cumulativeMotion] / [arg1 animationDistance];
+
+	if([arg1 state] == UIGestureRecognizerStateBegan){
+		launchpadClosing = [[OSViewController sharedInstance] launchpadIsActive];
+
+		if(![[OSViewController sharedInstance] launchpadIsActive]){
+			[[[OSViewController sharedInstance] iconContentView] prepareForDisplay];
+		}
+
+		[[OSViewController sharedInstance] setLaunchpadAnimating:true];
+	}else if([arg1 state] == UIGestureRecognizerStateChanged){
+		if(!launchpadClosing){
+			[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:-percentage];
+			if(![[[OSSlider sharedInstance] currentPane] showsDock])
+				[[OSViewController sharedInstance] setDockPercentage:1 - (-percentage)];
+		}else{
+			[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1 - (percentage)];
+			if(![[[OSSlider sharedInstance] currentPane] showsDock])
+				[[OSViewController sharedInstance] setDockPercentage:percentage];
+		}
+	}else if([arg1 state] == UIGestureRecognizerStateEnded){
+		[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+
+		if([arg1 completionTypeProjectingMomentumForInterval:3.0] != -1){
+			if(!launchpadClosing){
+				[UIView animateWithDuration:0.25
+					delay:0
+					options: UIViewAnimationOptionCurveEaseOut 
+					animations:^{
+						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
+						[[OSViewController sharedInstance] setDockPercentage:0.0];
+					}completion:^(BOOL completed){
+						[[OSViewController sharedInstance] setLaunchpadActive:true];
+						[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+					}];
+			}else{
+				[UIView animateWithDuration:0.25
+					delay:0
+					options: UIViewAnimationOptionCurveEaseOut 
+					animations:^{
+						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
+						[[OSViewController sharedInstance] setLaunchpadActive:false];
+						[[OSSlider sharedInstance] updateDockPosition];
+					}completion:^(BOOL completed){
+						[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+					}];
+			}
+		}else{
+			[UIView animateWithDuration:0.25
+				delay:0
+				options: UIViewAnimationOptionCurveEaseOut 
+				animations:^{
+					[[OSSlider sharedInstance] updateDockPosition];
+					[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
+				}completion:^(BOOL completed){
+					[[OSViewController sharedInstance] setLaunchpadActive:false];
+					[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+				}];
+		}
+	}
 
 
-- (BOOL)activateSwitcher{
+}
+
+- (void)_suspendGestureChanged:(float)arg1{
+	%log;
+	[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:arg1];
+
+	
+}
+
+- (void)_suspendGestureBegan{
+
+}
+
+- (void)_switchAppGestureBegan:(double)arg1{
+	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
+		[[OSSlider sharedInstance] beginPaging];
+}
+
+- (void)_switchAppGestureChanged:(double)arg1{
+	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
+		[[OSSlider sharedInstance] updatePaging:arg1];
+}
+
+- (void)_switchAppGestureCancelled{
+	[[OSSlider sharedInstance] swipeGestureEndedWithCompletionType:0 cumulativePercentage:0];
+}
+
+- (void)_switchAppGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
+	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
+		[[OSSlider sharedInstance] swipeGestureEndedWithCompletionType:arg1 cumulativePercentage:arg2];
+}
+
+- (void)_setToggleSwitcherAfterLaunchApp:(id)arg1{
+}
+
+- (BOOL)isAppSwitcherShowing{
+	return [[OSViewController sharedInstance] missionControlIsActive];
+}
+
+- (BOOL)_activateAppSwitcherFromSide:(int)arg1{
+	[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
+	return true;
+}
+
+- (void)dismissSwitcherAnimated:(BOOL)arg1{
+	[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
+}
+
+- (void)_toggleSwitcher{
 
 	if([[OSViewController sharedInstance] missionControlIsActive])
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
 	else
 		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
-	return true;
 }
 
 
 -(id)init{
 	self = %orig;
 
-	[[self rootView] removeFromSuperview];
+	[[self contentView] removeFromSuperview];
 
 	OSViewController *viewController = [OSViewController sharedInstance];
 
 
 	[[UIApp keyWindow] setRootViewController:viewController];
 	[viewController.view setFrame:[[UIScreen mainScreen] bounds]];
-
 
 	CPDistributedMessagingCenter *messagingCenter;
 	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
@@ -125,6 +265,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
 
 	[messagingCenter sendMessageAndReceiveReplyName:@"setKeyWindowContext" userInfo:dictionary];
+
 	return self;
 }
 
@@ -169,54 +310,28 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	[[OSThumbnailView sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 
 
-	[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
+	//[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
 
 
-	[[[[OSViewController sharedInstance] iconContentView] wallpaperView] setOrientation:arg2 duration:arg3];
+	//[[[[OSViewController sharedInstance] iconContentView] wallpaperView] setOrientation:arg2 duration:arg3];
 }
 
-
-%end
-
-
-
-
-%hook SBScaleGestureRecognizer
-
-
--(BOOL)sendsTouchesCancelledToApplication{
+- (BOOL)hasPendingAppActivatedByGesture{
 	return true;
 }
 
--(BOOL)shouldReceiveTouches{
-	return false;
-}
-
 %end
-
-
-%hook SBPanGestureRecognizer
-
--(BOOL)sendsTouchesCancelledToApplication{
-	return true;
-}
-
--(BOOL)shouldReceiveTouches{
-	if([self isKindOfClass:[%c(SBOffscreenSwipeGestureRecognizer) class]])
-		return true;
-	else
-		return false;
-
-
-}
-
-%end
-
-
 
 %hook SpringBoard
 
--(void)sendEvent:(id)arg1{
+- (id)_accessibilityFrontMostApplication{
+	return @"LOL";
+}
+
+- (void)sendEvent:(id)arg1{
+	%orig;
+	return;
+
 	if([arg1 isKindOfClass:[%c(UIMotionEvent) class]]){
 		%orig;
 		return;
@@ -253,7 +368,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_handleMenuButtonEvent{
-	if([[%c(SBAwayController) sharedAwayController] isLocked])
+	if([UIApp isLocked])
 		return;
 	if([[OSViewController sharedInstance] launchpadIsActive])
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
@@ -281,8 +396,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 %end
-
-
 
 %hook SBHandMotionExtractor
 
@@ -549,23 +662,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
-
-%hook SBFolderSlidingView
-
-- (id)initWithPosition:(int)arg1 folderView:(id)arg2{
-	self = %orig;
-
-	[[self valueForKey:@"dockView"] setHidden:true];
-	[[self valueForKey:@"outgoingDockView"] setHidden:true];
-	[[self valueForKey:@"wallpaperView"] setImage:[[[[OSViewController sharedInstance] iconContentView] wallpaperView] image]];
-
-
-	return self;
-}
-
-
-%end
-
 %hook SBAwayController
 
 -(void)lock{
@@ -587,14 +683,11 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
-
-
 %hook SBIconController
-
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
 	if(![[arg1 application] isRunning]){
-		[arg1 launchFromViewSwitcher];
+		[[arg1 application] icon:arg1 launchFromLocation:0];
 	}else{
 		[[arg1 application] addToSlider];
 	}
@@ -602,42 +695,116 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 
 -(void)iconTapped:(SBIconView*)arg1{
+	%log;
+	[arg1 setHighlighted:false];
+
     if(![[OSViewController sharedInstance] launchpadIsActive]){
         %orig;
         return;
     }
-    
+
     if([[arg1 icon] isFolderIcon] || [[arg1 icon] isNewsstandIcon]){
-        [[arg1 icon] launch];
+        [[arg1 icon] launchFromLocation:0];
     }else{
         [[OSViewController sharedInstance] deactivateLaunchpadWithIconView:arg1];
         %orig;
     }
 }
 
+- (void)_resetRootIconLists{
+	%orig;
 
-%end
+	[[[OSViewController sharedInstance] dock] removeFromSuperview];
 
-
-//App launch animations
-%hook SBAppToAppTransitionView
-
-
--(id)initWithFrame:(CGRect)arg1{
-	self = %orig;
-	[self setHidden:true];
-	return self;
+	[[OSViewController sharedInstance] setDock:[[[[objc_getClass("SBIconController") sharedInstance] _rootFolderController] contentView] dockView]];
+	CGRect dockFrame = [[[OSViewController sharedInstance] dock] frame];
+	dockFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - dockFrame.size.height;
+	[[[OSViewController sharedInstance] dock] setFrame:dockFrame];
+	[[[OSViewController sharedInstance] view] addSubview:[[OSViewController sharedInstance] dock]];
 }
 
+%end
+
+/* Block app launch animation */
+%hook SBIconAnimator
+
+- (void)_setAnimationFraction:(float)arg1{
+}
+
+- (void)setFraction:(float)arg1{
+}
+
+- (void)_prepareAnimation{
+}
+
+- (void)prepare{
+}
+
+- (void)_cleanupAnimation{
+}
+
+- (void)cleanup{
+}
 
 %end
 
+%hook SBUIAnimationZoomUpAppFromHome
 
-%hook SBUIAnimationZoomUpApp
+- (void)prepareZoom{
+}
 
-- (void)_startAnimation{
-	[self animationDidStop:@"AnimateResumption" finished:[NSNumber numberWithInt:1] context:0x0];
-	[self _cleanupAnimation];
+%end
+
+%hook SBUIAnimationController
+
+- (void)__cleanupAnimation{
+	[self _setAnimationState:3];
+	[self _releaseActivationAssertion];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"SBApplicationActivationStateDidChange" object:nil];
+	[[%c(SBAlertItemsController) sharedInstance] setForceAlertsToPend:false forReason:[self _animationIdentifier]];
+
+	[UIWindow _synchronizeDrawing];
+}
+
+- (void)dealloc{
+	[self _setAnimationState:4];
+	%orig;
+}
+
+%end
+
+%hook SBUIMainScreenAnimationController
+
+- (void)_cleanupAnimation{
+}
+
+%end
+
+%hook SBRootFolderController
+
+- (void)setDockOffscreenFraction:(double)arg1{
+}
+
+%end
+
+%hook SBAppToAppWorkspaceTransaction
+
+- (void)_commit{
+	[self _setupAnimation];
+	[self _kickOffActivation];
+
+	SBUIAnimationController *animationController = MSHookIvar<SBUIAnimationController*>(self, "_animationController");
+	[animationController beginAnimation];
+	
+	struct objc_super superInfo = {
+        self,
+        [self superclass]
+    };
+
+    objc_msgSendSuper(&superInfo, @selector(_commit));
+
+    [self animationController:nil willBeginAnimation:nil];
+    [self animationControllerDidFinishAnimation:nil];
 }
 
 %end
@@ -699,9 +866,10 @@ static BOOL missionControlActive;
 	
 		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
 
-		BKWorkspaceServer *server = [self workspaceForApplication:application];
+		[application _activate:nil];
+		//BKWorkspaceServer *server = [self workspaceForApplication:application];
 	
-		[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
+		//[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
 	
 	}else if([name isEqualToString:@"setApplicationPerformOriginals"]){
 		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
@@ -800,65 +968,6 @@ static BOOL OSGestureInProgress = false;
 }
 %end
 
-static IOHIDEventSystemCallback eventCallback = NULL;
-
-void resetTouches(void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event){
-	IOHIDEventRef eventNegator = IOHIDEventCreateCopy(kCFAllocatorDefault, event);
-
-	CFArrayRef children = IOHIDEventGetChildren(eventNegator);
-
-	for(int i = 0; i < CFArrayGetCount(children); i++){
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch, 0);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerRange, 0);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerEventMask, 3);
-	}
-
-	eventCallback(target, refcon, service, eventNegator);
-
-	for(int i = 0; i < CFArrayGetCount(children); i++){
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch, 1);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerRange, 1);
-		IOHIDEventSetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerEventMask, 3);
-	}
-
-	eventCallback(target, refcon, service, eventNegator);
-
-	CFRelease(eventNegator);
-}
-
-void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event) {
-	if(IOHIDEventGetType(event) == kIOHIDEventTypeDigitizer){
-		CFArrayRef children = IOHIDEventGetChildren(event);
-
-		if(children != NULL){
-			int count = 0;
-
-			for(int i = 0; i < CFArrayGetCount(children); i++){
-				int value = IOHIDEventGetIntegerValue((IOHIDEventRef)CFArrayGetValueAtIndex(children, i), kIOHIDEventFieldDigitizerTouch);
-				if(value == 1)
-					count++;
-			}
-
-			if(count >= 4){
-				if(!OSGestureInProgress == true){
-					OSGestureInProgress = true;
-					[[[%c(BKWorkspaceServerManager) sharedInstance] currentWorkspace] cancelAllTouches];
-					resetTouches(target, refcon, service, event);
-					return;
-				}
-			}else if(count == 0){
-				OSGestureInProgress = false;
-			}
-		}
-	}
-	eventCallback(target, refcon, service, event);
-}
-
-MSHook(Boolean, IOHIDEventSystemOpen, IOHIDEventSystemRef system, IOHIDEventSystemCallback callback, void* target, void* refcon, void* unused){
-	eventCallback = callback;
-	return _IOHIDEventSystemOpen(system, handle_event, target, refcon, unused);
-}
-
 %end
 //End (gesture fix)
 
@@ -912,12 +1021,10 @@ static BOOL networkActivity;
 
 %end
 
-
 __attribute__((constructor))
 static void initialize() {
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){
 		%init(Backboard);
-		MSHookFunction(&IOHIDEventSystemOpen, MSHake(IOHIDEventSystemOpen));
 
 		center = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
   		[center runServer];

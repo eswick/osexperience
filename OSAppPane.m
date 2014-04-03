@@ -26,7 +26,7 @@
 
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-	self.appView = [self.application contextHostViewForRequester:@"WindowManager" enableAndOrderFront:true];
+	self.appView = [[self.application mainScreenContextHostManager] hostViewForRequester:@"WindowManager" enableAndOrderFront:true];
 	[self addSubview:self.appView];
 
 	self.windowBar = [[UIToolbar alloc] init];

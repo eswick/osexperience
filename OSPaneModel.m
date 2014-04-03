@@ -31,7 +31,7 @@
 	return self;
 }
 
-- (unsigned int)count{
+- (NSUInteger)count{
 	return [self.panes count];
 }
 

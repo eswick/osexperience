@@ -1,6 +1,7 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
 
+#define LP_VARIANCE 0.1
 
 @implementation OSViewController
 @synthesize slider = _slider;
@@ -11,8 +12,6 @@
 @synthesize missionControlActive = _missionControlActive;
 @synthesize missionControlAnimating = _missionControlAnimating;
 @synthesize switcherBackgroundView = _switcherBackgroundView;
-@synthesize pinchInGesture = _pinchInGesture;
-@synthesize pinchOutGesture = _pinchOutGesture;
 @synthesize tempView = _tempView;
 
 
@@ -32,17 +31,6 @@
     if(![super init])
         return nil;
 
-    self.pinchInGesture = [[OSPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
-    self.pinchInGesture.minimumNumberOfTouches = 5;
-    self.pinchInGesture.type = OSPinchGestureRecognizerTypeInwards;
-
-
-    self.pinchOutGesture = [[OSPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinchGesture:)];
-    self.pinchOutGesture.minimumNumberOfTouches = 5;
-    self.pinchOutGesture.type = OSPinchGestureRecognizerTypeOutwards;
-
-    [self.pinchOutGesture release];
-    [self.pinchInGesture release];
     return self;
 }
 
@@ -58,14 +46,54 @@
         isPortrait = true;
     }
 
-
     CGRect dockFrame = self.dock.frame;
-
     float dockShownY = (isPortrait ? self.view.frame.size.height : self.view.frame.size.width) - dockFrame.size.height;
-
     dockFrame.origin.y = dockShownY + (percentage * dockFrame.size.height);
 
     [self.dock setFrame:dockFrame];
+
+}
+
+- (void)handleUpGesture{
+    if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
+        return;
+
+    if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]]){
+        if([(OSAppPane*)[[OSSlider sharedInstance] currentPane] windowBarIsOpen]){
+            [(OSAppPane*)[[OSSlider sharedInstance] currentPane] setWindowBarHidden];
+            return;
+        }
+    }else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]]){
+        if(!self.desktopShowsDock){
+            self.desktopShowsDock = true;
+            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
+                [[OSSlider sharedInstance] updateDockPosition];
+            }completion:nil];
+            return;
+        }
+    }
+
+    if(![self missionControlIsActive]){
+        [self setMissionControlActive:true animated:true];
+        return;
+    }
+}
+
+- (void)handleDownGesture{
+    if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
+        return;
+
+    if([self missionControlIsActive]){
+        [self setMissionControlActive:false animated:true];
+        return;
+    }else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]]){
+        [(OSAppPane*)[[OSSlider sharedInstance] currentPane] setWindowBarVisible];
+    }else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]]){
+        self.desktopShowsDock = false;
+        [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
+            [[OSSlider sharedInstance] updateDockPosition];
+        }completion:nil];
+    }
 }
 
 
@@ -88,15 +116,13 @@
 
     if(active){
 
-        //self.tempView.frame = [self missionControlWindowConstraints]; //(Visualize missionControlWindowConstraints)
-
         for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
             [thumbnail updateImage];
         }
         [[UIApplication sharedApplication] setStatusBarHidden:true withAnimation:true];
 
         self.switcherBackgroundView.hidden = false;
-        
+        [[OSSlider sharedInstance] setBackgroundColor:[UIColor clearColor]];
 
         [[OSThumbnailView sharedInstance] setHidden:false];
 
@@ -198,6 +224,7 @@
                     [desktopPane missionControlDidDeactivate];
                 }
                 self.switcherBackgroundView.hidden = true;
+                [[OSSlider sharedInstance] setBackgroundColor:[UIColor blackColor]];
                 [[OSThumbnailView sharedInstance] setHidden:true];
                 self.missionControlAnimating = false;
             }];
@@ -229,6 +256,7 @@
             }
 
             self.switcherBackgroundView.hidden = true;
+            [[OSSlider sharedInstance] setBackgroundColor:[UIColor blackColor]];
             [[OSThumbnailView sharedInstance] setHidden:true];
         }
 
@@ -287,31 +315,13 @@
     [desktopPane release];
 
 
-
-    [self.view addGestureRecognizer:self.pinchInGesture];
-    [self.view addGestureRecognizer:self.pinchOutGesture];
-
-
 	self.iconContentView = [[OSIconContentView alloc] init];
 	self.iconContentView.alpha = 0.0f;
-
-
-    UIView *stockWallpaperView = [[[objc_getClass("SBUIController") sharedInstance] wallpaperView] superview];
-    stockWallpaperView.hidden = true;
-    stockWallpaperView.alpha = 0.0f;
-    [self.iconContentView addSubview:stockWallpaperView];
-
 
 	[self.view addSubview:self.iconContentView];
 	self.launchpadActive = false;
 
-
-	self.dock = [[objc_getClass("SBIconController") sharedInstance] dock];
-	CGRect dockFrame = self.dock.frame;
-	dockFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - dockFrame.size.height;
-	[self.dock setFrame:dockFrame];
-	[self.view addSubview:self.dock];
-
+    [self setLaunchpadVisiblePercentage:0.0];
 
     self.tempView = [[UIView alloc] init];
     self.tempView.backgroundColor = [UIColor greenColor];
@@ -326,23 +336,9 @@
     [self.switcherBackgroundView release];
     [self.iconContentView release];
 
+    self.desktopShowsDock = true;
 
 }
-
--(void)handlePinchGesture:(OSPinchGestureRecognizer*)gesture{
-
-    if(gesture.state == UIGestureRecognizerStateRecognized){
-        if(gesture.type == OSPinchGestureRecognizerTypeInwards){
-            if(!self.launchpadIsActive)
-                [self setLaunchpadActive:true animated:true];
-        }else if(gesture.type == OSPinchGestureRecognizerTypeOutwards){
-            if(self.launchpadIsActive)
-                [self setLaunchpadActive:false animated:true];
-        }
-    }
-
-}
-
 
 - (void)menuButtonPressed{
 
@@ -356,9 +352,8 @@
 
 
 - (void)animateIconLaunch:(SBIconView*)iconView{
-
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
-	launchZoomView.image = [[iconView iconImageView] image];
+	launchZoomView.image = [iconView iconImageSnapshot];
 
 	CGRect zoomViewFrame;
 	zoomViewFrame.origin = [iconView convertPoint:iconView.bounds.origin toView:self.view];
@@ -375,7 +370,6 @@
     	[launchZoomView removeFromSuperview];
     	[launchZoomView release];
     }];
-
 }
 
 
@@ -387,22 +381,27 @@
 	[self setLaunchpadActive:false animated:true];
 }
 
+- (void)setLaunchpadVisiblePercentage:(float)percentage{
+    self._launchpadVisiblePercentage = percentage;
+
+    float variance = LP_VARIANCE - (LP_VARIANCE * percentage);
+
+    self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1 + variance, 1 + variance);
+    self.iconContentView.alpha = percentage;
+}
 
 - (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated{
 
 	if(activated){
 		[self.iconContentView prepareForDisplay];
 
-        if([[objc_getClass("SBIconController") sharedInstance] isShowingSearch])
-            [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:true];
+        //if([[objc_getClass("SBIconController") sharedInstance] isShowingSearch])
+          //  [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:true];
 
 		if(animated){
 
 			if(self.launchpadIsAnimating)
 				return;
-
-			self.iconContentView.alpha = 0.0f;
-        	self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
 
             self.launchpadAnimating = true;
             self.launchpadActive = true;
@@ -410,8 +409,8 @@
         	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
 
                 [self setDockPercentage:0.0];
-                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, 1);
-                self.iconContentView.alpha = 1.0f;
+                
+                [self setLaunchpadVisiblePercentage:1];
 
             } completion:^(BOOL finished){
                 self.launchpadAnimating = false;
@@ -425,32 +424,25 @@
     		self.iconContentView.alpha = 1.0f;
     		self.launchpadActive = true;
             [[[objc_getClass("SBIconController") sharedInstance] contentView] addSubview:[[OSViewController sharedInstance] dock]];
-
-   
     	}
 
 	}else{
-        [[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:false];
-
+        //[[objc_getClass("SBIconController") sharedInstance] _showSearchKeyboardIfNecessary:false];
 
 		if(animated){
 
 			if(self.launchpadIsAnimating)
 				return;
+
             self.launchpadAnimating = true;
             self.launchpadActive = false;
 
             [[[OSViewController sharedInstance] view] addSubview:[[OSViewController sharedInstance] dock]];
 
-			self.iconContentView.alpha = 1.0f;
-        	self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
-
         	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
                 [[OSSlider sharedInstance] updateDockPosition];
-                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 0.90f, 0.90f);
-                self.iconContentView.alpha = 0.0f;
+                [self setLaunchpadVisiblePercentage:0];
             } completion:^(BOOL finished){
-                self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1.0f, 1.0f);
                 self.launchpadAnimating = false;
                 [(SpringBoard*)UIApp clearMenuButtonTimer];
             }];
@@ -478,8 +470,6 @@
     [self.view release];
     [self.iconContentView release];
     [self.switcherBackgroundView release];
-    [self.pinchInGesture release];
-    [self.pinchOutGesture release];
     [super dealloc];
 }
 

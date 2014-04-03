@@ -2,28 +2,24 @@
 #import <UIKit/UIKit.h>
 #import "OSPane.h"
 #import "OSWallpaperView.h"
-#import "explorer/OSDesktopFileGridViewController.h"
 #import "include.h"
 #import "OSWindow.h"
 #import "OSSlider.h"
 
 
 @interface OSDesktopPane : OSPane <OSWindowDelegate> {
-	SBWallpaperView *_wallpaperView;
-	OSDesktopFileGridViewController *_fileGridViewController;
+	SBFStaticWallpaperView *_wallpaperView;
 	SBFakeStatusBarView *_statusBar;
 	OSWindow *_activeWindow;
 	NSMutableArray *_windows;
 	UIView *_desktopViewContainer;
 }
 
-@property (nonatomic, retain) SBWallpaperView *wallpaperView;
-@property (nonatomic, retain) OSDesktopFileGridViewController *fileGridViewController;
+@property (nonatomic, retain) SBWallpaperController *wallpaperController;
+@property (nonatomic, assign) SBFStaticWallpaperView *wallpaperView;
 @property (nonatomic, retain) SBFakeStatusBarView *statusBar;
 @property (nonatomic, assign) OSWindow *activeWindow;
 @property (nonatomic, retain) NSMutableArray *windows;
-@property (nonatomic, retain) UIView *desktopViewContainer;
-
 
 
 @end
