@@ -216,6 +216,7 @@ typedef struct{
 
 - (void)updateForBeganOrMovedTouches:(void*)arg1;
 - (float)computeIncrementalGestureMotion:(void*)arg1;
+- (long long)completionTypeProjectingMomentumForInterval:(double)arg1;
 
 @end
 

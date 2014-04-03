@@ -53,12 +53,19 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
+%hook SBScaleGestureRecognizer
+
+- (void)setRequiredDirectionality:(int)directionality{
+	%orig(0);
+}
+
+%end
+
 %hook SBUIController
 
-static BOOL upGestureWasRecognized = false;
-static BOOL downGestureWasRecognized = false;
-
 - (void)handleFluidVerticalSystemGesture:(SBPanGestureRecognizer*)arg1{
+	static BOOL upGestureWasRecognized = false;
+	static BOOL downGestureWasRecognized = false;
 
 	if([arg1 state] == UIGestureRecognizerStateEnded || [arg1 state] == UIGestureRecognizerStateCancelled){
 		upGestureWasRecognized = false;
@@ -117,16 +124,81 @@ static BOOL downGestureWasRecognized = false;
 	}
 }
 
+- (void)handleFluidScaleSystemGesture:(SBScaleGestureRecognizer*)arg1{
+	static BOOL launchpadClosing = false;
+
+	float percentage = [arg1 cumulativeMotion] / [arg1 animationDistance];
+
+	if([arg1 state] == UIGestureRecognizerStateBegan){
+		launchpadClosing = [[OSViewController sharedInstance] launchpadIsActive];
+
+		if(![[OSViewController sharedInstance] launchpadIsActive]){
+			[[[OSViewController sharedInstance] iconContentView] prepareForDisplay];
+		}
+
+		[[OSViewController sharedInstance] setLaunchpadAnimating:true];
+	}else if([arg1 state] == UIGestureRecognizerStateChanged){
+		if(!launchpadClosing){
+			[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:-percentage];
+			if(![[[OSSlider sharedInstance] currentPane] showsDock])
+				[[OSViewController sharedInstance] setDockPercentage:1 - (-percentage)];
+		}else{
+			[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1 - (percentage)];
+			//if(![[[OSSlider sharedInstance] currentPane] showsDock])
+			//	[[OSViewController sharedInstance] setDockPercentage:1 - arg1];
+		}
+	}else if([arg1 state] == UIGestureRecognizerStateEnded){
+		[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+
+		if([arg1 completionTypeProjectingMomentumForInterval:3.0] != -1){
+			if(!launchpadClosing){
+				[UIView animateWithDuration:0.25
+					delay:0
+					options: UIViewAnimationOptionCurveEaseOut 
+					animations:^{
+						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
+						[[OSViewController sharedInstance] setDockPercentage:0.0];
+					}completion:^(BOOL completed){
+						[[OSViewController sharedInstance] setLaunchpadActive:true];
+						[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+					}];
+			}else{
+				[UIView animateWithDuration:0.25
+					delay:0
+					options: UIViewAnimationOptionCurveEaseOut 
+					animations:^{
+						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
+						[[OSSlider sharedInstance] updateDockPosition];
+					}completion:^(BOOL completed){
+						[[OSViewController sharedInstance] setLaunchpadActive:false];
+						[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+					}];
+			}
+		}else{
+			[UIView animateWithDuration:0.25
+				delay:0
+				options: UIViewAnimationOptionCurveEaseOut 
+				animations:^{
+					[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
+				}completion:^(BOOL completed){
+					[[OSViewController sharedInstance] setLaunchpadActive:false];
+					[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+				}];
+		}
+	}
+
+
+}
+
 - (void)_suspendGestureChanged:(float)arg1{
+	%log;
 	[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:arg1];
 
-	if(![[[OSSlider sharedInstance] currentPane] showsDock])
-		[[OSViewController sharedInstance] setDockPercentage:1 - arg1];
+	
 }
 
 - (void)_suspendGestureBegan{
-	[[[OSViewController sharedInstance] iconContentView] prepareForDisplay];
-	[[OSViewController sharedInstance] setLaunchpadAnimating:true];
+
 }
 
 - (void)_switchAppGestureBegan:(double)arg1{
