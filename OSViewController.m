@@ -58,6 +58,13 @@
     if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
         return;
 
+    if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]]){
+        if([(OSAppPane*)[[OSSlider sharedInstance] currentPane] windowBarIsOpen]){
+            [(OSAppPane*)[[OSSlider sharedInstance] currentPane] setWindowBarHidden];
+            return;
+        }
+    }
+
     if(![self missionControlIsActive]){
         [self setMissionControlActive:true animated:true];
         return;
@@ -71,6 +78,8 @@
     if([self missionControlIsActive]){
         [self setMissionControlActive:false animated:true];
         return;
+    }else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]]){
+        [(OSAppPane*)[[OSSlider sharedInstance] currentPane] setWindowBarVisible];
     }
 }
 
