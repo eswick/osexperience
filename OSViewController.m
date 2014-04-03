@@ -116,15 +116,13 @@
 
     if(active){
 
-        //self.tempView.frame = [self missionControlWindowConstraints]; //(Visualize missionControlWindowConstraints)
-
         for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
             [thumbnail updateImage];
         }
         [[UIApplication sharedApplication] setStatusBarHidden:true withAnimation:true];
 
         self.switcherBackgroundView.hidden = false;
-        
+        [[OSSlider sharedInstance] setBackgroundColor:[UIColor clearColor]];
 
         [[OSThumbnailView sharedInstance] setHidden:false];
 
@@ -226,6 +224,7 @@
                     [desktopPane missionControlDidDeactivate];
                 }
                 self.switcherBackgroundView.hidden = true;
+                [[OSSlider sharedInstance] setBackgroundColor:[UIColor blackColor]];
                 [[OSThumbnailView sharedInstance] setHidden:true];
                 self.missionControlAnimating = false;
             }];
@@ -257,6 +256,7 @@
             }
 
             self.switcherBackgroundView.hidden = true;
+            [[OSSlider sharedInstance] setBackgroundColor:[UIColor blackColor]];
             [[OSThumbnailView sharedInstance] setHidden:true];
         }
 

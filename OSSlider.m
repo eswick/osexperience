@@ -42,6 +42,8 @@
 	self.clipsToBounds = false;
 	self.showsHorizontalScrollIndicator = false;
 
+	self.backgroundColor = [UIColor blackColor];
+
 	[self setDelegate:self];
 
 	return self;
