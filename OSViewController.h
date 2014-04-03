@@ -35,6 +35,7 @@
 @property (nonatomic, retain) OSSwitcherBackgroundView *switcherBackgroundView;
 @property (nonatomic, retain) UIView *tempView;
 @property (nonatomic, readwrite) float _launchpadVisiblePercentage;
+@property (nonatomic, readwrite) BOOL desktopShowsDock;
 
 
 

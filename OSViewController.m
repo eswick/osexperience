@@ -63,6 +63,14 @@
             [(OSAppPane*)[[OSSlider sharedInstance] currentPane] setWindowBarHidden];
             return;
         }
+    }else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]]){
+        if(!self.desktopShowsDock){
+            self.desktopShowsDock = true;
+            [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
+                [[OSSlider sharedInstance] updateDockPosition];
+            }completion:nil];
+            return;
+        }
     }
 
     if(![self missionControlIsActive]){
@@ -80,6 +88,11 @@
         return;
     }else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]]){
         [(OSAppPane*)[[OSSlider sharedInstance] currentPane] setWindowBarVisible];
+    }else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]]){
+        self.desktopShowsDock = false;
+        [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
+            [[OSSlider sharedInstance] updateDockPosition];
+        }completion:nil];
     }
 }
 
@@ -323,6 +336,7 @@
     [self.switcherBackgroundView release];
     [self.iconContentView release];
 
+    self.desktopShowsDock = true;
 
 }
 

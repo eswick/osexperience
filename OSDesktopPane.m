@@ -44,7 +44,7 @@
 }
 
 - (BOOL)showsDock{
-	return true;
+	return [[OSViewController sharedInstance] desktopShowsDock];
 }
 
 - (OSWindow*)activeWindow{
