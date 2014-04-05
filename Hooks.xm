@@ -63,6 +63,10 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %hook SBUIController
 
+- (UIView*)contentView{
+	return [[OSViewController sharedInstance] iconContentView];
+}
+
 - (void)handleFluidVerticalSystemGesture:(SBPanGestureRecognizer*)arg1{
 	static BOOL upGestureWasRecognized = false;
 	static BOOL downGestureWasRecognized = false;
@@ -202,7 +206,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 -(id)init{
 	self = %orig;
 
-	[[self contentView] removeFromSuperview];
+	[MSHookIvar<UIView*>(self, "_contentView") removeFromSuperview];
 
 	OSViewController *viewController = [OSViewController sharedInstance];
 
@@ -225,8 +229,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 
 - (void)window:(id)arg1 willAnimateRotationToInterfaceOrientation:(int)arg2 duration:(double)arg3{
-	%orig;
-
 
 	int degrees;
 
@@ -260,6 +262,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 	[[OSSlider sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 	[[OSThumbnailView sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
+
+	%orig;
 
 }
 
@@ -644,7 +648,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		[[arg1 application] addToSlider];
 	}
 }
-
 
 -(void)iconTapped:(SBIconView*)arg1{
 	[arg1 setHighlighted:false];

@@ -441,10 +441,14 @@ typedef struct {
 @end
 
 @interface SBIconListView : UIView
+
+- (void)layoutIconsNow;
+
 @end
 
 @interface SBRootFolderView : UIView
 
+- (void)_updateIconListFrames;
 - (id)dockView;
 
 @end
