@@ -340,6 +340,7 @@ typedef struct {
 - (NSString*)bundleIdentifier;
 - (int)activationState;
 - (void)_activate:(id)arg1;
+- (unsigned int)eventPort;
 //- (id)initWithBundleIdentifier:(id)arg1 queue:(dispatch_queue_s*)arg2;
 
 @end
@@ -439,6 +440,9 @@ typedef struct {
 
 @end
 
+@interface SBIconListView : UIView
+@end
+
 @interface SBRootFolderView : UIView
 
 - (id)dockView;
@@ -456,6 +460,8 @@ typedef struct {
 @property(readonly, nonatomic) SBRootFolderView *contentView;
 
 - (void)setDockOffscreenFraction:(double)arg1;
+- (void)willAnimateRotationToInterfaceOrientation:(long long)arg1;
+- (void)willRotateToInterfaceOrientation:(long long)arg1;
 
 @end
 

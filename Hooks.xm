@@ -90,40 +90,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 }
 
-- (void)_suspendGestureCleanUpState{
-}
-
-- (void)_suspendGestureCancelled{
-	[[OSViewController sharedInstance] setLaunchpadAnimating:false];
-}
-
-- (void)_suspendGestureEndedWithCompletionType:(long long)arg1{
-	if(arg1 == 1){
-
-		[UIView animateWithDuration:0.25
-			delay:0
-			options: UIViewAnimationOptionCurveEaseOut 
-			animations:^{
-				[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
-				[[OSViewController sharedInstance] setDockPercentage:0.0];
-		}completion:^(BOOL completed){
-				[[OSViewController sharedInstance] setLaunchpadActive:true];
-				[[OSViewController sharedInstance] setLaunchpadAnimating:false];
-		}];
-		
-	}else{
-		[UIView animateWithDuration:0.25
-			delay:0
-			options: UIViewAnimationOptionCurveEaseOut 
-			animations:^{
-				[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
-		}completion:^(BOOL completed){
-				[[OSViewController sharedInstance] setLaunchpadActive:false];
-				[[OSViewController sharedInstance] setLaunchpadAnimating:false];
-		}];
-	}
-}
-
 - (void)handleFluidScaleSystemGesture:(SBScaleGestureRecognizer*)arg1{
 	static BOOL launchpadClosing = false;
 
@@ -187,19 +153,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				}];
 		}
 	}
-
-
-}
-
-- (void)_suspendGestureChanged:(float)arg1{
-	%log;
-	[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:arg1];
-
-	
-}
-
-- (void)_suspendGestureBegan{
-
 }
 
 - (void)_switchAppGestureBegan:(double)arg1{
@@ -301,7 +254,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		UIView *osView = [[OSViewController sharedInstance] view];
 		osView.transform = CGAffineTransformMakeRotation(DegreesToRadians(degrees));
 		[osView setFrame:[[UIScreen mainScreen] bounds]];
-		[[objc_getClass("SBIconController") sharedInstance] willAnimateRotationToInterfaceOrientation:arg2 duration:arg3];
 	}completion:^(BOOL finished){
 
     }];
@@ -309,15 +261,19 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	[[OSSlider sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 	[[OSThumbnailView sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 
-
-	//[[objc_getClass("SBIconController") sharedInstance] prepareToRotateFolderAndSlidingViewsToOrientation:arg2];
-
-
-	//[[[[OSViewController sharedInstance] iconContentView] wallpaperView] setOrientation:arg2 duration:arg3];
 }
 
 - (BOOL)hasPendingAppActivatedByGesture{
 	return true;
+}
+
+%end
+
+%hook SBIconListView
+
+- (void)prepareToRotateToInterfaceOrientation:(UIInterfaceOrientation)arg1{
+	self.transform = CGAffineTransformIdentity;
+	%orig;
 }
 
 %end
@@ -329,15 +285,12 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)sendEvent:(id)arg1{
-	%orig;
-	return;
-
-	if([arg1 isKindOfClass:[%c(UIMotionEvent) class]]){
-		%orig;
-		return;
-	}
 
 	GSEventRef event = [arg1 _gsEvent];
+
+	if(event == NULL){
+		%orig; return;
+	}
 
 	if(GSEventGetType(event) == kGSEventDeviceOrientationChanged){
 		for(OSAppPane *appPane in [[OSPaneModel sharedInstance] panes]){
@@ -348,7 +301,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		}
 	}
 
-	if(GSEventGetType(event) == kGSEventKeyUp || GSEventGetType(event) == kGSEventKeyDown){
+	/*if(GSEventGetType(event) == kGSEventKeyUp || GSEventGetType(event) == kGSEventKeyDown){
 		if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
 			const GSEventRecord* record = _GSEventGetGSEventRecord(event);
 			GSSendEvent(record, (mach_port_t)[[(OSAppPane*)[[OSSlider sharedInstance] currentPane] application] eventPort]);
@@ -362,7 +315,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				}
 			}
 		}
-	}
+	}*/
 
 	%orig;
 }
@@ -519,24 +472,23 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 %new
--(void)rotateToInterfaceOrientation:(int)orientation{
-
-	uint8_t orientationEvent[sizeof(GSEventRecord) + sizeof(GSDeviceOrientationInfo)];
+- (BOOL)rotateToInterfaceOrientation:(int)orientation{
 
 	struct GSOrientationEvent {
-        GSEventRecord record;
-        GSDeviceOrientationInfo orientationInfo;
-    } * event = (struct GSOrientationEvent*) &orientationEvent;
-    
-	event->record.type = kGSEventDeviceOrientationChanged;
-	event->record.timestamp = mach_absolute_time();
-	event->record.senderPID = getpid();
-	event->record.infoSize = sizeof(GSDeviceOrientationInfo);
-	event->orientationInfo.orientation = orientation;
-	
-	
-	GSSendEvent((GSEventRecord*)event, (mach_port_t)[self eventPort]);
+		GSEventRecord record;
+		GSDeviceOrientationInfo orientationInfo;
+	} event;
 
+	bzero(&event, sizeof(event));
+
+	event.record.type = kGSEventDeviceOrientationChanged;
+	event.record.flags = (GSEventFlags)0;
+	event.record.infoSize = 4;
+	event.orientationInfo.orientation = orientation;
+
+	int success = GSSendEvent((GSEventRecord*)&event, (mach_port_t)[self eventPort]);
+
+	return (success == 0);
 }
 
 -(void)willActivate{
@@ -695,7 +647,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 
 -(void)iconTapped:(SBIconView*)arg1{
-	%log;
 	[arg1 setHighlighted:false];
 
     if(![[OSViewController sharedInstance] launchpadIsActive]){
