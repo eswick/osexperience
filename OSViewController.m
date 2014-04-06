@@ -350,7 +350,6 @@
 
 }
 
-
 - (void)animateIconLaunch:(SBIconView*)iconView{
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
 	launchZoomView.image = [iconView iconImageSnapshot];
@@ -371,8 +370,6 @@
     	[launchZoomView release];
     }];
 }
-
-
 
 - (void)deactivateLaunchpadWithIconView:(SBIconView*)iconView{
     if(![iconView isInDock])

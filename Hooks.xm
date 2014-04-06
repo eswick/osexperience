@@ -378,7 +378,14 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 %end
 
+%hook SBGestureRecognizer
 
+- (void)touchesBegan:(struct __SBGestureContext *)arg1{
+	[UIApp _cancelAllTouches];
+	%orig;
+}
+
+%end
 
 %hook SBApplication
 
