@@ -9,6 +9,7 @@
 #import <substrate.h>
 #import "OSRemoteRenderLayer.h"
 #import "explorer/OSExplorerWindow.h"
+#import <rocketbootstrap.h>
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
@@ -337,21 +338,23 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 - (void)applicationDidFinishLaunching:(id)arg1{
 	%orig;
 
-	CPDistributedNotificationCenter* notificationCenter = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
-	[notificationCenter startDeliveringNotificationsToMainThread];
- 
-	NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-	[nc addObserver:self
-       	selector:@selector(notificationRecieved:)
-        name:@"cancelTouches"
-        object:notificationCenter
-    ];
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
+	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
+	[messagingCenter runServerOnCurrentThread];
+	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
 }
 
 %new
-- (void)notificationRecieved:(NSNotification *)notification {
-	[UIApp _cancelAllTouches];
+- (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
+	SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:[userinfo objectForKey:@"bundleID"]];
+
+	if([app forceClassic]){
+		return @{@"forceClassic" : @(true)};
+	}else{
+		return @{@"forceClassic" : @(false)};
+	}
 }
+
 
 %end
 
@@ -388,7 +391,42 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %end
 
+%hook SBWindowContextHostManager
+
+- (id)hostViewForRequester:(id)arg1 enableAndOrderFront:(_Bool)arg2{
+	if([arg1 isEqualToString:@"com.apple.springboard.launchwithzoomanimation"])
+		return nil;
+	return %orig;
+}
+
+%end
+
 %hook SBApplication
+
+static char forceClassicKey;
+
+%new
+- (void)setForceClassic:(BOOL)forceClassic{
+	objc_setAssociatedObject(self, &forceClassicKey, [NSNumber numberWithBool:forceClassic], OBJC_ASSOCIATION_RETAIN);
+}
+
+%new
+- (BOOL)forceClassic{
+	return [objc_getAssociatedObject(self, &forceClassicKey) boolValue];
+}
+
+
+static char relaunchingKey;
+
+%new
+- (void)setRelaunching:(BOOL)relaunching{
+	objc_setAssociatedObject(self, &relaunchingKey, [NSNumber numberWithBool:relaunching], OBJC_ASSOCIATION_RETAIN);
+}
+
+%new
+- (BOOL)isRelaunching{
+	return [objc_getAssociatedObject(self, &relaunchingKey) boolValue];
+}
 
 - (void)setDisplaySetting:(unsigned int)arg1 value:(id)arg2{
 	%orig;
@@ -415,6 +453,12 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 -(void)didExitWithInfo:(id)arg1 type:(int)arg2{
+
+	if([self isRelaunching]){
+		%orig;
+		[self performSelector:@selector(launch) withObject:nil afterDelay:1];
+		return;
+	}
 
 	OSAppPane *appPane = nil;
 
@@ -454,7 +498,10 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 
 -(void)didSuspend{
-	
+
+	%log;
+	return;
+
 	OSAppPane *appPane = nil;
 
 	for(OSAppPane *pane in [[OSPaneModel sharedInstance] panes]){
@@ -509,7 +556,11 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)didLaunch:(BKSApplicationProcessInfo*)arg1{
+	if([self isRelaunching])
+		[self setRelaunching:false];
+
 	%orig;
+
 	if([arg1 suspended]){
 		return;
 	}
@@ -588,6 +639,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 			[[OSSlider sharedInstance] scrollToPane:foundPane animated:true];
 		}
 		if(foundWindow){
+			[foundWindow resetHostView];
 			[[OSSlider sharedInstance] scrollToPane:[[OSPaneModel sharedInstance] desktopPaneContainingWindow:foundWindow] animated:true];
 		}
 	}
@@ -596,6 +648,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 - (void)activate{
 	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+
+	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
 
 	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", nil];
 	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], nil];
@@ -608,9 +662,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %new
 - (void)suspend{
-
-    
 	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+
+	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
 
 	NSArray *keys = [NSArray arrayWithObjects:@"bundleIdentifier", @"performOriginals", nil];
 	NSArray *objects = [NSArray arrayWithObjects:[self displayIdentifier], [NSNumber numberWithBool:true], nil];
@@ -623,6 +677,19 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 }
 
+%new
+- (void)relaunch{
+	[self setRelaunching:true];
+	[self suspend];
+}
+
+%new
+- (void)launch{
+	SBIconModel *iconModel = MSHookIvar<SBIconModel*>([%c(SBIconController) sharedInstance], "_iconModel");
+	SBIcon *icon = [iconModel applicationIconForDisplayIdentifier:[self bundleIdentifier]];
+
+	[self icon:icon launchFromLocation:0];
+}
 
 %end
 
@@ -794,8 +861,9 @@ static BOOL missionControlActive;
 	self = %orig;
 
 
-	CPDistributedMessagingCenter *messagingCenter;
-	messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.backboardserver"];
+	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
+
 	[messagingCenter runServerOnCurrentThread];
 	[messagingCenter registerForMessageName:@"activate" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
 	[messagingCenter registerForMessageName:@"setApplicationPerformOriginals" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
@@ -809,13 +877,12 @@ static BOOL missionControlActive;
 %new
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
 	if([name isEqualToString:@"activate"]){
-	
-		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
 
+		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
 		[application _activate:nil];
-		//BKWorkspaceServer *server = [self workspaceForApplication:application];
-	
-		//[server _activate:application activationSettings:nil deactivationSettings:nil token:[objc_getClass("BKSWorkspaceActivationToken") token]];
+
+		BKWorkspaceServer *server = [self workspaceForApplication:application];
+		[server _activate:application activationSettings:nil deactivationSettings:nil token:[[%c(BKSWorkspaceActivationTokenFactory) sharedInstance] generateToken] completion:nil];
 	
 	}else if([name isEqualToString:@"setApplicationPerformOriginals"]){
 		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
@@ -926,22 +993,29 @@ static BOOL networkActivity;
 - (id)init{
 	self = %orig;
 
-	CPDistributedNotificationCenter* notificationCenter = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
-	[notificationCenter startDeliveringNotificationsToMainThread];
- 
-	NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-	[nc addObserver:self
-       	selector:@selector(notificationRecieved:)
-        name:@"cancelTouches"
-        object:notificationCenter
-    ];
-
 	return self;
 }
 
-%new
-- (void)notificationRecieved:(NSNotification *)notification {
-		[UIApp _cancelAllTouches];
+- (BOOL)_isClassic{
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
+
+	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
+
+	NSArray *keys = [NSArray arrayWithObjects:@"bundleID", nil];
+	NSArray *objects = [NSArray arrayWithObjects:[[NSBundle mainBundle] bundleIdentifier], nil];
+	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+	NSDictionary *response = [messagingCenter sendMessageAndReceiveReplyName:@"forceClassic" userInfo:dictionary];
+
+	if([[response objectForKey:@"forceClassic"] boolValue]){
+		return true;
+	}
+
+	return %orig;
+}
+
+- (BOOL)_shouldZoom{
+	return true;
 }
 
 - (BOOL)isNetworkActivityIndicatorVisible{
@@ -958,6 +1032,23 @@ static BOOL networkActivity;
 
 %end
 
+%hook UIDevice
+
+- (UIUserInterfaceIdiom)userInterfaceIdiom{
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
+
+	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
+
+	NSArray *keys = [NSArray arrayWithObjects:@"bundleID", nil];
+	NSArray *objects = [NSArray arrayWithObjects:[[NSBundle mainBundle] bundleIdentifier], nil];
+	NSDictionary *dictionary = [NSDictionary dictionaryWithObjects:objects forKeys:keys];
+
+	NSDictionary *response = [messagingCenter sendMessageAndReceiveReplyName:@"forceClassic" userInfo:dictionary];
+	return [[response objectForKey:@"forceClassic"] boolValue] ? UIUserInterfaceIdiomPhone : %orig;
+}
+
+%end
+
 %hook UIStatusBar
 - (void)statusBarServer:(id)arg1 didReceiveStatusBarData:(UIStatusBarData *)arg2 withActions:(int)arg3{
 	arg2->itemIsEnabled[22] = networkActivity;
@@ -969,10 +1060,12 @@ static BOOL networkActivity;
 
 __attribute__((constructor))
 static void initialize() {
+
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){
 		%init(Backboard);
 
 		center = [CPDistributedNotificationCenter centerNamed:notificationCenterID];
+
   		[center runServer];
   		[center retain];
 	}else if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]){

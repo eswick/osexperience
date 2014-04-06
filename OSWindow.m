@@ -39,13 +39,13 @@
 
 	NSMutableArray *items = [[NSMutableArray alloc] init];
 
-	UIBarButtonItem *closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(stopButtonPressed)];
+	self.closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop target:self action:@selector(stopButtonPressed)];
 	UIBarButtonItem *titleLabel = [[UIBarButtonItem alloc] initWithTitle:title style:UIBarButtonItemStylePlain target:nil action:nil];
 	self.expandButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageWithContentsOfFile:@"/Library/Application Support/OS Experience/167-1.png"] style:UIBarButtonItemStylePlain target:self action:@selector(expandButtonPressed)];
 	UIBarButtonItem *flexibleSpace1 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 	UIBarButtonItem *flexibleSpace2 = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
 
-	[items addObject:closeButton];
+	[items addObject:self.closeButton];
 	[items addObject:flexibleSpace1];
 	[items addObject:titleLabel];
 	[items addObject:flexibleSpace2];
@@ -79,7 +79,7 @@
 
 	self.title = title;
 
-	[closeButton release];
+	[self.closeButton release];
 	[flexibleSpace1 release];
 	[flexibleSpace2 release];
 	[items release];
@@ -257,6 +257,7 @@
 	[self.title release];
 	[self.windowBar release];
 	[self.expandButton release];
+	[self.closeButton release];
 	[super dealloc];
 }
 

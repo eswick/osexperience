@@ -11,6 +11,6 @@
 
 - (id)initWithApplication:(SBApplication*)application;
 - (void)applicationDidRotate;
-
+- (void)resetHostView;
 
 @end

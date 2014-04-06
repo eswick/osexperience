@@ -44,8 +44,19 @@
 	[self.expandButton.view addGestureRecognizer:rotateRecognizer];
 	[rotateRecognizer release];
 
+	UILongPressGestureRecognizer *idiomSwitchRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(idiomSwitchButtonHeld:)];
+	[self.closeButton.view addGestureRecognizer:idiomSwitchRecognizer];
+	[idiomSwitchRecognizer release];
 
 	return self;
+}
+
+- (void)resetHostView{
+	if(![self.subviews containsObject:self.appView]){
+		self.appView = [[self.application mainScreenContextHostManager] hostViewForRequester:@"WindowManager" enableAndOrderFront:true];
+		[self addSubview:self.appView];
+	}
+	
 }
 
 - (void)applicationDidRotate{
@@ -72,6 +83,33 @@
 
 	}completion:^(BOOL finished){}];
 
+}
+
+- (void)idiomSwitchButtonHeld:(UILongPressGestureRecognizer*)gesture{
+	if([gesture state] == UIGestureRecognizerStateBegan){
+		if(![self.application forceClassic]){
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Relaunch in iPhone Mode?" message:@"Would you like to relaunch this app in iPhone mode? Some apps may not work as expected." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil]; 
+			[alert show];
+			[alert release];
+		}else{
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Relaunch in Normal Mode?" message:@"Would you like to relaunch this app in normal mode?" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil]; 
+			[alert show];
+			[alert release];
+		}
+
+	}
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	if (buttonIndex == 1) {
+		if(![[self application] forceClassic]){
+			[[self application] setForceClassic:true];
+			[[self application] relaunch];
+		}else{
+			[[self application] setForceClassic:false];
+			[[self application] relaunch];
+		}
+	}
 }
 
 - (void)expandButtonHeld:(UILongPressGestureRecognizer*)gesture{

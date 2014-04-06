@@ -64,6 +64,7 @@
 @interface SBIconModel : NSObject
 
 - (void)addIcon:(SBIcon *)arg1;
+- (id)applicationIconForDisplayIdentifier:(id)arg1;
 
 @end
 
@@ -407,7 +408,14 @@ typedef struct {
 - (void)suspend; //new
 - (int)statusBarOrientation;
 - (BOOL)isRunning;
+- (BOOL)supportsApplicationType:(int)arg1;
 
+- (BOOL)forceClassic; //New
+- (void)setForceClassic:(BOOL)forceClassic;//New
+- (BOOL)isRelaunching; //New
+- (void)setRelaunching:(BOOL)relaunching;//New
+- (void)relaunch; //New
+- (void)launch; //New
 
 @end
 
@@ -608,11 +616,18 @@ typedef struct {
 
 @end
 
+@interface BKSWorkspaceActivationTokenFactory : NSObject
+
++ (id)sharedInstance;
+- (id)generateToken;
+
+@end
+
 
 @interface BKWorkspaceServer
 
 -(void)activate:(id)arg1 withActivation:(id)arg2 withDeactivation:(id)arg3 token:(id)arg4;
-- (BOOL)_activate:(id)arg1 activationSettings:(id)arg2 deactivationSettings:(id)arg3 token:(id)arg4;
+- (BOOL)_activate:(id)arg1 activationSettings:(id)arg2 deactivationSettings:(id)arg3 token:(id)arg4 completion:(void*)arg5;
 - (id)runningApplications;
 - (void)suspend:(id)arg1;
 - (void)cancelAllTouches;//New
@@ -675,6 +690,7 @@ typedef struct {
 - (id)systemGestureSnapshotForApp:(id)arg1 includeStatusBar:(BOOL)arg2 decodeImage:(BOOL)arg3;
 - (void)createFakeSpringBoardStatusBar;
 - (id)_fakeSpringBoardStatusBar;
+- (void)launchApplicationByGesture:(id)arg1;
 
 //New
 - (void)setScaleGestureRecognizer:(SBFluidSlideGestureRecognizer*)recognizer;

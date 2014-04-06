@@ -9,6 +9,7 @@ OSExperience_FILES = $(wildcard *.xm) $(wildcard *.m) $(wildcard missioncontrol/
 OSExperience_CFLAGS = -Wno-format-nonliteral -Wno-unused-function
 OSExperience_FRAMEWORKS = UIKit QuartzCore CoreGraphics IOKit Security CoreText
 OSExperience_PRIVATE_FRAMEWORKS = AppSupport GraphicsServices BackBoardServices SpringBoardFoundation
+OSExperience_LIBRARIES = rocketbootstrap
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 

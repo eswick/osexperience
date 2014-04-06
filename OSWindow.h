@@ -40,6 +40,7 @@
 @property (nonatomic, readwrite) CGPoint originInDesktop;
 @property (nonatomic, readwrite) CGPoint desktopPaneOffset;
 @property (nonatomic, retain) UIBarButtonItem *expandButton;
+@property (nonatomic, retain) UIBarButtonItem *closeButton;
 @property (nonatomic, readwrite) float maxScale;
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title;
