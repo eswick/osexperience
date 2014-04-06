@@ -136,6 +136,7 @@
 
 	OSAppWindow *window = [[OSAppWindow alloc] initWithApplication:self.application];
 	window.hidden = true;
+	[[[[OSPaneModel sharedInstance] firstDesktopPane] windows] addObject:window];
 	[[[OSPaneModel sharedInstance] firstDesktopPane] addSubview:window];
 	[window setDelegate:[[OSPaneModel sharedInstance] firstDesktopPane]];
 
