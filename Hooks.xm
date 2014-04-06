@@ -1043,7 +1043,7 @@ static BOOL networkActivity;
 	networkActivity = arg1;
 
 	UIStatusBarData data = *[UIStatusBarServer getStatusBarData];
-	data.itemIsEnabled[22] = arg1;
+	data.networkActivity = arg1;
 	[[UIApp statusBar] forceUpdateToData:&data animated:true];
 }
 
@@ -1068,7 +1068,7 @@ static BOOL networkActivity;
 
 %hook UIStatusBar
 - (void)statusBarServer:(id)arg1 didReceiveStatusBarData:(UIStatusBarData *)arg2 withActions:(int)arg3{
-	arg2->itemIsEnabled[22] = networkActivity;
+	arg2->networkActivity = networkActivity;
 	%orig;
 }
 %end

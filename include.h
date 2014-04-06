@@ -109,7 +109,36 @@
 @end
 
 typedef struct { 
-    char itemIsEnabled[24];
+    union{
+        BOOL itemIsEnabled[25];
+        struct{
+            BOOL time;
+            BOOL doNotDisturb;
+            BOOL airplaneMode;
+            BOOL signalBars;
+            BOOL serviceStringEnabled;
+            BOOL wifiBars;
+            BOOL unk_000;
+            BOOL battery;
+            BOOL batteryPercentage;
+            BOOL unk_001;
+            BOOL weirdBatteryIcon;
+            BOOL bluetooth;
+            BOOL phoneAboveKeyboard;
+            BOOL alarm;
+            BOOL plus;
+            BOOL playing;
+            BOOL locationServices;
+            BOOL orientationLock;
+            BOOL unk_002;
+            BOOL airPlay;
+            BOOL microphone;
+            BOOL vpn;
+            BOOL phoneWithArrow;
+            BOOL networkActivity;
+            BOOL unk_003;
+        };
+    };
     /*
 	0 - Time
 	1 - Do Not Disturb
@@ -117,24 +146,25 @@ typedef struct {
 	3 - Signal Bars
 	4 - Service String
 	5 - Wifi Bars
-	6 - Battery Icon
-	7 - Battery detail string
-	8 - Second battery detail string? Sligtly smaller. Possibly non-retina
-	9 - Horizontal bar with circle on top
-	10 - Bluetooth
-	11 - Phone with 7 dots underneath
-	12 - Alarm
-	13 - Plus sign
-	14 - Playing
-	15 - Location Services
-	16 - Orientation lock
-	17 - ?
-	18 - Airplay
-	19 - Microphone
-	20 - VPN
-	21 - Phone with right-facing arrow
-	22 - Activity icon
-	23 - Empty space?
+	6 - Time (2nd?)
+	7 - Battery icon
+	8 - Battery percentage
+	9 - Second battery percentage?
+	10 - Weird rectangular icon. (maybe a battery?)
+	11 - Bluetooth
+	12 - Phone above keyboard?
+	13 - Alarm
+	14 - Plus
+	15 - Playing
+	16 - Location Services
+	17 - Orientation Lock
+	18 - Unknown
+	19 - AirPlay
+	20 - Microphone
+	21 - VPN
+	22 - Phone with right-facing arrow
+	23 - Activity
+    24 - Empty space?
 
     */
     char timeString[64];
@@ -161,6 +191,8 @@ typedef struct {
     unsigned int displayRawGSMSignal:1;
     unsigned int displayRawWifiSignal:1;
     unsigned int locationIconType:1;
+    unsigned int quietModeInactive:1;
+    unsigned int tetheringConnectionCount;
 } UIStatusBarData;
 
 typedef struct{
