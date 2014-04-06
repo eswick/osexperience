@@ -454,8 +454,10 @@ typedef struct {
 @end
 
 @interface SBIconAnimator : NSObject
-@property(nonatomic, assign) id delegate;
 
+@property(nonatomic, assign) id delegate;
+@property(retain, nonatomic) SBApplication *activatingApp;
+@property(retain, nonatomic) SBApplication *deactivatingApp;
 
 @end
 

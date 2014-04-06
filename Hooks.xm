@@ -680,27 +680,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %end
 
 /* Block app launch animation */
-%hook SBIconAnimator
-
-- (void)_setAnimationFraction:(float)arg1{
-}
-
-- (void)setFraction:(float)arg1{
-}
-
-- (void)_prepareAnimation{
-}
-
-- (void)prepare{
-}
-
-- (void)_cleanupAnimation{
-}
-
-- (void)cleanup{
-}
-
-%end
 
 %hook SBUIAnimationZoomUpAppFromHome
 
