@@ -484,6 +484,8 @@ static char relaunchingKey;
 			appPane = pane;
 	}
 
+	OSAppWindow *foundWindow = nil;
+	OSDesktopPane *foundDesktop = nil;
 
 	if(appPane){
 		[[OSPaneModel sharedInstance] removePane:appPane];
@@ -497,15 +499,16 @@ static char relaunchingKey;
 				if(![window isKindOfClass:[OSAppWindow class]])
 					continue;
 				if(window.application == self){
-					[desktop.windows removeObject:window];
-					[window removeFromSuperview];
+					foundDesktop = desktop;
+					foundWindow = window;
 				}
 			}
 
 		}
 	}
 
-
+	[foundDesktop.windows removeObject:foundWindow];
+	[foundWindow removeFromSuperview];
 
     %orig;
 }
