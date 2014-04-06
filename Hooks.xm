@@ -392,7 +392,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 - (void)setDisplaySetting:(unsigned int)arg1 value:(id)arg2{
 	%orig;
-	if(arg1 == 5){//Rotation changed
+	if(arg1 == 4){//Rotation changed
 		for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
 			if([pane isKindOfClass:[OSDesktopPane class]]){
 				for(OSAppWindow *window in pane.subviews){
