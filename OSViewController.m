@@ -114,6 +114,9 @@
 
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated{
 
+    if(self.missionControlIsActive == active)
+        return;
+
     if(active){
 
         for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
