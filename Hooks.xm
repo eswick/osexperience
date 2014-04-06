@@ -247,8 +247,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 			break;
 	}
 
-	
-	
+
+
 	[[OSSlider sharedInstance] setPageIndexPlaceholder:[[OSSlider sharedInstance] currentPageIndex]];
 
 
@@ -265,6 +265,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 	%orig;
 
+	[[OSSlider sharedInstance] updateDockPosition];
 }
 
 - (BOOL)hasPendingAppActivatedByGesture{
@@ -682,6 +683,11 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	dockFrame.origin.y = [[UIScreen mainScreen] bounds].size.height - dockFrame.size.height;
 	[[[OSViewController sharedInstance] dock] setFrame:dockFrame];
 	[[[OSViewController sharedInstance] view] addSubview:[[OSViewController sharedInstance] dock]];
+}
+
+- (void)willRotateToInterfaceOrientation:(long long)arg1 duration:(double)arg2{
+	[[[OSViewController sharedInstance] iconContentView] contentView].transform = CGAffineTransformIdentity;
+	%orig;
 }
 
 %end

@@ -397,6 +397,8 @@
 
 		if(animated){
 
+            self.iconContentView.contentView.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1 + LP_VARIANCE, 1 + LP_VARIANCE);
+
 			if(self.launchpadIsAnimating)
 				return;
 
