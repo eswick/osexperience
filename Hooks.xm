@@ -327,8 +327,22 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_handleMenuButtonEvent{
+	
+
+	if([[%c(SBNotificationCenterController) sharedInstance] isVisible]){
+		[[%c(SBNotificationCenterController) sharedInstance] dismissAnimated:true];
+		return;
+	}
+
+	if([%c(SBAssistantController) isAssistantVisible]){
+		SBAssistantController *controller = [%c(SBAssistantController) sharedInstanceIfExists];
+		[controller _dismissForMainScreenAnimated:true duration:[controller _defaultAnimatedDismissDurationForMainScreen] completion:nil];
+		return;
+	}
+
 	if([UIApp isLocked])
 		return;
+
 	if([[OSViewController sharedInstance] launchpadIsActive])
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
 	else

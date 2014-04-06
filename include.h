@@ -386,7 +386,23 @@ typedef struct {
 - (void)forceUpdateToData:(UIStatusBarData *)arg1 animated:(BOOL)arg2;
 @end
 
+@interface SBNotificationCenterController : NSObject
 
++ (id)sharedInstanceIfExists;
+- (BOOL)handleMenuButtonTap;
+- (void)dismissAnimated:(BOOL)arg1;
+- (BOOL)isVisible;
+
+@end
+
+@interface SBAssistantController : NSObject
+
++ (id)sharedInstanceIfExists;
++ (BOOL)isAssistantVisible;
+- (void)_dismissForMainScreenAnimated:(BOOL)arg1 duration:(double)arg2 completion:(id)arg3;
+- (double)_defaultAnimatedDismissDurationForMainScreen;
+
+@end
 
 @interface SBApplication : NSObject {
 
