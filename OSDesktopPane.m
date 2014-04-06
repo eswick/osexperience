@@ -20,9 +20,11 @@
 	self.backgroundColor = [UIColor clearColor];
 	self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
-	self.wallpaperController = [[objc_getClass("SBWallpaperController") alloc] initWithOrientation:0 variant:0];
+	self.wallpaperController = [[objc_getClass("SBWallpaperController") alloc] initWithOrientation:[UIApp statusBarOrientation] variant:0];
 	self.wallpaperView = [self.wallpaperController _wallpaperViewForVariant:0];
 	self.wallpaperView.clipsToBounds = true;
+	self.wallpaperView.frame = self.bounds;
+
 	[self addSubview:self.wallpaperView];
 	[self.wallpaperController release];
 
@@ -140,6 +142,10 @@
 			continue;
 		window.desktopPaneOffset = CGPointSub(window.frame.origin, self.frame.origin);
 	}
+}
+
+- (void)layoutSubviews{
+	self.wallpaperView.frame = self.bounds;
 }
 
 - (void)paneIndexDidChange{
