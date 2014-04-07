@@ -118,10 +118,7 @@
         return;
 
     if(active){
-
-        for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
-            [thumbnail updateImage];
-        }
+        
         [[UIApplication sharedApplication] setStatusBarHidden:true withAnimation:true];
 
         self.switcherBackgroundView.hidden = false;
@@ -148,6 +145,10 @@
 
             for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                 [pane missionControlWillActivate];
+            }
+
+            for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+                [thumbnail prepareForDisplay];
             }
 
             [UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
@@ -181,6 +182,10 @@
 
             for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
                 [pane missionControlWillActivate];
+            }
+
+            for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+                [thumbnail prepareForDisplay];
             }
 
             [self setDockPercentage:0.0];
@@ -228,6 +233,11 @@
                 }
                 self.switcherBackgroundView.hidden = true;
                 [[OSSlider sharedInstance] setBackgroundColor:[UIColor blackColor]];
+
+                for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+                    [thumbnail didHide];
+                }
+
                 [[OSThumbnailView sharedInstance] setHidden:true];
                 self.missionControlAnimating = false;
             }];
@@ -260,6 +270,10 @@
 
             self.switcherBackgroundView.hidden = true;
             [[OSSlider sharedInstance] setBackgroundColor:[UIColor blackColor]];
+
+            for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+                [thumbnail didHide];
+            }
             [[OSThumbnailView sharedInstance] setHidden:true];
         }
 

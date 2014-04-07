@@ -6,7 +6,7 @@
 #import "../include.h"
 #import "../UIImage+Extensions.h"
 
-@class OSThumbnailPlaceholder;
+@class OSThumbnailPlaceholder, OSAppMirrorView;
 
 @interface OSPaneThumbnail : UIView{
 	OSPane *_pane;
@@ -35,12 +35,16 @@
 @property (nonatomic, readwrite) BOOL closeboxVisible;
 @property (nonatomic, getter=isPressed, readwrite) BOOL pressed;
 @property (nonatomic, retain) UIView *shadowOverlayView;
- 
+@property (nonatomic, retain) OSAppMirrorView *mirrorView;
+@property (nonatomic, retain) UIView *windowContainer;
+
 - (id)initWithPane:(OSPane*)pane;
-- (void)updateImage;
-- (void)updateImageAnimated:(BOOL)animated;
 - (void)updateSize;
 - (void)setCloseboxVisible:(BOOL)visible animated:(BOOL)animated;
+- (void)prepareForDisplay;
+- (void)didHide;
+- (CGRect)previewRectForWindow:(OSWindow*)window;
+- (void)updateWindowPreviews;
 
 
 

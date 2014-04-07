@@ -1,6 +1,6 @@
 Package: com.eswick.osexperience
 Name: OS Experience
-Depends: mobilesubstrate
+Depends: mobilesubstrate cc.tweak.libobjcipc
 Version: 0.8.0
 Architecture: iphoneos-arm
 Description: OS Experience beta. Brings Launchpad, Mission Control, a window manager, and a file explorer to your iPad.

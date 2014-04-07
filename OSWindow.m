@@ -1,6 +1,7 @@
 #import "OSWindow.h"
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
+#import "missioncontrol/OSAppMirrorView.h"
 
 
 @implementation OSWindow
@@ -144,6 +145,30 @@
 						fromPane = pane;
 				}
 
+				if([self isKindOfClass:[OSAppWindow class]]){
+
+					OSAppMirrorView *mirrorView = [[OSAppMirrorView alloc] initWithApplication:[(OSAppWindow*)self application]];
+
+					[mirrorView addRemoteViews];
+
+					CGRect frame = self.frame;
+					frame.origin.y += self.windowBar.bounds.size.height * 0.15;
+					frame.size.height -= self.windowBar.bounds.size.height * 0.15;
+					mirrorView.frame = frame;
+
+					[[self superview] addSubview:mirrorView];
+
+					[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+						CGRect animationFrame = [selectedThumbnail convertRect:[selectedThumbnail previewRectForWindow:self] toView:[self superview]];
+						mirrorView.frame = animationFrame;
+					} completion:^(BOOL finished){
+						CGRect animationFrame = [[mirrorView superview] convertRect:mirrorView.frame toView:selectedThumbnail.windowContainer];
+						mirrorView.frame = animationFrame;
+						[selectedThumbnail.windowContainer addSubview:mirrorView];
+					}];
+
+					[mirrorView release];
+				}
 				
 				[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
 					[[selectedThumbnail shadowOverlayView] setAlpha:0.0];
@@ -163,8 +188,9 @@
 
 				[[OSSlider sharedInstance] bringSubviewToFront:self];
 
-				[selectedThumbnail updateImage];
-				[fromThumbnail updateImage];
+
+				[fromThumbnail updateWindowPreviews];
+
 			}
 		}
 		

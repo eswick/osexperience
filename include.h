@@ -221,6 +221,28 @@ typedef struct{
     UIStatusBarData values;
 } UIStatusBarOverrideData;
 
+
+@class SBProxyRemoteView;
+@protocol SBProxyRemoteViewDelegate <NSObject>
+
+- (void)remoteViewDidConnect:(SBProxyRemoteView*)remoteView;
+- (void)remoteViewDidDisconnect:(SBProxyRemoteView*)remoteView;
+
+@end
+
+@interface SBProxyRemoteView : UIView
+
+@property(nonatomic) BOOL remoteViewOpaque; // @synthesize remoteViewOpaque=_remoteViewOpaque;
+@property(nonatomic, assign) id<SBProxyRemoteViewDelegate> delegate; // @synthesize delegate=_delegate;
+@property(retain, nonatomic) NSString *remoteViewIdentifier; // @synthesize remoteViewIdentifier=_remoteViewIdentifier;
+- (void)disconnect;
+- (void)noteConnectionLost;
+- (void)_setIsConnected:(BOOL)arg1;
+- (void)connectToContextID:(unsigned int)arg1 forIdentifier:(id)arg2 application:(id)arg3;
+- (void)didMoveToSuperview;
+
+@end
+
 @interface SBAwayController : NSObject
 
 + (id)sharedAwayController;
@@ -396,6 +418,18 @@ typedef struct {
 @interface SBWindowContextHostManager : NSObject
 
 - (id)hostViewForRequester:(id)arg1 enableAndOrderFront:(BOOL)arg2;
+
+@end
+
+@interface SBWindowContextManager : NSObject
+
+- (id)contextsForScreen:(UIScreen*)arg1;
+
+@end
+
+@interface SBWindowContext : NSObject
+
+@property(readonly, nonatomic) unsigned int identifier;
 
 @end
 

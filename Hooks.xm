@@ -7,7 +7,6 @@
 #import <mach/mach_time.h>
 #import <IOKit/hid/IOHIDEventSystem.h>
 #import <substrate.h>
-#import "OSRemoteRenderLayer.h"
 #import "explorer/OSExplorerWindow.h"
 #import <rocketbootstrap.h>
 
@@ -27,19 +26,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 - (BOOL)_shouldShowGradientOverWallpaper{
 	return false;
-}
-
-%end
-
-%hook SBAppContextHostView
-
-+ (Class)layerClass{
-	return [OSRemoteRenderLayer class];
-}
-
-- (void)setManager:(id)manager{
-	[(OSRemoteRenderLayer*)self.layer setManager:manager];
-	%orig;
 }
 
 %end
@@ -462,6 +448,9 @@ static char relaunchingKey;
 			if([(OSAppPane*)pane application] == self){
 
 			}
+		}
+		for(OSPaneThumbnail *thumbnail in [[[OSThumbnailView sharedInstance] wrapperView] subviews]){
+			[thumbnail layoutSubviews];
 		}
 	}
 }

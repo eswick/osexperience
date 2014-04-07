@@ -1,6 +1,6 @@
 #import "OSPaneThumbnail.h"
 #import "OSThumbnailPlaceholder.h"
-
+#import "OSAppMirrorView.h"
 
 
 
@@ -35,6 +35,10 @@
 
 	self.userInteractionEnabled = true;
 
+	self.windowContainer = [[UIView alloc] initWithFrame:self.frame];
+	self.windowContainer.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+	self.windowContainer.clipsToBounds = true;
+	[self addSubview:self.windowContainer];
 
 	self.imageView = [[UIImageView alloc] initWithFrame:self.frame];
 	self.imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
@@ -45,13 +49,18 @@
 	self.imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.imageView.bounds].CGPath;
 	[self addSubview:self.imageView];
 
-
-	self.pane = pane;
-	self.imageView.image = [[[[OSThumbnailView sharedInstance] addDesktopButton] wallpaper] image];
-	[self updateImageAnimated:true];
-
+	self.pane = pane;	
 
 	if([self.pane isKindOfClass:[OSAppPane class]]){
+		//Initialize remote view
+		self.mirrorView = [[OSAppMirrorView alloc] initWithApplication:[(OSAppPane*)pane application]];
+		self.mirrorView.frame = self.bounds;
+		self.mirrorView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+
+		[self addSubview:self.mirrorView];
+
+
+		//Initialize icon
 		self.icon = [[UIImageView alloc] init];
 		
 		SBApplicationIcon *sbAppIcon = [[objc_getClass("SBApplicationIcon") alloc] initWithApplication:[(OSAppPane*)self.pane application]];
@@ -70,6 +79,8 @@
 		self.icon.layer.shouldRasterize = true;
 		[self addSubview:self.icon];
 		[self.icon release];
+	}else if([self.pane isKindOfClass:[OSDesktopPane class]]){
+		self.imageView.image = [[[[OSThumbnailView sharedInstance] addDesktopButton] wallpaper] image];
 	}
 
 
@@ -89,7 +100,7 @@
 	[self addSubview:self.label];
 
 
-	frame = self.imageView.frame;
+	frame = self.frame;
 	frame.size.width += 2;
 	frame.size.height += 2;
 	frame.origin.x = -1;
@@ -125,11 +136,14 @@
 	self.shadowOverlayView.hidden = true;
 	[self addSubview:self.shadowOverlayView];
 
+	[self bringSubviewToFront:self.windowContainer];
+
 	[self.imageView release];
 	[self.label release];
 	[self.selectionView release];
 	[self.placeholder release];
 	[self.shadowOverlayView release];
+	[self.windowContainer release];
 
 	return self;
 }
@@ -167,6 +181,64 @@
 	}
 }
 
+- (void)removeWindowPreviews{
+	for(OSAppMirrorView *mirrorView in self.windowContainer.subviews){
+		if(![mirrorView isKindOfClass:[OSAppMirrorView class]])
+			continue;
+		[mirrorView removeRemoteViews];
+		[mirrorView removeFromSuperview];
+	}
+}
+
+- (CGRect)previewRectForWindow:(OSWindow*)window{
+	if(![self.pane isKindOfClass:[OSDesktopPane class]])
+		return CGRectNull;
+
+	CGRect frame = window.bounds;
+	frame.origin = window.originInDesktop;
+	frame.origin.y += window.windowBar.bounds.size.height;
+	frame.size.height -= window.windowBar.bounds.size.height;
+
+	frame = CGRectApplyAffineTransform(frame, CGAffineTransformMakeScale(0.15, 0.15));
+
+	return frame;
+}
+
+- (void)updateWindowPreviews{
+	if(![self.pane isKindOfClass:[OSDesktopPane class]])
+		return;
+	OSDesktopPane *desktopPane = (OSDesktopPane*)self.pane;
+
+	[self removeWindowPreviews];
+
+	for(OSAppWindow *window in desktopPane.windows){
+		if(![window isKindOfClass:[OSAppWindow class]])
+			continue;
+
+		OSAppMirrorView *mirrorView = [[OSAppMirrorView alloc] initWithApplication:window.application];
+
+		CGRect frame = window.bounds;
+		frame.origin = window.originInDesktop;
+		frame = CGRectApplyAffineTransform(frame, CGAffineTransformMakeScale(0.15, 0.15));
+
+		mirrorView.frame = frame;
+
+		[mirrorView addRemoteViews];
+		[self.windowContainer addSubview:mirrorView];
+		[mirrorView release];
+	}
+}
+
+- (void)prepareForDisplay{
+	[self updateWindowPreviews];
+	[self.mirrorView addRemoteViews];
+}
+
+- (void)didHide{
+	[self removeWindowPreviews];
+	[self.mirrorView removeRemoteViews];
+}
+
 - (void)dealloc{
 
 	[self.label release];
@@ -176,6 +248,8 @@
 	[self.closebox release];
 	[self.shadowOverlayView release];
 	[self.icon release];
+	[self.mirrorView release];
+	[self.windowContainer release];
 	
 	[super dealloc];
 }
@@ -208,12 +282,18 @@
 	self.label.center = labelCenter;
 
 
-	CGRect frame = self.imageView.frame;
+	CGRect frame = self.bounds;
 	frame.size.width += 2;
 	frame.size.height += 2;
 	frame.origin.x = -1;
 	frame.origin.y = -1;
 	self.selectionView.frame = frame;
+
+	[self.mirrorView layoutSubviews];
+
+	for(OSAppMirrorView *mirrorView in self.windowContainer.subviews){
+		[mirrorView layoutSubviews];
+	}
 }
 
 - (void)updateSize{
@@ -230,89 +310,6 @@
 	self.frame = frame;
 
 	self.imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.imageView.bounds].CGPath;
-}
-
-- (void)updateImage{
-	[self updateImageAnimated:true];
-}
-
-- (void)updateImageAnimated:(BOOL)animated{
-	dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-
-		UIImage *image = nil;
-
-		if([self.pane isKindOfClass:[OSAppPane class]]){
-			UIView *zoomView = [[objc_getClass("SBUIController") sharedInstance] systemGestureSnapshotWithIOSurfaceSnapshotOfApp:[(OSAppPane*)self.pane application] includeStatusBar:true];
-			
-			CGRect frame = zoomView.bounds;
-			int appViewDegrees;
-
-			switch([UIApp statusBarOrientation]){
-				case UIInterfaceOrientationPortrait:
-					appViewDegrees = 0;
-					break;
-				case UIInterfaceOrientationPortraitUpsideDown:
-					appViewDegrees = 180;
-					break;
-				case UIInterfaceOrientationLandscapeLeft:
-					appViewDegrees = 90;
-					break;
-				case UIInterfaceOrientationLandscapeRight:
-					appViewDegrees = 270;
-					break;
-			}
-
-			UIGraphicsBeginImageContextWithOptions(frame.size, zoomView.opaque, [UIScreen mainScreen].scale);
-    		[zoomView.layer renderInContext:UIGraphicsGetCurrentContext()];
-  			image = [UIGraphicsGetImageFromCurrentImageContext() imageRotatedByDegrees:appViewDegrees];
-
-		}else if([self.pane isKindOfClass:[OSDesktopPane class]]){
-
-			UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.pane.opaque, 4);
-			CGContextConcatCTM(UIGraphicsGetCurrentContext(), CGAffineTransformMakeScale(0.15, 0.15));
-    		[self.pane.layer renderInContext:UIGraphicsGetCurrentContext()];
-    		
-    		for(OSWindow *window in [(OSDesktopPane*)self.pane windows]){
-    			CGContextTranslateCTM(UIGraphicsGetCurrentContext(), window.originInDesktop.x, window.originInDesktop.y);
-    			[window.layer renderInContext:UIGraphicsGetCurrentContext()];
-    		}
-    		
-    		image = UIGraphicsGetImageFromCurrentImageContext();
-    	}
-
-    	UIGraphicsEndImageContext();
-    	
-    	dispatch_async(dispatch_get_main_queue(), ^{
-    		if(animated)
-    			[self animateToImage:image];
-    		else
-    			[self.imageView setImage:image];
-    	});
-	});
-}
-
-- (void)animateToImage:(UIImage*)image{
-	UIImageView *newImageView = [[UIImageView alloc] initWithFrame:self.imageView.frame];
-	newImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-	newImageView.alpha = 0;
-	newImageView.image = image;
-
-	[self addSubview:newImageView];
-	[self sendSubviewToBack:newImageView];
-	[self sendSubviewToBack:self.imageView];
-	[self sendSubviewToBack:self.selectionView];
-
-	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
-		newImageView.alpha = 1;
-	}completion:^(BOOL finished){
-		[self.imageView removeFromSuperview];
-		self.imageView = newImageView;
-
-		self.imageView.layer.shadowOffset = CGSizeMake(0, 0);
-		self.imageView.layer.shadowRadius = 5;
-		self.imageView.layer.shadowOpacity = 0.5;
-		self.imageView.layer.shadowPath = [UIBezierPath bezierPathWithRect:newImageView.bounds].CGPath;
-	}];
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
