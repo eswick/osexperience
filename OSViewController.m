@@ -126,7 +126,7 @@
 
         [[OSThumbnailView sharedInstance] setHidden:false];
 
-        [[[OSSlider sharedInstance] panGestureRecognizer] setMinimumNumberOfTouches:1];
+        [[OSSlider sharedInstance] addGestureRecognizer:[[OSSlider sharedInstance] panGestureRecognizer]];
 
         if(animated){
 
@@ -201,7 +201,7 @@
         }
     }else{
         [self.view insertSubview:[OSThumbnailView sharedInstance] belowSubview:self.slider];
-        [[[OSSlider sharedInstance] panGestureRecognizer] setMinimumNumberOfTouches:4];
+        [[OSSlider sharedInstance] removeGestureRecognizer:[[OSSlider sharedInstance] panGestureRecognizer]];
 
         if(animated){
 

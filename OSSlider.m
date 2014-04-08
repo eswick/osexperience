@@ -27,9 +27,7 @@
     return _slider;
 }
 
-
-
--(id)init{
+- (id)init{
 	CGRect frame = [[UIScreen mainScreen] bounds];
 	frame.size.width += marginSize;
 
@@ -46,10 +44,14 @@
 
 	[self setDelegate:self];
 
+	for(UIGestureRecognizer *gestureRecognizer in self.gestureRecognizers){
+		[self removeGestureRecognizer:gestureRecognizer];
+	}
+
 	return self;
 }
 
--(void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+- (void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
 		if([(OSAppPane*)[self currentPane] windowBarIsOpen]){
 			[(OSAppPane*)[self currentPane] setWindowBarHidden];
@@ -59,7 +61,7 @@
 	[[OSViewController sharedInstance] setMissionControlActive:true animated:true]; 
 }
 
--(void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+- (void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
 	if([[OSViewController sharedInstance] missionControlIsActive]){
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
 		return;
@@ -72,7 +74,7 @@
 	}
 }
 
--(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
+- (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
 	int appViewDegrees;
 
 	switch(orientation){
@@ -111,7 +113,7 @@
 
 }
 
--(void)addPane:(OSPane*)pane{
+- (void)addPane:(OSPane*)pane{
 
 	CGSize contentSize = self.contentSize;
 	contentSize.width = (marginSize + pane.frame.size.width) * [[OSPaneModel sharedInstance] count];
@@ -182,7 +184,7 @@
 	
 }
 
--(void)alignPanes{
+- (void)alignPanes{
 	self.contentSize = CGSizeMake([[OSPaneModel sharedInstance] count] * self.bounds.size.width, self.bounds.size.height);
 
 	for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
@@ -210,7 +212,7 @@
 
 
 
--(void)updateDockPosition{
+- (void)updateDockPosition{
 
 	OSPane *intrudingPane;
 	CGRect currentPaneRect = CGRectIntersection(self.currentPane.frame, self.bounds);
@@ -248,18 +250,18 @@
 	[[OSViewController sharedInstance] setDockPercentage:shownPercentage];
 }
 
--(BOOL)isPortrait{
+- (BOOL)isPortrait{
 	if([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait || [[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortraitUpsideDown){
         return true;
     }
     return false;
 }
 
--(int)currentPageIndex{
+- (int)currentPageIndex{
 	return nearbyint(self.contentOffset.x / self.bounds.size.width);
 }
 
--(OSPane*)currentPane{
+- (OSPane*)currentPane{
 	return [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex];
 }
 

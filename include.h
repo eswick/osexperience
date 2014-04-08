@@ -3,6 +3,18 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+typedef enum{
+    SBSystemGestureTypeNone                 = 0,
+    SBSystemGestureTypeSuspendApp           = 1 << 0,
+    SBSystemGestureTypeSwitcher             = 1 << 1,
+    SBSystemGestureTypeSwitchApp            = 1 << 2,
+    SBSystemGestureTypeShowNotifications    = 1 << 3,
+    SBSystemGestureTypeHideNotifications    = 1 << 4,
+    SBSystemGestureTypeDismissBanner        = 1 << 5,
+    SBSystemGestureTypeShowControlCenter    = 1 << 6,
+    SBSystemGestureTypeAny = SBSystemGestureTypeShowControlCenter | SBSystemGestureTypeDismissBanner | SBSystemGestureTypeHideNotifications | SBSystemGestureTypeShowNotifications | SBSystemGestureTypeSwitchApp | SBSystemGestureTypeSwitcher | SBSystemGestureTypeSuspendApp
+} SBSystemGestureType;
+
 @interface SBIcon : NSObject
 
 
@@ -21,7 +33,7 @@
 - (struct CGPoint)_pageDecelerationTarget;
 - (void)_prepareToPageWithHorizontalVelocity:(double)arg1 verticalVelocity:(double)arg2;
 - (struct CGPoint)_rubberBandContentOffsetForOffset:(struct CGPoint)arg1 outsideX:(BOOL *)arg2 outsideY:(BOOL *)arg3;
-
+- (void)handlePan:(id)arg1;
 
 @end
 
@@ -755,9 +767,11 @@ typedef struct {
 
 
 
-@interface SBUIController : UIView{
+@interface SBUIController : UIView
 
-}
+@property (assign) BOOL switchAppGestureInProgress;// New
+@property (assign) BOOL switcherGestureInProgress;// New
+@property (assign) BOOL scaleGestureInProgress; // New
 
 + (id)sharedInstance;
 + (id)zoomViewForContextHostView:(id)arg1 application:(id)arg2 includeStatusBar:(BOOL)arg3 includeBanner:(BOOL)arg4;

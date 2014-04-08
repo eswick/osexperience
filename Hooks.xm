@@ -50,17 +50,47 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %hook SBUIController
 
+%property (assign) BOOL switchAppGestureInProgress;
+%property (assign) BOOL switcherGestureInProgress;
+%property (assign) BOOL scaleGestureInProgress;
+
 - (UIView*)contentView{
 	return [[OSViewController sharedInstance] iconContentView];
 }
 
+- (BOOL)allowSystemGestureType:(SBSystemGestureType)type atLocation:(struct CGPoint)arg2{
+	
+	if(type & SBSystemGestureTypeSuspendApp){
+		if(self.switchAppGestureInProgress || self.switcherGestureInProgress || [[OSViewController sharedInstance] missionControlIsActive])
+			return false;
+	}
+
+	if(type & SBSystemGestureTypeSwitcher){
+		if(self.switchAppGestureInProgress || self.scaleGestureInProgress)
+			return false;
+	}
+
+	if(type & SBSystemGestureTypeSwitchApp){
+		if(self.scaleGestureInProgress || self.switcherGestureInProgress || [[OSViewController sharedInstance] missionControlIsActive])
+			return false;
+	}
+
+	return %orig;
+}
+
 - (void)handleFluidVerticalSystemGesture:(SBPanGestureRecognizer*)arg1{
+
 	static BOOL upGestureWasRecognized = false;
 	static BOOL downGestureWasRecognized = false;
+
+	if([arg1 state] == UIGestureRecognizerStateBegan)
+		self.switcherGestureInProgress = true;
 
 	if([arg1 state] == UIGestureRecognizerStateEnded || [arg1 state] == UIGestureRecognizerStateCancelled){
 		upGestureWasRecognized = false;
 		downGestureWasRecognized = false;
+
+		self.switcherGestureInProgress = false;
 		return;
 	}
 
@@ -82,11 +112,13 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)handleFluidScaleSystemGesture:(SBScaleGestureRecognizer*)arg1{
+
 	static BOOL launchpadClosing = false;
 
 	float percentage = [arg1 cumulativeMotion] / [arg1 animationDistance];
 
 	if([arg1 state] == UIGestureRecognizerStateBegan){
+		self.scaleGestureInProgress = true;
 		launchpadClosing = [[OSViewController sharedInstance] launchpadIsActive];
 
 		if(![[OSViewController sharedInstance] launchpadIsActive]){
@@ -105,6 +137,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				[[OSViewController sharedInstance] setDockPercentage:percentage];
 		}
 	}else if([arg1 state] == UIGestureRecognizerStateEnded){
+		self.scaleGestureInProgress = false;
 		[[OSViewController sharedInstance] setLaunchpadAnimating:false];
 
 		if([arg1 completionTypeProjectingMomentumForInterval:3.0] != -1){
@@ -143,10 +176,14 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 					[[OSViewController sharedInstance] setLaunchpadAnimating:false];
 				}];
 		}
+	}else if([arg1 state] == UIGestureRecognizerStateCancelled){
+		self.scaleGestureInProgress = false;
 	}
 }
 
 - (void)_switchAppGestureBegan:(double)arg1{
+	self.switchAppGestureInProgress = true;
+
 	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
 		[[OSSlider sharedInstance] beginPaging];
 }
@@ -161,6 +198,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_switchAppGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
+	self.switchAppGestureInProgress = false;
+
 	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
 		[[OSSlider sharedInstance] swipeGestureEndedWithCompletionType:arg1 cumulativePercentage:arg2];
 }
@@ -277,7 +316,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)sendEvent:(id)arg1{
-
+	
 	GSEventRef event = [arg1 _gsEvent];
 
 	if(event == NULL){
@@ -380,15 +419,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 	%orig;
 }
-%end
-
-%hook SBGestureRecognizer
-
-- (void)touchesBegan:(struct __SBGestureContext *)arg1{
-	[UIApp _cancelAllTouches];
-	%orig;
-}
-
 %end
 
 %hook SBWindowContextHostManager
