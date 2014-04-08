@@ -137,8 +137,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				[[OSViewController sharedInstance] setDockPercentage:percentage];
 		}
 	}else if([arg1 state] == UIGestureRecognizerStateEnded){
-		self.scaleGestureInProgress = false;
-		[[OSViewController sharedInstance] setLaunchpadAnimating:false];
+		[[OSViewController sharedInstance] setLaunchpadAnimating:true];
 
 		if([arg1 completionTypeProjectingMomentumForInterval:3.0] != -1){
 			if(!launchpadClosing){
@@ -149,6 +148,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
 						[[OSViewController sharedInstance] setDockPercentage:0.0];
 					}completion:^(BOOL completed){
+						self.scaleGestureInProgress = false;
 						[[OSViewController sharedInstance] setLaunchpadActive:true];
 						[[OSViewController sharedInstance] setLaunchpadAnimating:false];
 					}];
@@ -157,6 +157,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 					delay:0
 					options: UIViewAnimationOptionCurveEaseOut 
 					animations:^{
+						self.scaleGestureInProgress = false;
 						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
 						[[OSViewController sharedInstance] setLaunchpadActive:false];
 						[[OSSlider sharedInstance] updateDockPosition];
@@ -169,6 +170,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				delay:0
 				options: UIViewAnimationOptionCurveEaseOut 
 				animations:^{
+					self.scaleGestureInProgress = false;
 					[[OSSlider sharedInstance] updateDockPosition];
 					[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
 				}completion:^(BOOL completed){

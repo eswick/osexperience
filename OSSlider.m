@@ -212,6 +212,10 @@
 
 - (void)updateDockPosition{
 
+	if([[objc_getClass("SBUIController") sharedInstance] scaleGestureInProgress]){
+		return;
+	}
+
 	OSPane *intrudingPane;
 	CGRect currentPaneRect = CGRectIntersection(self.currentPane.frame, self.bounds);
 	CGRect intrudingPaneRect;
