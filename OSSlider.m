@@ -163,10 +163,11 @@
 	if(pane != [self currentPane]){
 		destination = [self currentPane];
 	}else{
-		for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
-			if(![desktopPane isKindOfClass:[OSDesktopPane class]] || desktopPane == pane)
-				continue;
-			destination = desktopPane;
+		int index = [[[OSPaneModel sharedInstance] panes] indexOfObject:pane];
+		if(index > 0){
+			destination = [[OSPaneModel sharedInstance] paneAtIndex:index - 1];
+		}else{
+			destination = [[OSPaneModel sharedInstance] paneAtIndex:index + 1];
 		}
 	}
 
