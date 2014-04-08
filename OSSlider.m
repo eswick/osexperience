@@ -44,10 +44,8 @@
 
 	[self setDelegate:self];
 
-	for(UIGestureRecognizer *gestureRecognizer in self.gestureRecognizers){
-		[self removeGestureRecognizer:gestureRecognizer];
-	}
-
+	[self removeGestureRecognizer:self.panGestureRecognizer];
+	
 	return self;
 }
 

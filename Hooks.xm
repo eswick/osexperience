@@ -182,6 +182,12 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)_switchAppGestureBegan:(double)arg1{
+	for(UIGestureRecognizer *recognizer in [[OSSlider sharedInstance] gestureRecognizers]){
+		if([recognizer isKindOfClass:objc_getClass("UIScrollViewPagingSwipeGestureRecognizer")]){
+			recognizer.enabled = false;
+		}
+	}
+
 	self.switchAppGestureInProgress = true;
 
 	if(![[OSViewController sharedInstance] launchpadIsAnimating] && ![[OSViewController sharedInstance] launchpadIsActive])
