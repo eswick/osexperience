@@ -304,13 +304,18 @@ typedef struct{
 @end
 
 typedef struct {
-	int type;
-	unsigned pathIndex;
-	CGPoint location;
-	CGPoint previousLocation;
-	CGFloat totalDistanceTraveled;
-	UIInterfaceOrientation interfaceOrientation;
-	UIInterfaceOrientation previousInterfaceOrientation;
+    int type;
+    int modifier;
+    unsigned long long pathIndex;
+    unsigned long long pathIdentity;
+    struct CGPoint location;
+    struct CGPoint previousLocation;
+    struct CGPoint unrotatedLocation;
+    struct CGPoint previousUnrotatedLocation;
+    double totalDistanceTraveled;
+    long long interfaceOrientation;
+    long long previousInterfaceOrientation;
+    double timestamp;
 } SBGestureRecognizerTouchData;
 
 @interface SBHandMotionExtractor

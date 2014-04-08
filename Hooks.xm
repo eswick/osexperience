@@ -422,8 +422,10 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 					continue;
 				CGPoint point = [[[OSViewController sharedInstance] view] convertPoint:arg1[0].location toView:window];
 				if([window pointInside:point withEvent:nil]){
-					[pane bringSubviewToFront:window];
-					[pane setActiveWindow:window];
+					dispatch_async(dispatch_get_main_queue(), ^{
+						[pane bringSubviewToFront:window];
+						[pane setActiveWindow:window];
+					});
 				}
 			}
 		}
