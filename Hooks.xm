@@ -316,7 +316,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (void)sendEvent:(id)arg1{
-	
+
 	GSEventRef event = [arg1 _gsEvent];
 
 	if(event == NULL){
@@ -381,10 +381,14 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
 	[messagingCenter runServerOnCurrentThread];
 	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
+	[messagingCenter registerForMessageName:@"checkin" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
 }
 
 %new
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
+	if([name isEqualToString:@"checkin"])
+		return @{};
+
 	SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:[userinfo objectForKey:@"bundleID"]];
 
 	if([app forceClassic]){
@@ -971,11 +975,24 @@ static CPDistributedNotificationCenter *center;
 
 %end
 
+BOOL checkin_with_springboard(){
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
+	NSDictionary *response = [messagingCenter sendMessageAndReceiveReplyName:@"checkin" userInfo:nil];
+
+	if(response)
+		return true;
+	else
+		return false;
+}
+
 //Gesture fix
 static BOOL OSGestureInProgress = false;
 %hook CAWindowServerDisplay
 
 - (unsigned int)contextIdAtPosition:(CGPoint)arg1{
+	if(!checkin_with_springboard())
+		return %orig;
+
 	if(OSGestureInProgress || missionControlActive){
 		return springBoardContext;
 	}else{
