@@ -386,11 +386,11 @@ typedef struct {
 
 @interface BKApplication : NSObject
 
+@property (assign) BOOL performOriginals;
+
 -(int)suspendType;
 -(void)setSuspendType:(int)arg1;
 - (BKProcess*)process;
-- (BOOL)performOriginals;//New
-- (void)setPerformOriginals:(BOOL)arg1;//New
 - (void)_deactivate:(id)arg1;
 - (NSString*)bundleIdentifier;
 - (int)activationState;
@@ -470,9 +470,11 @@ typedef struct {
 
 @end
 
-@interface SBApplication : NSObject {
+@interface SBApplication : NSObject
 
-}
+@property (assign) BOOL forceClassic;
+@property (assign, getter=isRelaunching) BOOL relaunching;
+@property (assign, setter=setTest:) BOOL testBOOL;
 
 - (id)mainScreenContextHostManager;
 - (BOOL)icon:(id)arg1 launchFromLocation:(int)arg2;
@@ -492,10 +494,6 @@ typedef struct {
 - (BOOL)isRunning;
 - (BOOL)supportsApplicationType:(int)arg1;
 
-- (BOOL)forceClassic; //New
-- (void)setForceClassic:(BOOL)forceClassic;//New
-- (BOOL)isRelaunching; //New
-- (void)setRelaunching:(BOOL)relaunching;//New
 - (void)relaunch; //New
 - (void)launch; //New
 

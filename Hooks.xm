@@ -403,30 +403,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 %hook SBApplication
 
-static char forceClassicKey;
-
-%new
-- (void)setForceClassic:(BOOL)forceClassic{
-	objc_setAssociatedObject(self, &forceClassicKey, [NSNumber numberWithBool:forceClassic], OBJC_ASSOCIATION_RETAIN);
-}
-
-%new
-- (BOOL)forceClassic{
-	return [objc_getAssociatedObject(self, &forceClassicKey) boolValue];
-}
-
-
-static char relaunchingKey;
-
-%new
-- (void)setRelaunching:(BOOL)relaunching{
-	objc_setAssociatedObject(self, &relaunchingKey, [NSNumber numberWithBool:relaunching], OBJC_ASSOCIATION_RETAIN);
-}
-
-%new
-- (BOOL)isRelaunching{
-	return [objc_getAssociatedObject(self, &relaunchingKey) boolValue];
-}
+%property (assign) BOOL forceClassic;
+%property (assign, getter=isRelaunching) BOOL relaunching;
 
 - (void)setDisplaySetting:(unsigned int)arg1 value:(id)arg2{
 	%orig;
@@ -945,18 +923,7 @@ static CPDistributedNotificationCenter *center;
 
 %hook BKApplication
 
-static char originalsKey;
-
-%new
-- (void)setPerformOriginals:(BOOL)performOriginals{
-	objc_setAssociatedObject(self, &originalsKey, [NSNumber numberWithBool:performOriginals], OBJC_ASSOCIATION_RETAIN);
-}
-
-%new
-- (BOOL)performOriginals{
-	return [objc_getAssociatedObject(self, &originalsKey) boolValue];
-}
-
+%property (assign) BOOL performOriginals;
 
 -(void)_deactivate:(id)arg1{
 	if([self performOriginals]){
