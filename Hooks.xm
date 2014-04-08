@@ -143,7 +143,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 			if(!launchpadClosing){
 				[UIView animateWithDuration:0.25
 					delay:0
-					options: UIViewAnimationOptionCurveEaseOut 
+					options: UIViewAnimationOptionCurveEaseOut
 					animations:^{
 						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:1];
 						[[OSViewController sharedInstance] setDockPercentage:0.0];
@@ -224,8 +224,16 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	return true;
 }
 
+static BOOL preventSwitcherDismiss = false;
 - (void)dismissSwitcherAnimated:(BOOL)arg1{
-	[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
+	if(!preventSwitcherDismiss)
+		[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
+}
+
+- (void)activateApplicationAnimated:(id)arg1{
+	preventSwitcherDismiss = true;
+	%orig;
+	preventSwitcherDismiss = false;
 }
 
 - (void)_toggleSwitcher{
@@ -526,8 +534,6 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 
 -(void)didSuspend{
-
-	%log;
 	return;
 
 	OSAppPane *appPane = nil;
@@ -738,6 +744,16 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		[[(SpringBoard*)UIApp statusBarWindow] setAlpha:1.0];
 	}
 	%orig;
+}
+
+%end
+
+%hook SBToAppWorkspaceTransaction
+
+- (void)performToAppStateCleanup{
+	preventSwitcherDismiss = true;
+	%orig;
+	preventSwitcherDismiss = false;
 }
 
 %end

@@ -154,6 +154,9 @@
 	[self alignSubviews];
 	[self updateSelectedThumbnail];
 
+	if([[OSViewController sharedInstance] missionControlIsActive])
+		[thumbnail performSelector:@selector(prepareForDisplay) withObject:nil afterDelay:2.0];
+
 	[panGesture release];
 	[thumbnail release];
 }
