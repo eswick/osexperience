@@ -54,6 +54,15 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %property (assign) BOOL switcherGestureInProgress;
 %property (assign) BOOL scaleGestureInProgress;
 
+- (void)_deviceLockStateChanged:(id)arg1{
+	if([[[arg1 userInfo] objectForKey:@"kSBNotificationKeyState"] boolValue]){
+		[[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
+	}else{
+		
+	}
+	%orig;
+}
+
 - (UIView*)contentView{
 	return [[OSViewController sharedInstance] iconContentView];
 }
@@ -728,11 +737,6 @@ static BOOL preventSwitcherDismiss = false;
 %end
 
 %hook SBAwayController
-
--(void)lock{
-	[[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
-    %orig;
-}
 
 - (void)setLocked:(BOOL)arg1{
 	if(!arg1){

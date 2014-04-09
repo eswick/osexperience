@@ -36,6 +36,8 @@
 	[self addSubview:self.wallpaperView];
 	[self bringSubviewToFront:self.wallpaperView];
 
+	self.wallpaperView.alpha = 1;
+
 	[self addSubview:self.contentView];
 	[self bringSubviewToFront:self.statusBar];
 }
