@@ -328,7 +328,7 @@ static BOOL preventSwitcherDismiss = false;
 %hook SpringBoard
 
 - (id)_accessibilityFrontMostApplication{
-	return @"LOL";
+	return nil;
 }
 
 - (void)sendEvent:(id)arg1{
