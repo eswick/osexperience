@@ -57,8 +57,12 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 - (void)_deviceLockStateChanged:(id)arg1{
 	if([[[arg1 userInfo] objectForKey:@"kSBNotificationKeyState"] boolValue]){
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
+		[[(SpringBoard*)UIApp statusBarWindow] setAlpha:1.0];
 	}else{
-		
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{	
+			[[(SpringBoard*)UIApp statusBarWindow] setAlpha:0.0];
+		}completion:^(BOOL finished){
+		}];	
 	}
 	%orig;
 }
@@ -732,22 +736,6 @@ static BOOL preventSwitcherDismiss = false;
 	SBIcon *icon = [iconModel applicationIconForDisplayIdentifier:[self bundleIdentifier]];
 
 	[self icon:icon launchFromLocation:0];
-}
-
-%end
-
-%hook SBAwayController
-
-- (void)setLocked:(BOOL)arg1{
-	if(!arg1){
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{	
-			[[(SpringBoard*)UIApp statusBarWindow] setAlpha:0.0];
-		}completion:^(BOOL finished){
-		}];
-	}else{
-		[[(SpringBoard*)UIApp statusBarWindow] setAlpha:1.0];
-	}
-	%orig;
 }
 
 %end
