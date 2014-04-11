@@ -9,6 +9,7 @@
 #import <substrate.h>
 #import "explorer/OSExplorerWindow.h"
 #import <rocketbootstrap.h>
+#import <mach_encrypt/mach_encrypt.h>
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
@@ -55,6 +56,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %property (assign) BOOL scaleGestureInProgress;
 
 - (void)_deviceLockStateChanged:(id)arg1{
+	ENCRYPTION_START(_deviceLockStateChanged);
+
 	if([[[arg1 userInfo] objectForKey:@"kSBNotificationKeyState"] boolValue]){
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
 		[[(SpringBoard*)UIApp statusBarWindow] setAlpha:1.0];
@@ -65,6 +68,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		}];	
 	}
 	%orig;
+
+	ENCRYPTION_STOP(_deviceLockStateChanged);
 }
 
 - (UIView*)contentView{
@@ -72,7 +77,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (BOOL)allowSystemGestureType:(SBSystemGestureType)type atLocation:(struct CGPoint)arg2{
-	
+
 	if(type & SBSystemGestureTypeSuspendApp){
 		if(self.switchAppGestureInProgress || self.switcherGestureInProgress || [[OSViewController sharedInstance] missionControlIsActive])
 			return false;
@@ -239,8 +244,12 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 static BOOL preventSwitcherDismiss = false;
 - (void)dismissSwitcherAnimated:(BOOL)arg1{
+	ENCRYPTION_START(dismissSwitcherAnimated);
+
 	if(!preventSwitcherDismiss)
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
+
+	ENCRYPTION_STOP(dismissSwitcherAnimated);
 }
 
 - (void)activateApplicationAnimated:(id)arg1{
@@ -250,15 +259,20 @@ static BOOL preventSwitcherDismiss = false;
 }
 
 - (void)_toggleSwitcher{
+	ENCRYPTION_START(_toggleSwitcher);
 
 	if([[OSViewController sharedInstance] missionControlIsActive])
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
 	else
 		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
+
+	ENCRYPTION_STOP(_toggleSwitcher);
 }
 
 
--(id)init{
+- (id)init{
+	ENCRYPTION_START(SBUIController$init);
+
 	self = %orig;
 
 	[MSHookIvar<UIView*>(self, "_contentView") removeFromSuperview];
@@ -278,12 +292,14 @@ static BOOL preventSwitcherDismiss = false;
 
 	[messagingCenter sendMessageAndReceiveReplyName:@"setKeyWindowContext" userInfo:dictionary];
 
+	ENCRYPTION_STOP(SBUIController$init);
 	return self;
 }
 
 
 
 - (void)window:(id)arg1 willAnimateRotationToInterfaceOrientation:(int)arg2 duration:(double)arg3{
+	ENCRYPTION_START(window$willAnimateRotationToInterfaceOrientation$duration);
 
 	int degrees;
 
@@ -321,6 +337,8 @@ static BOOL preventSwitcherDismiss = false;
 	%orig;
 
 	[[OSSlider sharedInstance] updateDockPosition];
+
+	ENCRYPTION_STOP(window$willAnimateRotationToInterfaceOrientation$duration);
 }
 
 - (BOOL)hasPendingAppActivatedByGesture{
@@ -381,6 +399,7 @@ static BOOL preventSwitcherDismiss = false;
 }
 
 - (void)_handleMenuButtonEvent{
+	ENCRYPTION_START(_handleMenuButtonEvent);
 	
 
 	if([[%c(SBNotificationCenterController) sharedInstance] isVisible]){
@@ -401,9 +420,12 @@ static BOOL preventSwitcherDismiss = false;
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
 	else
 		[[OSViewController sharedInstance] setLaunchpadActive:true animated:true];
+
+	ENCRYPTION_STOP(_handleMenuButtonEvent);
 }
 
 - (void)applicationDidFinishLaunching:(id)arg1{
+	ENCRYPTION_START(applicationDidFinishLaunching);
 	%orig;
 
 	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
@@ -411,10 +433,13 @@ static BOOL preventSwitcherDismiss = false;
 	[messagingCenter runServerOnCurrentThread];
 	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
 	[messagingCenter registerForMessageName:@"checkin" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
+
+	ENCRYPTION_STOP(applicationDidFinishLaunching);
 }
 
 %new
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
+
 	if([name isEqualToString:@"checkin"])
 		return @{};
 
@@ -425,6 +450,7 @@ static BOOL preventSwitcherDismiss = false;
 	}else{
 		return @{@"forceClassic" : @(false)};
 	}
+
 }
 
 
@@ -461,6 +487,7 @@ static BOOL preventSwitcherDismiss = false;
 - (id)hostViewForRequester:(id)arg1 enableAndOrderFront:(_Bool)arg2{
 	if([arg1 isEqualToString:@"com.apple.springboard.launchwithzoomanimation"])
 		return nil;
+
 	return %orig;
 }
 
@@ -499,6 +526,8 @@ static BOOL preventSwitcherDismiss = false;
 }
 
 -(void)didExitWithInfo:(id)arg1 type:(int)arg2{
+
+	ENCRYPTION_START(didExitWithInfo$type);
 
 	if([self isRelaunching]){
 		%orig;
@@ -543,6 +572,8 @@ static BOOL preventSwitcherDismiss = false;
 	[foundWindow removeFromSuperview];
 
     %orig;
+
+    ENCRYPTION_STOP(didExitWithInfo$type);
 }
 
 
@@ -603,6 +634,8 @@ static BOOL preventSwitcherDismiss = false;
 }
 
 - (void)didLaunch:(BKSApplicationProcessInfo*)arg1{
+	ENCRYPTION_START(didLaunch);
+
 	if([self isRelaunching])
 		[self setRelaunching:false];
 
@@ -613,6 +646,8 @@ static BOOL preventSwitcherDismiss = false;
 	}
 
 	[self addToSlider];
+
+	ENCRYPTION_STOP(didLaunch);
 }
 
 
@@ -753,14 +788,20 @@ static BOOL preventSwitcherDismiss = false;
 %hook SBIconController
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
+	ENCRYPTION_START(iconWasTapped);
+
 	if(![[arg1 application] isRunning]){
 		[[arg1 application] icon:arg1 launchFromLocation:0];
 	}else{
 		[[arg1 application] addToSlider];
 	}
+
+	ENCRYPTION_STOP(iconWasTapped);
 }
 
 -(void)iconTapped:(SBIconView*)arg1{
+	ENCRYPTION_START(iconTapped);
+
 	[arg1 setHighlighted:false];
 
     if(![[OSViewController sharedInstance] launchpadIsActive]){
@@ -774,6 +815,8 @@ static BOOL preventSwitcherDismiss = false;
         [[OSViewController sharedInstance] deactivateLaunchpadWithIconView:arg1];
         %orig;
     }
+
+    ENCRYPTION_STOP(iconTapped);
 }
 
 - (void)_resetRootIconLists{
@@ -789,8 +832,12 @@ static BOOL preventSwitcherDismiss = false;
 }
 
 - (void)willRotateToInterfaceOrientation:(long long)arg1 duration:(double)arg2{
+	ENCRYPTION_START(SBIconController$willRotateToInterfaceOrientation$duration);
+
 	[[[OSViewController sharedInstance] iconContentView] contentView].transform = CGAffineTransformIdentity;
 	%orig;
+
+	ENCRYPTION_STOP(SBIconController$willRotateToInterfaceOrientation$duration);
 }
 
 %end
@@ -839,6 +886,8 @@ static BOOL preventSwitcherDismiss = false;
 %hook SBAppToAppWorkspaceTransaction
 
 - (void)_commit{
+	ENCRYPTION_START(_commit);
+
 	[self _setupAnimation];
 	[self _kickOffActivation];
 
@@ -854,6 +903,8 @@ static BOOL preventSwitcherDismiss = false;
 
     [self animationController:nil willBeginAnimation:nil];
     [self animationControllerDidFinishAnimation:nil];
+
+    ENCRYPTION_STOP(_commit);
 }
 
 %end
@@ -868,12 +919,17 @@ static BOOL preventSwitcherDismiss = false;
 %end
 
 MSHook (CFTypeRef, SecTaskCopyValueForEntitlement, void *task, CFStringRef entitlement, CFErrorRef *error){
+
+	ENCRYPTION_START(SecTaskCopyValueForEntitlement);
+
 	CFTypeRef value = _SecTaskCopyValueForEntitlement(task, entitlement, error);
 
 	NSString *nsEntitlement = (NSString*)entitlement;
 	if([nsEntitlement isEqualToString:@"com.apple.springboard.openurlinbackground"]){
 		value = kCFBooleanTrue;
 	}
+
+	ENCRYPTION_STOP(SecTaskCopyValueForEntitlement);
 	
 	return value;
 }

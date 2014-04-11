@@ -1,5 +1,6 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
+#import <mach_encrypt/mach_encrypt.h>
 
 #define LP_VARIANCE 0.1
 
@@ -277,9 +278,7 @@
             [[OSThumbnailView sharedInstance] setHidden:true];
         }
 
-
     }
-
 }
 
 - (CGRect)missionControlWindowConstraints{
@@ -314,6 +313,8 @@
 
 
 -(void)loadView{
+    ENCRYPTION_START(loadView);
+
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
     self.switcherBackgroundView = [[OSSwitcherBackgroundView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
@@ -355,6 +356,7 @@
 
     self.desktopShowsDock = true;
 
+    ENCRYPTION_STOP(loadView);
 }
 
 - (void)menuButtonPressed{
@@ -368,6 +370,8 @@
 }
 
 - (void)animateIconLaunch:(SBIconView*)iconView{
+    ENCRYPTION_START(animateIconLaunch);
+
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
 	launchZoomView.image = [iconView iconImageSnapshot];
 
@@ -386,6 +390,8 @@
     	[launchZoomView removeFromSuperview];
     	[launchZoomView release];
     }];
+
+    ENCRYPTION_STOP(animateIconLaunch);
 }
 
 - (void)deactivateLaunchpadWithIconView:(SBIconView*)iconView{
@@ -405,6 +411,7 @@
 }
 
 - (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated{
+    ENCRYPTION_START(setLaunchpadActive$animated);
 
 	if(activated){
 		[self.iconContentView prepareForDisplay];
@@ -472,6 +479,8 @@
     	}
 
 	}
+
+    ENCRYPTION_STOP(setLaunchpadActive$animated);
 }
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{
