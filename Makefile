@@ -1,7 +1,7 @@
 ARCHS = arm64
 
 THEOS_BUILD_DIR = debs
-#DEBUG = 1
+DEBUG = 1
 include theos/makefiles/common.mk
 
 TWEAK_NAME = OSExperience
@@ -17,9 +17,11 @@ endif
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
+ifndef DEBUG
 after-OSExperience-all::
 	theos/bin/mach_prot $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT) __TEXT rwx
-	/Users/eswick/Development/mach_encrypt/mach_encrypt $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT) -u 
+	/Users/eswick/Development/mach_verify/mach_verify $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT) -u 9f1b481a4bcce5a47ef72374155289b9246f8a1f
+endif
 
 after-install::
 	install.exec "killall -9 backboardd"

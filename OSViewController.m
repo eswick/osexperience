@@ -1,6 +1,6 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
-#import <mach_encrypt/mach_encrypt.h>
+#import <mach_verify/mach_verify.h>
 
 #define LP_VARIANCE 0.1
 

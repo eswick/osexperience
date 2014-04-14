@@ -9,7 +9,7 @@
 #import <substrate.h>
 #import "explorer/OSExplorerWindow.h"
 #import <rocketbootstrap.h>
-#import <mach_encrypt/mach_encrypt.h>
+#import <mach_verify/mach_verify.h>
 
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
