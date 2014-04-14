@@ -5,6 +5,8 @@
 #define widthPercentage 0.99
 #define heightPercentage 0.99
 
+#define snapMargin 20
+
 @implementation OSDesktopPane
 @synthesize wallpaperView = _wallpaperView;
 @synthesize statusBar = _statusBar;
@@ -42,6 +44,17 @@
 	[self.statusBar release];
 	[self.windows release];
 
+	self.showingRightSnapIndicator = false;
+
+	self.snapIndicator = [[UIView alloc] init];
+	self.snapIndicator.backgroundColor = [UIColor grayColor];
+	self.snapIndicator.alpha = 0.5;
+	self.snapIndicator.layer.borderColor = [[UIColor whiteColor] CGColor];
+	self.snapIndicator.layer.borderWidth = 1;
+	self.snapIndicator.hidden = true;
+	[self addSubview:self.snapIndicator];
+	[self.snapIndicator release];
+
 	return self;
 }
 
@@ -70,6 +83,141 @@
 		if(frame.origin.y < self.statusBar.bounds.size.height)
 			frame.origin.y = self.statusBar.bounds.size.height;
 		window.frame = frame;
+
+		if(![window isKindOfClass:[OSAppWindow class]])
+			return;
+
+		if([gesture locationInView:self].x > self.bounds.size.width - snapMargin){ //Right side of screen
+			if(UIInterfaceOrientationIsLandscape([UIApp statusBarOrientation]) && UIInterfaceOrientationIsPortrait([[(OSAppWindow*)window application] statusBarOrientation])){
+				if(!self.showingRightSnapIndicator){
+					[self insertSubview:self.snapIndicator belowSubview:window];
+					[self setRightSnapIndicatorVisible:true animated:true];
+				}
+			}
+		}else if([gesture locationInView:self].x < snapMargin){
+			if(UIInterfaceOrientationIsLandscape([UIApp statusBarOrientation]) && UIInterfaceOrientationIsPortrait([[(OSAppWindow*)window application] statusBarOrientation])){
+				if(!self.showingLeftSnapIndicator){
+					[self insertSubview:self.snapIndicator belowSubview:window];
+					[self setLeftSnapIndicatorVisible:true animated:true];
+				}
+			}
+		}else{
+			if(self.showingRightSnapIndicator)
+				[self setRightSnapIndicatorVisible:false animated:true];
+			else if(self.showingLeftSnapIndicator)
+				[self setLeftSnapIndicatorVisible:false animated:true];
+		}
+	}else if([gesture state] == UIGestureRecognizerStateEnded){
+		if(![window isKindOfClass:[OSAppWindow class]])
+			return;
+
+		if(self.showingRightSnapIndicator){
+			OSAppWindow *appWindow = (OSAppWindow*)window;
+
+			[UIView animateWithDuration:0.25
+				delay:0.0
+				options:UIViewAnimationOptionCurveEaseOut
+				animations:^{
+					appWindow.frame = self.snapIndicator.frame;
+				}
+				completion:nil
+			];
+
+			[self setRightSnapIndicatorVisible:false animated:true];
+		}else if(self.showingLeftSnapIndicator){
+			OSAppWindow *appWindow = (OSAppWindow*)window;
+
+			[UIView animateWithDuration:0.25
+				delay:0.0
+				options:UIViewAnimationOptionCurveEaseOut
+				animations:^{
+					appWindow.frame = self.snapIndicator.frame;
+				}
+				completion:nil
+			];
+
+			[self setLeftSnapIndicatorVisible:false animated:true];
+		}
+	}
+}
+
+- (void)setRightSnapIndicatorVisible:(BOOL)visible animated:(BOOL)animated{
+	self.showingRightSnapIndicator = visible;
+
+	if(visible){
+		self.snapIndicator.hidden = false;
+		self.snapIndicator.frame = CGRectMake(self.bounds.size.width, self.bounds.size.height / 2, 0, 0);
+
+		void (^snapToFrame)(void) = ^{
+			self.snapIndicator.frame = CGRectMake(self.bounds.size.width / 2, self.statusBar.frame.size.height, self.bounds.size.width / 2, self.bounds.size.height - self.statusBar.frame.size.height);
+		};
+
+		if(animated){
+			[UIView animateWithDuration:0.25
+				delay:0.0
+				options:UIViewAnimationOptionCurveEaseOut
+				animations:snapToFrame
+				completion:nil
+			];
+		}else{
+			snapToFrame();
+		}
+	}else{
+
+		if(animated){
+			[UIView animateWithDuration:0.25
+				delay:0.0
+				options:UIViewAnimationOptionCurveEaseOut
+				animations:^{
+					self.snapIndicator.alpha = 0;
+				}
+				completion:^(BOOL finished){
+					self.snapIndicator.alpha = 0.5;
+					self.snapIndicator.hidden = true;
+				}];
+		}else{
+			self.snapIndicator.hidden = true;
+		}
+	}
+}
+
+- (void)setLeftSnapIndicatorVisible:(BOOL)visible animated:(BOOL)animated{
+	self.showingLeftSnapIndicator = visible;
+
+	if(visible){
+		self.snapIndicator.hidden = false;
+		self.snapIndicator.frame = CGRectMake(0, self.bounds.size.height / 2, 0, 0);
+
+		void (^snapToFrame)(void) = ^{
+			self.snapIndicator.frame = CGRectMake(0, self.statusBar.frame.size.height, self.bounds.size.width / 2, self.bounds.size.height - self.statusBar.frame.size.height);
+		};
+
+		if(animated){
+			[UIView animateWithDuration:0.25
+				delay:0.0
+				options:UIViewAnimationOptionCurveEaseOut
+				animations:snapToFrame
+				completion:nil
+			];
+		}else{
+			snapToFrame();
+		}
+	}else{
+
+		if(animated){
+			[UIView animateWithDuration:0.25
+				delay:0.0
+				options:UIViewAnimationOptionCurveEaseOut
+				animations:^{
+					self.snapIndicator.alpha = 0;
+				}
+				completion:^(BOOL finished){
+					self.snapIndicator.alpha = 0.5;
+					self.snapIndicator.hidden = true;
+				}];
+		}else{
+			self.snapIndicator.hidden = true;
+		}
 	}
 }
 
@@ -181,6 +329,7 @@
 	[self.wallpaperController release];
 	[self.statusBar release];
 	[self.windows release];
+	[self.snapIndicator release];
 
 	[super dealloc];
 }

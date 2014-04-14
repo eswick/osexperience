@@ -21,5 +21,8 @@
 @property (nonatomic, assign) OSWindow *activeWindow;
 @property (nonatomic, retain) NSMutableArray *windows;
 
+@property (nonatomic, assign) BOOL showingRightSnapIndicator;
+@property (nonatomic, assign) BOOL showingLeftSnapIndicator;
+@property (nonatomic, retain) UIView *snapIndicator;
 
 @end
