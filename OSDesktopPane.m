@@ -1,5 +1,6 @@
 #import "OSDesktopPane.h"
 #import "missioncontrol/OSMCWindowLayoutManager.h"
+#import <mach_verify/mach_verify.h>
 
 #define desktopPath @"/var/mobile/Desktop"
 #define widthPercentage 0.99
@@ -15,6 +16,7 @@
 
 
 -(id)init{
+	VERIFY_START(OSDesktopPane$init);
 	if(![super initWithName:@"Desktop" thumbnail:nil]){
 		return nil;
 	}
@@ -54,6 +56,8 @@
 	self.snapIndicator.hidden = true;
 	[self addSubview:self.snapIndicator];
 	[self.snapIndicator release];
+
+	VERIFY_STOP(OSDesktopPane$init);
 
 	return self;
 }
@@ -142,6 +146,7 @@
 }
 
 - (void)setRightSnapIndicatorVisible:(BOOL)visible animated:(BOOL)animated{
+	VERIFY_START(setRightSnapIndicatorVisible$animated);
 	self.showingRightSnapIndicator = visible;
 
 	if(visible){
@@ -179,9 +184,13 @@
 			self.snapIndicator.hidden = true;
 		}
 	}
+
+	VERIFY_STOP(setRightSnapIndicatorVisible$animated);
 }
 
 - (void)setLeftSnapIndicatorVisible:(BOOL)visible animated:(BOOL)animated{
+	VERIFY_START(setLeftSnapIndicatorVisible$animated);
+
 	self.showingLeftSnapIndicator = visible;
 
 	if(visible){
@@ -219,6 +228,8 @@
 			self.snapIndicator.hidden = true;
 		}
 	}
+
+	VERIFY_STOP(setLeftSnapIndicatorVisible$animated);
 }
 
 - (void)window:(OSWindow*)window didRecieveResizePanGesture:(UIPanGestureRecognizer*)gesture{
@@ -244,6 +255,8 @@
 }
 
 - (void)missionControlWillActivate{
+	VERIFY_START(missionControlWillActivate);
+
 	for(OSWindow *window in self.subviews){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
@@ -255,9 +268,13 @@
 
 		[[OSSlider sharedInstance] addSubview:window];
 	}
+
+	VERIFY_STOP(missionControlWillActivate);
 }
 
 - (void)missionControlWillDeactivate{
+	VERIFY_START(missionControlWillDeactivate);
+
 	for(OSWindow *window in self.windows){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
@@ -268,9 +285,13 @@
 		frame.origin = [self convertPoint:window.originInDesktop toView:[self superview]];
 		[window setFrame:frame];
 	}
+
+	VERIFY_STOP(missionControlWillDeactivate);
 }
 
 - (void)missionControlDidDeactivate{
+	VERIFY_START(missionControlDidDeactivate);
+
 	for(OSWindow *window in self.windows){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
@@ -282,14 +303,20 @@
 		[self addSubview:window];
 		window.windowBar.userInteractionEnabled = true;
 	}
+
+	VERIFY_STOP(missionControlDidDeactivate);
 }
 
 - (void)paneIndexWillChange{
+	VERIFY_START(paneIndexWillChange);
+
 	for(OSWindow *window in self.windows){
 		if(![window isKindOfClass:[OSWindow class]])
 			continue;
 		window.desktopPaneOffset = CGPointSub(window.frame.origin, self.frame.origin);
 	}
+
+	VERIFY_STOP(paneIndexWillChange);
 }
 
 - (void)layoutSubviews{
@@ -297,6 +324,8 @@
 }
 
 - (void)paneIndexDidChange{
+	VERIFY_START(paneIndexDidChange);
+
 	[self setName:[NSString stringWithFormat:@"Desktop %i", [self desktopPaneIndex]]];
 
 	for(OSWindow *window in self.windows){
@@ -311,6 +340,8 @@
 
 		[window setFrame:frame];
 	}
+
+	VERIFY_STOP(paneIndexDidChange);
 }
 
 - (int)desktopPaneIndex{

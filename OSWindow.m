@@ -2,6 +2,7 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
 #import "missioncontrol/OSAppMirrorView.h"
+#import <mach_verify/mach_verify.h>
 
 
 @implementation OSWindow
@@ -18,6 +19,8 @@
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{
+	VERIFY_START(initWithFrame$title);
+
 	if(![super initWithFrame:arg1])
 		return nil;
 
@@ -87,6 +90,8 @@
 	[gestureBackdrop release];
 	[self.expandButton release];
 	
+	VERIFY_STOP(initWithFrame$title);
+
 	return self;
 }
 
@@ -198,6 +203,8 @@
 }
 
 - (void)switchToDesktopPane:(OSDesktopPane*)pane{
+	VERIFY_START(switchToDesktopPane);
+
 	for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
 		if(![desktopPane isKindOfClass:[OSDesktopPane class]])
 			continue;
@@ -206,6 +213,8 @@
 	}
 	[self setDelegate:pane];
 	[pane.windows addObject:self];
+
+	VERIFY_STOP(switchToDesktopPane);
 }
 
 - (OSPaneThumbnail*)selectedThumbnailView{

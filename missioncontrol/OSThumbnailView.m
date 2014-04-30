@@ -1,9 +1,7 @@
 #import "OSThumbnailView.h"
 #import "OSThumbnailPlaceholder.h"
 #import "OSPaneThumbnail.h"
-
-
-
+#import <mach_verify/mach_verify.h>
 
 @implementation OSThumbnailView
 @synthesize wrapperView = _wrapperView;
@@ -25,6 +23,8 @@
 
 
 - (id)init{
+
+	VERIFY_START(init);
 
 	CGRect frame = [[UIScreen mainScreen] bounds];
 
@@ -55,6 +55,9 @@
 	[self addSubview:self.addDesktopButton];
 
 	self.shouldLayoutSubviews = true;
+
+	VERIFY_STOP(init);
+
 	return self;
 }
 
@@ -104,6 +107,8 @@
 
 
 -(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
+	VERIFY_START(willRotateToInterfaceOrientation$duration);
+
 	CGRect frame = [[UIScreen mainScreen] bounds];
 
 	if(![self isPortrait]){
@@ -118,6 +123,8 @@
 
 	[self alignSubviews];
 
+
+	VERIFY_STOP(willRotateToInterfaceOrientation$duration);
 }
 
 
@@ -139,6 +146,8 @@
 
 - (void)addPane:(OSPane*)pane{
 
+	VERIFY_START(addPane);
+
 	OSPaneThumbnail *thumbnail = [[OSPaneThumbnail alloc] initWithPane:pane];
 
 	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailPanGesture:)];
@@ -159,9 +168,13 @@
 
 	[panGesture release];
 	[thumbnail release];
+
+	VERIFY_STOP(addPane);
 }
 
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated{
+	VERIFY_START(removePane$animated);
+
 	OSPaneThumbnail *thumbnail;
 
 	for(OSPaneThumbnail *view in self.wrapperView.subviews){
@@ -196,7 +209,7 @@
 		[self alignSubviews];
 	}
 
-
+	VERIFY_STOP(removePane$animated);
 }
 
 - (void)handleThumbnailLongPress:(UILongPressGestureRecognizer *)gesture{
@@ -308,6 +321,8 @@
 }
 
 - (void)addDesktopButtonWasTapped:(OSAddDesktopButton*)button{
+	VERIFY_START(addDesktopButtonWasTapped);
+
 	OSDesktopPane *desktop = [[OSDesktopPane alloc] init];
 
 	[[OSPaneModel sharedInstance] addPaneToBack:desktop];
@@ -368,6 +383,8 @@
 	}
 
 	[desktop release];
+
+	VERIFY_STOP(addDesktopButtonWasTapped);
 }
 
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation{

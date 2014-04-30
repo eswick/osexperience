@@ -1,0 +1,31 @@
+#!/bin/sh
+
+PRODUCTID=com.eswick.osexperience
+PRODUCTNAME=OS\ Experience
+LICENSE_PATH=/Library/MobileSubstrate/DynamicLibraries/OSExperience.dylib
+
+if [ -f $LICENSE_PATH ]
+	then
+		rm $LICENSE_PATH
+		echo "Removed old license!"
+fi
+
+UDID=`echo "dlopen(\"/usr/lib/libMobileGestalt.dylib\", RTLD_LAZY); var MGCopyAnswer = @encode(id(id))(dlsym(RTLD_DEFAULT, \"MGCopyAnswer\")); system.print(MGCopyAnswer(@\"UniqueDeviceID\"));" | cycript`
+ARCH=`uname -p`
+
+echo "Downloading license..."
+
+STATUS=`curl -sL -w "%{http_code}" --data "udid=$UDID&arch=$ARCH&productid=$PRODUCTID" "http://54.86.59.161/a2" -o $LICENSE_PATH`
+
+if [ "$STATUS" -eq "402" ]
+	then
+		echo "Error: You have not purchased $PRODUCTNAME"
+		exit 1
+fi
+
+if [ "$STATUS" -ne "200" ]
+	then
+		echo "Failed to download license: status code $STATUS."
+		exit 1
+fi
+

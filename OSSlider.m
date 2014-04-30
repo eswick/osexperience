@@ -1,5 +1,5 @@
 #import "OSSlider.h"
-
+#import <mach_verify/mach_verify.h>
 
 #define marginSize 40
 #define scrollDuration 1.0
@@ -9,8 +9,6 @@
 
 @implementation OSSlider
 @synthesize startingOffset = _startingOffset;
-@synthesize currentPageIndex = _currentPageIndex;
-@synthesize currentPane = _currentPane;
 @synthesize currentOrientation = _currentOrientation;
 @synthesize pageIndexPlaceholder = _pageIndexPlaceholder;
 
@@ -28,6 +26,8 @@
 }
 
 - (id)init{
+	VERIFY_START(init);
+
 	CGRect frame = [[UIScreen mainScreen] bounds];
 	frame.size.width += marginSize;
 
@@ -46,10 +46,14 @@
 
 	[self removeGestureRecognizer:self.panGestureRecognizer];
 	
+	VERIFY_STOP(init);
+
 	return self;
 }
 
 - (void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+	VERIFY_START(handleUpSwitcherGesture);
+
 	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
 		if([(OSAppPane*)[self currentPane] windowBarIsOpen]){
 			[(OSAppPane*)[self currentPane] setWindowBarHidden];
@@ -57,9 +61,13 @@
 		}
 	}
 	[[OSViewController sharedInstance] setMissionControlActive:true animated:true]; 
+
+	VERIFY_STOP(handleUpSwitcherGesture);
 }
 
 - (void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
+	VERIFY_START(handleDownSwitcherGesture);
+
 	if([[OSViewController sharedInstance] missionControlIsActive]){
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
 		return;
@@ -70,9 +78,13 @@
 			[(OSAppPane*)[self currentPane] setWindowBarVisible];
 		}
 	}
+
+	VERIFY_STOP(handleDownSwitcherGesture);
 }
 
 - (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
+	VERIFY_START(willRotateToInterfaceOrientation$duration);
+
 	int appViewDegrees;
 
 	switch(orientation){
@@ -109,9 +121,13 @@
 
  	[self updateDockPosition];
 
+
+ 	VERIFY_STOP(willRotateToInterfaceOrientation$duration);
 }
 
 - (void)addPane:(OSPane*)pane{
+
+	VERIFY_START(addPane);
 
 	CGSize contentSize = self.contentSize;
 	contentSize.width = (marginSize + pane.frame.size.width) * [[OSPaneModel sharedInstance] count];
@@ -132,10 +148,13 @@
 	[self addSubview:pane];
 
 	[self alignPanes];
+
+	VERIFY_STOP(addPane);
 }
 
 
 - (void)removePane:(OSPane*)pane{
+	VERIFY_START(removePane);
 	
 	if([pane isKindOfClass:[OSDesktopPane class]]){
 		for(OSWindow *window in [(OSDesktopPane*)pane windows]){
@@ -181,6 +200,7 @@
 		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 	});
 	
+	VERIFY_STOP(removePane);
 }
 
 - (void)alignPanes{
@@ -269,6 +289,8 @@
 }
 
 - (void)scrollToPane:(OSPane*)pane animated:(BOOL)animated{
+	VERIFY_START(scrollToPane$animated);
+
 	if(!animated){
 		self.contentOffset = CGPointMake([[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width, 0);
 		[self updateDockPosition];
@@ -288,6 +310,8 @@
         	}completion:^(BOOL completed){
         	}];
 	}
+
+	VERIFY_STOP(scrollToPane$animated);
 }
 
 - (void)beginPaging{
@@ -318,12 +342,16 @@
 }
 
 - (void)swipeGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
+	VERIFY_START(swipeGestureEndedWithCompletionType$cumulativePercentage);
+
 	Ivar horizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_horizontalVelocity");
 	if (!horizontalVelocity_ivar) return;
 	double *horizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(horizontalVelocity_ivar)));
 
 	[self _prepareToPageWithHorizontalVelocity:*horizontalVelocity verticalVelocity:0];
 	[self _endPanNormal:true];
+
+	VERIFY_STOP(swipeGestureEndedWithCompletionType$cumulativePercentage);
 }
 
 - (void)dealloc{

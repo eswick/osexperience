@@ -1,7 +1,7 @@
 #import "OSPaneThumbnail.h"
 #import "OSThumbnailPlaceholder.h"
 #import "OSAppMirrorView.h"
-
+#import <mach_verify/mach_verify.h>
 
 
 @implementation OSPaneThumbnail
@@ -20,6 +20,8 @@
 
 
 - (id)initWithPane:(OSPane*)pane{
+	VERIFY_START(initWithPane);
+
 	CGRect frame = [[UIScreen mainScreen] bounds];
 
 	if(![[OSThumbnailView sharedInstance] isPortrait]){
@@ -145,10 +147,14 @@
 	[self.shadowOverlayView release];
 	[self.windowContainer release];
 
+	VERIFY_STOP(initWithPane);
+
 	return self;
 }
 
 - (void)setCloseboxVisible:(BOOL)visible animated:(BOOL)animated{
+	VERIFY_START(setCloseboxVisible);
+
 	if(animated){
 
 		if(visible){
@@ -179,6 +185,8 @@
 			self.closeboxVisible = false;
 		}
 	}
+
+	VERIFY_STOP(setCloseboxVisible);
 }
 
 - (void)removeWindowPreviews{

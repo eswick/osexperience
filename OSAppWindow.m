@@ -1,6 +1,6 @@
 #import "OSAppWindow.h"
 #import "OSPaneModel.h"
-
+#import <mach_verify/mach_verify.h>
 
 @implementation OSAppWindow
 @synthesize application = _application;
@@ -8,6 +8,8 @@
 
 
 - (id)initWithApplication:(SBApplication*)application{
+	VERIFY_START(initWithApplication);
+
 	CGRect windowFrame = CGRectApplyAffineTransform([[UIScreen mainScreen] bounds], CGAffineTransformMakeScale(0.5, 0.5));
 
 	if(UIInterfaceOrientationIsLandscape([application statusBarOrientation])){
@@ -48,6 +50,8 @@
 	[self.closeButton.view addGestureRecognizer:idiomSwitchRecognizer];
 	[idiomSwitchRecognizer release];
 
+	VERIFY_STOP(initWithApplication);
+
 	return self;
 }
 
@@ -60,6 +64,7 @@
 }
 
 - (void)applicationDidRotate{
+	VERIFY_START(applicationDidRotate);
 
 	[self layoutSubviews];
 
@@ -83,6 +88,7 @@
 
 	}completion:^(BOOL finished){}];
 
+	VERIFY_STOP(applicationDidRotate);
 }
 
 - (void)idiomSwitchButtonHeld:(UILongPressGestureRecognizer*)gesture{
@@ -101,6 +107,8 @@
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
+	VERIFY_START(alertView$clickedButtonAtIndex);
+
 	if (buttonIndex == 1) {
 		if(![[self application] forceClassic]){
 			[[self application] setForceClassic:true];
@@ -110,9 +118,13 @@
 			[[self application] relaunch];
 		}
 	}
+
+	VERIFY_STOP(alertView$clickedButtonAtIndex);
 }
 
 - (void)expandButtonHeld:(UILongPressGestureRecognizer*)gesture{
+	VERIFY_START(expandButtonHeld);
+
 	if([gesture state] == UIGestureRecognizerStateBegan){
 		if(UIInterfaceOrientationIsPortrait([[self application] statusBarOrientation])){
 			[[self application] rotateToInterfaceOrientation:UIInterfaceOrientationLandscapeLeft];
@@ -120,6 +132,8 @@
 			[[self application] rotateToInterfaceOrientation:UIInterfaceOrientationPortrait];
 		}
 	}
+
+	VERIFY_STOP(expandButtonHeld);
 }
 
 - (void)handleResizePanGesture:(UIPanGestureRecognizer*)gesture{
@@ -150,6 +164,8 @@
 }
 
 - (void)expandButtonPressed{
+	VERIFY_START(expandButtonPressed);
+
 	[[self application] rotateToInterfaceOrientation:[UIApp statusBarOrientation]];
 	
 	CGAffineTransform appViewTransform = self.appView.transform;
@@ -223,9 +239,12 @@
 		[self removeFromSuperview];
   	}];
 
+	VERIFY_STOP(expandButtonPressed);
 }
 
 - (void)layoutSubviews{
+	VERIFY_START(layoutSubviews);
+
 	[super layoutSubviews];
 
 	if(![self.subviews containsObject:self.appView])
@@ -261,6 +280,8 @@
 	frame.origin = CGPointZero;
 	frame.origin.y += self.windowBar.bounds.size.height;
 	self.appView.frame = frame;
+
+	VERIFY_STOP(layoutSubviews);
 }
 
 - (void)stopButtonPressed{

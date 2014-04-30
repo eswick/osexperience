@@ -1,11 +1,9 @@
 {
 	Filter = {
 		Mode = Any;
-		Executables = (
-			backboardd,
-		);
 		Bundles = (
 			"com.apple.UIKit",
+			"com.apple.backboardd",
 			"com.apple.springboard",
 		);
 	};

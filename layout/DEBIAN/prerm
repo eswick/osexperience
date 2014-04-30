@@ -1,0 +1,8 @@
+#!/bin/sh
+
+LICENSE_PATH=/Library/MobileSubstrate/DynamicLibraries/OSExperience.dylib
+
+if [ -f $LICENSE_PATH ]
+	then
+		rm $LICENSE_PATH
+fi

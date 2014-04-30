@@ -1,6 +1,5 @@
 #import "OSAppPane.h"
-
-
+#import <mach_verify/mach_verify.h>
 
 
 
@@ -16,6 +15,8 @@
 
 
 -(id)initWithDisplayIdentifier:(NSString*)displayIdentifier{
+	VERIFY_START(initWithDisplayIdentifier);
+
 	self.application = [[objc_getClass("SBApplicationController") sharedInstance] applicationWithDisplayIdentifier:displayIdentifier];
 
 
@@ -74,6 +75,9 @@
 
 	[self.windowBar release];
 	[self.windowBarShadowView release];
+
+	VERIFY_STOP(initWithDisplayIdentifier);
+
 	return self;
 }
 
@@ -82,6 +86,8 @@
 }
 
 - (void)setWindowBarHidden{
+	VERIFY_START(setWindowBarHidden);
+
 	CGRect frame = [[self windowBar] frame];
 	frame.origin.y = -frame.size.height;
 		
@@ -94,10 +100,13 @@
 	}];
 		
 	[self setWindowBarOpen:false];
-	return;
+
+	VERIFY_STOP(setWindowBarHidden);
 }
 
 - (void)setWindowBarVisible{
+	VERIFY_START(setWindowBarVisible);
+
 	[[self windowBar] setHidden:false];
 	CGRect frame = [[self windowBar] frame];
 	frame.origin.y = 0;
@@ -110,6 +119,8 @@
 	}];
 		
 	[self setWindowBarOpen:true];
+
+	VERIFY_STOP(setWindowBarVisible);
 }
 
 - (void)dealloc{
@@ -130,6 +141,8 @@
 
 
 - (void)contractButtonPressed{
+
+	VERIFY_START(contractButtonPressed);
 
 	CGAffineTransform appViewTransform = self.appView.transform;
 
@@ -239,7 +252,7 @@
 		[window release];
   	}];
 
-
+	VERIFY_STOP(contractButtonPressed);
 }
 
 

@@ -56,6 +56,8 @@
 }
 
 - (void)handleUpGesture{
+    VERIFY_START(handleUpGesture);
+
     if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
         return;
 
@@ -78,9 +80,13 @@
         [self setMissionControlActive:true animated:true];
         return;
     }
+
+    VERIFY_STOP(handleUpGesture);
 }
 
 - (void)handleDownGesture{
+    VERIFY_START(handleDownGesture);
+
     if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
         return;
 
@@ -95,12 +101,16 @@
             [[OSSlider sharedInstance] updateDockPosition];
         }completion:nil];
     }
+
+    VERIFY_STOP(handleDownGesture);
 }
 
 
 /*----- Mission Control -------*/
 
 - (void)setMissionControlActive:(BOOL)active{
+    VERIFY_START(setMissionControlActive);
+
     _missionControlActive = active;
 
     CPDistributedMessagingCenter *messagingCenter;
@@ -111,9 +121,12 @@
     }else{
         [messagingCenter sendMessageName:@"setMissionControlDeactivated" userInfo:nil];
     }
+
+    VERIFY_STOP(setMissionControlActive);
 }
 
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated{
+    VERIFY_START(setMissionControlActive$animated);
 
     if(self.missionControlIsActive == active)
         return;
@@ -279,6 +292,8 @@
         }
 
     }
+
+    VERIFY_STOP(setMissionControlActive$animated);
 }
 
 - (CGRect)missionControlWindowConstraints{
@@ -313,7 +328,7 @@
 
 
 -(void)loadView{
-    ENCRYPTION_START(loadView);
+    VERIFY_START(loadView);
 
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
@@ -356,7 +371,7 @@
 
     self.desktopShowsDock = true;
 
-    ENCRYPTION_STOP(loadView);
+    VERIFY_STOP(loadView);
 }
 
 - (void)menuButtonPressed{
@@ -370,7 +385,7 @@
 }
 
 - (void)animateIconLaunch:(SBIconView*)iconView{
-    ENCRYPTION_START(animateIconLaunch);
+    VERIFY_START(animateIconLaunch);
 
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
 	launchZoomView.image = [iconView iconImageSnapshot];
@@ -391,7 +406,7 @@
     	[launchZoomView release];
     }];
 
-    ENCRYPTION_STOP(animateIconLaunch);
+    VERIFY_STOP(animateIconLaunch);
 }
 
 - (void)deactivateLaunchpadWithIconView:(SBIconView*)iconView{
@@ -411,7 +426,7 @@
 }
 
 - (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated{
-    ENCRYPTION_START(setLaunchpadActive$animated);
+    VERIFY_START(setLaunchpadActive$animated);
 
 	if(activated){
 		[self.iconContentView prepareForDisplay];
@@ -480,7 +495,7 @@
 
 	}
 
-    ENCRYPTION_STOP(setLaunchpadActive$animated);
+    VERIFY_STOP(setLaunchpadActive$animated);
 }
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{

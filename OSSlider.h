@@ -15,8 +15,6 @@
 }
 
 @property (nonatomic) CGPoint startingOffset;
-@property (nonatomic, readonly) int currentPageIndex;
-@property (nonatomic, readonly) OSPane *currentPane;
 @property (nonatomic, readwrite) UIInterfaceOrientation currentOrientation;
 @property (nonatomic, readwrite) int pageIndexPlaceholder;
 @property (nonatomic, readwrite) float pageOffsetBefore;
@@ -24,6 +22,8 @@
 
 
 + (id)sharedInstance;
+- (int)currentPageIndex;
+- (OSPane*)currentPane;
 - (void)addPane:(OSPane*)pane;
 - (void)updateDockPosition;
 - (BOOL)isPortrait;

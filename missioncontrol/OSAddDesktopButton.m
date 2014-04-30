@@ -1,5 +1,5 @@
 #import "OSAddDesktopButton.h"
-
+#import <mach_verify/mach_verify.h>
 
 
 @implementation OSAddDesktopButton
@@ -9,6 +9,7 @@
 @synthesize shadow = _shadow;
 
 - (id)init{
+	VERIFY_START(init);
 
 	CGRect frame = CGRectZero;
 	frame = [[UIScreen mainScreen] bounds];
@@ -93,11 +94,14 @@
 	[self addGestureRecognizer:tapGesture];
 	[tapGesture release];
 
+	VERIFY_STOP(init);
 
 	return self;
 }
 
 - (void)handleTap:(UILongPressGestureRecognizer*)gesture{
+	VERIFY_START(handleTap);
+
 	if(gesture.state == UIGestureRecognizerStateBegan){
 		self.plusIcon.layer.shadowOpacity = 0.60;
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
@@ -108,6 +112,7 @@
 		self.plusIcon.layer.shadowOpacity = 0.60;
 	}
 
+	VERIFY_STOP(handleTap);
 }
 
 - (void)layoutSubviews{

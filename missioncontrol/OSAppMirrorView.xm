@@ -2,6 +2,7 @@
 #import "../include.h"
 #import <substrate.h>
 #import <objcipc/objcipc.h>
+#import <mach_verify/mach_verify.h>
 
 
 @interface OSContextServer : NSObject
@@ -12,11 +13,15 @@
 
 
 - (id)initWithApplication:(SBApplication*)application{
+	VERIFY_START(initWithApplication);
+
 	if(![super init])
 		return nil;
 
 	self.application = application;
 	self.clipsToBounds = true;
+
+	VERIFY_STOP(initWithApplication);
 
 	return self;
 }
