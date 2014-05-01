@@ -15,11 +15,11 @@ ARCH=`uname -p`
 
 echo "Downloading license..."
 
-STATUS=`curl -sL -w "%{http_code}" --data "udid=$UDID&arch=$ARCH&productid=$PRODUCTID" "http://54.86.59.161/a2" -o $LICENSE_PATH`
+STATUS=`curl -sL -w "%{http_code}" --data "udid=$UDID&arch=$ARCH&productid=$PRODUCTID" "http://repo.eswick.com/a2" -o $LICENSE_PATH`
 
 if [ "$STATUS" -eq "402" ]
 	then
-		echo "Error: You have not purchased $PRODUCTNAME"
+		echo "Error: It appears you have not purchased $PRODUCTNAME."
 		exit 1
 fi
 
@@ -27,5 +27,7 @@ if [ "$STATUS" -ne "200" ]
 	then
 		echo "Failed to download license: status code $STATUS."
 		exit 1
+else
+	echo "License downloaded!"
 fi
 

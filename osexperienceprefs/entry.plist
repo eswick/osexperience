@@ -1,0 +1,10 @@
+{
+	entry = {
+		bundle = OSExperiencePrefs;
+		cell = PSLinkCell;
+		detail = "OSExperienceListController";
+		icon = "OSExperience.png";
+		isController = 1;
+		label = OSExperience;
+	};
+}

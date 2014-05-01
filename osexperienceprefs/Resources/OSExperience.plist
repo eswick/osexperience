@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>items</key>
+	<array>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>Options</string>
+		</dict>
+		<dict>
+			<key>get</key>
+			<string>getEnabled:</string>
+			<key>label</key>
+			<string>Enabled</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>set</key>
+			<string>setEnabled:forSpecifier:</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>cell</key>
+			<string>PSButtonCell</string>
+			<key>action</key>
+			<string>follow:</string>
+			<key>icon</key>
+			<string>twitter.png</string>
+			<key>label</key>
+			<string>@e_swick on Twitter</string>
+		</dict>
+		<dict>
+			<key>alignment</key>
+			<integer>1</integer>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+			<key>label</key>
+			<string>OS Experience © 2014 Evan Swick</string>
+			<key>footerText</key>
+			<string>Note: Each copy of OS Experience is unique to its device. Under no circumstances should you give your copy to anyone else. If publicly released (pirated), I&apos;ll know who you are, and will take action as necessary. Otherwise, thank you for supporting me!</string>
+		</dict>
+	</array>
+	<key>title</key>
+	<string>OSExperience</string>
+</dict>
+</plist>

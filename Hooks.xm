@@ -10,7 +10,7 @@
 #import "explorer/OSExplorerWindow.h"
 #import <rocketbootstrap.h>
 #import <mach_verify/mach_verify.h>
-
+#import "OSPreferences.h"
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
 extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CFStringRef entitlement, CFErrorRef *error);//In Security.framework
@@ -1154,6 +1154,9 @@ static BOOL networkActivity;
 
 __attribute__((constructor))
 static void initialize() {
+
+	if(![prefs isEnabled])
+		return;
 
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){
 		%init(Backboard);
