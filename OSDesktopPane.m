@@ -1,12 +1,9 @@
 #import "OSDesktopPane.h"
 #import "missioncontrol/OSMCWindowLayoutManager.h"
 #import <mach_verify/mach_verify.h>
+#import "OSPreferences.h"
 
-#define desktopPath @"/var/mobile/Desktop"
-#define widthPercentage 0.99
-#define heightPercentage 0.99
-
-#define snapMargin 20
+#define snapMargin [prefs SNAP_MARGIN]
 
 @implementation OSDesktopPane
 @synthesize wallpaperView = _wallpaperView;

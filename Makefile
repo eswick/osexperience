@@ -5,6 +5,7 @@ include theos/makefiles/common.mk
 #ENCRYPT=1
 #WRAPPER_ONLY=1
 INSTALL_LOCAL=1
+#DEBUG_PREFS=1
 
 
 TWEAK_NAME = OSExperience
@@ -41,7 +42,11 @@ before-package::
 endif
 
 after-install::
-	install.exec "killall -9 Preferences"
+ifdef DEBUG_PREFS
+	install.exec "killall -9 Preferences; rm /var/mobile/Library/Preferences/com.eswick.osexperience.plist"
+else
+	install.exec "killall -9 backboardd"
+endif
 
 SUBPROJECTS += osexperienceprefs
 include $(THEOS_MAKE_PATH)/aggregate.mk

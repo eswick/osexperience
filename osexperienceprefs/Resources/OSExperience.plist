@@ -21,6 +21,22 @@
 			<string>setEnabled:forSpecifier:</string>
 		</dict>
 		<dict>
+			<key>footerText</key>
+			<string>Disabling live previews can increase performance.</string>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>get</key>
+			<string>getLivePreviews:</string>
+			<key>label</key>
+			<string>Live App Previews</string>
+			<key>cell</key>
+			<string>PSSwitchCell</string>
+			<key>set</key>
+			<string>setLivePreviews:forSpecifier:</string>
+		</dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 		</dict>

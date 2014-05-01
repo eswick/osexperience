@@ -1155,7 +1155,7 @@ static BOOL networkActivity;
 __attribute__((constructor))
 static void initialize() {
 
-	if(![prefs isEnabled])
+	if(![prefs ENABLED])
 		return;
 
 	if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.backboardd"]){

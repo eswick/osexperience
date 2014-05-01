@@ -6,7 +6,7 @@
 /* Dictionary tools */
 #define dictionary [NSDictionary dictionaryWithContentsOfFile:PREFS_PATH]
 
-#define getPrefValue(key) [dictionary objectForKey:@#key]
+#define getPrefValue(key) ([dictionary objectForKey:@#key] ? [dictionary objectForKey:@#key] : [DEFAULTS objectForKey:@#key])
 #define setPrefValue(key,value) \
 ({ \
 	NSMutableDictionary *tempDict = [NSMutableDictionary dictionaryWithDictionary:dictionary]; \
@@ -17,16 +17,35 @@
 #define getBoolValue(key) [getPrefValue(key) boolValue]
 #define setBoolValue(key,value) setPrefValue(key,[NSNumber numberWithBool:value])
 
+#define fileManager [NSFileManager defaultManager]
+
+/* Value helpers */
+#define FLOAT_RDONLY(name) - (float)name{ return [getPrefValue(name) floatValue]; }
+#define BOOL_RDWT(name) - (BOOL)name { return getBoolValue(name); } - (void)set##name:(BOOL)value{ setBoolValue(name,value); } 
+#define VALUE(name,default) @#name : @(default),
 /* ======== */
 
-#define fileManager [NSFileManager defaultManager]
+
+
 
 #define DEFAULTS \
 @{\
-	@"ENABLED" : @true\
+	VALUE(ENABLED, true)\
+	VALUE(SNAP_MARGIN, 20)\
+	VALUE(PANE_SEPARATOR_SIZE, 40)\
+	VALUE(SCROLL_TO_PANE_DURATION, 1.0)\
+	VALUE(LIVE_PREVIEWS, true)\
 }
 
 @implementation OSPreferences
+
+
+BOOL_RDWT			(ENABLED);
+BOOL_RDWT			(LIVE_PREVIEWS);
+FLOAT_RDONLY		(SNAP_MARGIN);
+FLOAT_RDONLY		(PANE_SEPARATOR_SIZE);
+FLOAT_RDONLY		(SCROLL_TO_PANE_DURATION);
+
 
 + (id)sharedInstance{
     static OSPreferences *_prefs;
@@ -43,15 +62,5 @@
 
     return _prefs;
 }
-
-- (BOOL)isEnabled{
-	return getBoolValue(ENABLED);
-}
-
-- (void)setIsEnabled:(BOOL)enabled{
-	setBoolValue(ENABLED, enabled);
-}
-
-
 
 @end

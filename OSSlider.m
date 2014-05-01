@@ -1,8 +1,9 @@
 #import "OSSlider.h"
 #import <mach_verify/mach_verify.h>
+#import "OSPreferences.h"
 
-#define marginSize 40
-#define scrollDuration 1.0
+#define marginSize [prefs PANE_SEPARATOR_SIZE]
+#define scrollDuration [prefs SCROLL_TO_PANE_DURATION]
 #define mcScrollDuration 0.40
 
 

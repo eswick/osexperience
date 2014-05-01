@@ -780,6 +780,8 @@ typedef struct {
 
 + (id)sharedInstance;
 + (id)zoomViewForContextHostView:(id)arg1 application:(id)arg2 includeStatusBar:(BOOL)arg3 includeBanner:(BOOL)arg4;
++ (id)_zoomViewForApplication:(id)arg1 screen:(id)arg2 interfaceOrientation:(long long)arg3 includeStatusBar:(BOOL)arg4 includeBanner:(BOOL)arg5 snapshotFrame:(struct CGRect *)arg6 canUseIOSurface:(BOOL)arg7 decodeImage:(BOOL)arg8;
++ (struct CGRect)snapshotRectForOrientation:(long long)arg1 statusBarStyleRequest:(id)arg2 hidden:(BOOL)arg3;
 
 - (id)wallpaperView;
 - (id)rootView;
