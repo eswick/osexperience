@@ -3,21 +3,21 @@ THEOS_BUILD_DIR = debs
 include theos/makefiles/common.mk
 
 #ENCRYPT=1
-#WRAPPER_ONLY=1
-INSTALL_LOCAL=1
-#DEBUG_PREFS=1
+#INSTALL_LOCAL=1
+#MAKE_SOURCE_DYLIB=1
 
 
 TWEAK_NAME = OSExperience
 
-ifndef WRAPPER_ONLY
+ifdef MAKE_SOURCE_DYLIB
 OSExperience_FILES += $(wildcard missioncontrol/*.xm) $(wildcard *.xm) $(wildcard *.m) $(wildcard missioncontrol/*.m) $(wildcard missioncontrol/*.mm) $(wildcard explorer/*.c) $(wildcard launchpad/*.m)
 OSExperience_CFLAGS += -O0 -Wno-unused-function -mno-thumb
 OSExperience_FRAMEWORKS += UIKit QuartzCore CoreGraphics IOKit Security CoreText
 OSExperience_PRIVATE_FRAMEWORKS += AppSupport GraphicsServices BackBoardServices SpringBoardFoundation
 OSExperience_LIBRARIES += rocketbootstrap objcipc MobileGestalt
 else
-OSExperience_FILES = Empty.m
+OSExperience_FILES = Notifier.x
+OSExperience_FRAMEWORKS += UIKit
 endif
 
 ifdef ENCRYPT
@@ -28,7 +28,7 @@ endif
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-ifdef ENCRYPT
+ifdef INSTALL_LOCAL
 after-OSExperience-all::
 	cp $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT) $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT).tmp
 	rm $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT)
@@ -39,14 +39,13 @@ endif
 ifdef INSTALL_LOCAL
 before-package::
 	rm $(THEOS_STAGING_DIR)/DEBIAN/extrainst_
+else
+before-package::
+	rm $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/OSExperience.dylib
 endif
 
 after-install::
-ifdef DEBUG_PREFS
-	install.exec "killall -9 Preferences; rm /var/mobile/Library/Preferences/com.eswick.osexperience.plist"
-else
 	install.exec "killall -9 backboardd"
-endif
 
 SUBPROJECTS += osexperienceprefs
 include $(THEOS_MAKE_PATH)/aggregate.mk
