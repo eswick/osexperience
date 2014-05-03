@@ -3,8 +3,8 @@ THEOS_BUILD_DIR = debs
 include theos/makefiles/common.mk
 
 #ENCRYPT=1
-#INSTALL_LOCAL=1
-#MAKE_SOURCE_DYLIB=1
+INSTALL_LOCAL=1
+MAKE_SOURCE_DYLIB=1
 
 
 TWEAK_NAME = OSExperience
@@ -28,7 +28,7 @@ endif
 
 include $(THEOS_MAKE_PATH)/tweak.mk
 
-ifdef INSTALL_LOCAL
+ifdef ENCRYPT
 after-OSExperience-all::
 	cp $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT) $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT).tmp
 	rm $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT)
@@ -39,9 +39,6 @@ endif
 ifdef INSTALL_LOCAL
 before-package::
 	rm $(THEOS_STAGING_DIR)/DEBIAN/extrainst_
-else
-before-package::
-	rm $(THEOS_STAGING_DIR)/Library/MobileSubstrate/DynamicLibraries/OSExperience.dylib
 endif
 
 after-install::
