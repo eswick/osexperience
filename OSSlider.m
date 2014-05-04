@@ -7,7 +7,6 @@
 #define mcScrollDuration 0.40
 
 
-
 @implementation OSSlider
 @synthesize startingOffset = _startingOffset;
 @synthesize currentOrientation = _currentOrientation;

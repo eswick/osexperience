@@ -11,6 +11,7 @@
 #import <rocketbootstrap.h>
 #import <mach_verify/mach_verify.h>
 #import "OSPreferences.h"
+#import "tutorial/OSTutorialController.h"
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
 extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CFStringRef entitlement, CFErrorRef *error);//In Security.framework
@@ -77,6 +78,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 }
 
 - (BOOL)allowSystemGestureType:(SBSystemGestureType)type atLocation:(struct CGPoint)arg2{
+
+	if([[OSTutorialController sharedInstance] inProgress])
+		return [[OSTutorialController sharedInstance] allowSystemGestureType:type atLocation:arg2];
 
 	if(type & SBSystemGestureTypeSuspendApp){
 		if(self.switchAppGestureInProgress || self.switcherGestureInProgress || [[OSViewController sharedInstance] missionControlIsActive])
@@ -333,6 +337,7 @@ static BOOL preventSwitcherDismiss = false;
 
 	[[OSSlider sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 	[[OSThumbnailView sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
+	[[OSTutorialController sharedInstance] willRotateToInterfaceOrientation:arg2 duration:arg3];
 
 	%orig;
 
@@ -347,6 +352,16 @@ static BOOL preventSwitcherDismiss = false;
 
 %end
 
+%hook SBBacklightController
+
+- (void)_lockScreenDimTimerFired{
+	if([[OSTutorialController sharedInstance] inProgress])
+		return;
+	%orig;
+}
+
+%end
+
 %hook SBIconListView
 
 - (void)prepareToRotateToInterfaceOrientation:(UIInterfaceOrientation)arg1{
@@ -357,6 +372,24 @@ static BOOL preventSwitcherDismiss = false;
 %end
 
 %hook SpringBoard
+
+- (void)_lockButtonDownFromSource:(int)arg1{
+
+	if([[OSTutorialController sharedInstance] inProgress]){
+		return;
+	}
+
+	%orig;
+}
+
+- (void)_lockButtonUpFromSource:(int)arg1{
+
+	if([[OSTutorialController sharedInstance] inProgress]){
+		return;
+	}
+
+	%orig;
+}
 
 - (id)_accessibilityFrontMostApplication{
 	return nil;
@@ -433,6 +466,9 @@ static BOOL preventSwitcherDismiss = false;
 	[messagingCenter runServerOnCurrentThread];
 	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
 	[messagingCenter registerForMessageName:@"checkin" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
+
+	if(![[OSPreferences sharedInstance] TUTORIAL_SHOWN])
+		[[OSTutorialController sharedInstance] beginTutorial];
 
 	VERIFY_STOP(applicationDidFinishLaunching);
 }

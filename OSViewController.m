@@ -1,6 +1,7 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
 #import <mach_verify/mach_verify.h>
+#import "tutorial/OSTutorialController.h"
 
 #define LP_VARIANCE 0.1
 
@@ -58,6 +59,11 @@
 - (void)handleUpGesture{
     VERIFY_START(handleUpGesture);
 
+    if([[OSTutorialController sharedInstance] inProgress]){
+        [[OSTutorialController sharedInstance] handleUpGesture];
+        return;
+    }
+
     if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
         return;
 
@@ -86,6 +92,11 @@
 
 - (void)handleDownGesture{
     VERIFY_START(handleDownGesture);
+
+    if([[OSTutorialController sharedInstance] inProgress]){
+        [[OSTutorialController sharedInstance] handleDownGesture];
+        return;
+    }
 
     if([[OSViewController sharedInstance] launchpadIsAnimating] || [[OSViewController sharedInstance] launchpadIsActive])
         return;

@@ -10,7 +10,7 @@ MAKE_SOURCE_DYLIB=1
 TWEAK_NAME = OSExperience
 
 ifdef MAKE_SOURCE_DYLIB
-OSExperience_FILES += $(wildcard missioncontrol/*.xm) $(wildcard *.xm) $(wildcard *.m) $(wildcard missioncontrol/*.m) $(wildcard missioncontrol/*.mm) $(wildcard explorer/*.c) $(wildcard launchpad/*.m)
+OSExperience_FILES += $(wildcard tutorial/*.x) $(wildcard missioncontrol/*.xm) $(wildcard *.xm) $(wildcard *.m) $(wildcard missioncontrol/*.m) $(wildcard missioncontrol/*.mm) $(wildcard explorer/*.c) $(wildcard launchpad/*.m)
 OSExperience_CFLAGS += -O0 -Wno-unused-function -mno-thumb
 OSExperience_FRAMEWORKS += UIKit QuartzCore CoreGraphics IOKit Security CoreText
 OSExperience_PRIVATE_FRAMEWORKS += AppSupport GraphicsServices BackBoardServices SpringBoardFoundation

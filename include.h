@@ -15,8 +15,18 @@ typedef enum{
     SBSystemGestureTypeAny = SBSystemGestureTypeShowControlCenter | SBSystemGestureTypeDismissBanner | SBSystemGestureTypeHideNotifications | SBSystemGestureTypeShowNotifications | SBSystemGestureTypeSwitchApp | SBSystemGestureTypeSwitcher | SBSystemGestureTypeSuspendApp
 } SBSystemGestureType;
 
-@interface SBIcon : NSObject
 
+@interface SBBacklightController : NSObject
+
+- (void)preventIdleSleepForNumberOfSeconds:(float)arg1;
+- (void)preventIdleSleep;
+- (void)allowIdleSleep;
+- (void)resetLockScreenIdleTimer;
+- (void)cancelLockScreenIdleTimer;
+
+@end
+
+@interface SBIcon : NSObject
 
 - (BOOL)isFolderIcon;
 - (BOOL)isNewsstandIcon;
@@ -793,6 +803,12 @@ typedef struct {
 - (id)_fakeSpringBoardStatusBar;
 - (void)launchApplicationByGesture:(id)arg1;
 
+- (void)_releaseTransitionOrientationLock;
+- (void)_releaseSystemGestureOrientationLock;
+- (void)releaseSwitcherOrientationLock;
+- (void)_lockOrientationForSwitcher;
+- (void)_lockOrientationForSystemGesture;
+- (void)_lockOrientationForTransition;
 //New
 - (void)setScaleGestureRecognizer:(SBFluidSlideGestureRecognizer*)recognizer;
 - (SBFluidSlideGestureRecognizer*)scaleGestureRecognizer;
