@@ -412,22 +412,6 @@ static BOOL preventSwitcherDismiss = false;
 		}
 	}
 
-	/*if(GSEventGetType(event) == kGSEventKeyUp || GSEventGetType(event) == kGSEventKeyDown){
-		if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
-			const GSEventRecord* record = _GSEventGetGSEventRecord(event);
-			GSSendEvent(record, (mach_port_t)[[(OSAppPane*)[[OSSlider sharedInstance] currentPane] application] eventPort]);
-			return;
-		}else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
-			OSDesktopPane *pane = (OSDesktopPane*)[[OSSlider sharedInstance] currentPane];
-			if([pane activeWindow]){
-				if([[pane activeWindow] isKindOfClass:[OSAppWindow class]]){
-					const GSEventRecord* record = _GSEventGetGSEventRecord(event);
-					GSSendEvent(record, (mach_port_t)[[(OSAppWindow*)[pane activeWindow] application] eventPort]);
-				}
-			}
-		}
-	}*/
-
 	%orig;
 }
 
@@ -466,6 +450,7 @@ static BOOL preventSwitcherDismiss = false;
 	[messagingCenter runServerOnCurrentThread];
 	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
 	[messagingCenter registerForMessageName:@"checkin" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
+	[messagingCenter registerForMessageName:@"frontmostApp" target:self selector:@selector(handleFrontmostAppRequest:withUserInfo:)]; 
 
 	if(![[OSPreferences sharedInstance] TUTORIAL_SHOWN])
 		[[OSTutorialController sharedInstance] beginTutorial];
@@ -474,10 +459,38 @@ static BOOL preventSwitcherDismiss = false;
 }
 
 %new
+- (NSDictionary *)handleFrontmostAppRequest:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
+	NSString *bundleID = [self frontmostApp] ? [[self frontmostApp] displayIdentifier] : @"com.apple.springboard";
+
+	return @{ @"bundleID" : bundleID };
+}
+
+%new
+- (SBApplication*)frontmostApp{
+
+	if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
+		return [(OSAppPane*)[[OSSlider sharedInstance] currentPane] application];
+	}else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
+		OSDesktopPane *pane = (OSDesktopPane*)[[OSSlider sharedInstance] currentPane];
+		if([pane activeWindow]){
+			if([[pane activeWindow] isKindOfClass:[OSAppWindow class]]){				
+				return [(OSAppWindow*)[pane activeWindow] application];
+			}
+		}
+	}
+
+	return nil;
+}
+	
+
+	
+
+%new
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
 
 	if([name isEqualToString:@"checkin"])
 		return @{};
+
 
 	SBApplication *app = [[%c(SBApplicationController) sharedInstance] applicationWithDisplayIdentifier:[userinfo objectForKey:@"bundleID"]];
 
@@ -1027,9 +1040,6 @@ static BOOL missionControlActive;
 	return nil;
 }
 
-- (unsigned int)currentEventPort{
-	return [self portForBundleIdentifier:@"com.apple.springboard"];
-}
 %end
 
 
@@ -1059,10 +1069,6 @@ static CPDistributedNotificationCenter *center;
 }
 
 %end
-
-
-
-
 
 
 %hook BKApplication
@@ -1111,7 +1117,22 @@ static BOOL OSGestureInProgress = false;
 }
 %end
 
+%hook BKEventFocusManager
+
+- (id)currentEventFocusClientIDOnDisplay:(id)arg1{
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
+	NSDictionary *response = [messagingCenter sendMessageAndReceiveReplyName:@"frontmostApp" userInfo:nil];
+
+	if(![response objectForKey:@"bundleID"]){
+		return %orig;
+	}else{
+		return [response objectForKey:@"bundleID"];
+	}
+}
+
 %end
+
+%end // %group Backboard
 //End (gesture fix)
 
 %group other

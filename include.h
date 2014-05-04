@@ -383,6 +383,7 @@ typedef struct {
 - (UIWindow*)keyWindow;
 - (void)clearMenuButtonTimer;
 - (BOOL)isLocked;
+- (id)frontmostApp; //New
 
 @end
 
