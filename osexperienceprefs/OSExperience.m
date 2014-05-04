@@ -32,6 +32,14 @@
 	return [NSNumber numberWithBool:[prefs LIVE_PREVIEWS]];
 }
 
+- (NSNumber*)getAppTransitionSpeed:(PSSpecifier*)specifier{
+	return [NSNumber numberWithFloat:[prefs SCROLL_TO_PANE_DURATION]];
+}
+
+- (void)setAppTransitionSpeed:(NSNumber*)speed forSpecifier:(PSSpecifier*)specifier{
+	[prefs setSCROLL_TO_PANE_DURATION:[speed floatValue]];
+}
+
 - (void)follow:(id)arg1{
     if([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"twitter://"]]){
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"twitter://user?screen_name=e_swick"]];

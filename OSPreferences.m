@@ -21,6 +21,7 @@
 
 /* Value helpers */
 #define FLOAT_RDONLY(name) - (float)name{ return [getPrefValue(name) floatValue]; }
+#define FLOAT_RDWT(name) - (float)name{ return [getPrefValue(name) floatValue]; } - (void)set##name:(float)value{  setPrefValue(name,[NSNumber numberWithFloat:value]); }
 #define BOOL_RDWT(name) - (BOOL)name { return getBoolValue(name); } - (void)set##name:(BOOL)value{ setBoolValue(name,value); } 
 #define VALUE(name,default) @#name : @(default),
 /* ======== */
@@ -46,7 +47,7 @@ BOOL_RDWT			(LIVE_PREVIEWS);
 BOOL_RDWT           (TUTORIAL_SHOWN);
 FLOAT_RDONLY		(SNAP_MARGIN);
 FLOAT_RDONLY		(PANE_SEPARATOR_SIZE);
-FLOAT_RDONLY		(SCROLL_TO_PANE_DURATION);
+FLOAT_RDWT		(SCROLL_TO_PANE_DURATION);
 
 
 + (id)sharedInstance{

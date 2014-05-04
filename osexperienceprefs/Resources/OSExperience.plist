@@ -37,6 +37,26 @@
 			<string>setLivePreviews:forSpecifier:</string>
 		</dict>
 		<dict>
+			<key>label</key>
+			<string>App Transition Speed</string>
+			<key>cell</key>
+			<string>PSGroupCell</string>
+		</dict>
+		<dict>
+			<key>set</key>
+			<string>setAppTransitionSpeed:forSpecifier:</string>
+			<key>get</key>
+			<string>getAppTransitionSpeed:</string>
+			<key>max</key>
+			<real>1.5</real>
+			<key>min</key>
+			<real>0.1</real>
+			<key>showValue</key>
+			<true/>
+			<key>cell</key>
+			<string>PSSliderCell</string>
+		</dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 		</dict>
