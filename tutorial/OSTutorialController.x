@@ -723,6 +723,10 @@
 }
 
 - (BOOL)allowSystemGestureType:(SBSystemGestureType)type atLocation:(struct CGPoint)arg2{
+
+	if(type & SBSystemGestureTypeShowControlCenter)
+		return true;
+
 	if(type & SBSystemGestureTypeSwitcher && self.currentStep == OSTutorialStepMenuBar){
 		return true;
 	}
