@@ -528,7 +528,8 @@ static BOOL preventSwitcherDismiss = false;
 		for(OSDesktopPane *pane in [[OSPaneModel sharedInstance] panes]){
 			if(![pane isKindOfClass:[OSDesktopPane class]])
 				continue;
-			for(OSWindow *window in pane.subviews){
+			for(int i = [pane.subviews count] - 1; i > 0; i--){
+				OSWindow *window = [pane.subviews objectAtIndex:i];
 				if(![window isKindOfClass:[OSWindow class]])
 					continue;
 				CGPoint point = [[[OSViewController sharedInstance] view] convertPoint:arg1[0].location toView:window];
@@ -537,6 +538,7 @@ static BOOL preventSwitcherDismiss = false;
 						[pane bringSubviewToFront:window];
 						[pane setActiveWindow:window];
 					});
+					return;
 				}
 			}
 		}
