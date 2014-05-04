@@ -3,6 +3,11 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+#define CTRL_KEY 228
+#define ARROW_RIGHT_KEY 79
+#define ARROW_LEFT_KEY 80
+
+
 typedef enum{
     SBSystemGestureTypeNone                 = 0,
     SBSystemGestureTypeSuspendApp           = 1 << 0,

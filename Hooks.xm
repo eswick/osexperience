@@ -451,11 +451,29 @@ static BOOL preventSwitcherDismiss = false;
 	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
 	[messagingCenter registerForMessageName:@"checkin" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
 	[messagingCenter registerForMessageName:@"frontmostApp" target:self selector:@selector(handleFrontmostAppRequest:withUserInfo:)]; 
+	[messagingCenter registerForMessageName:@"shortcut" target:self selector:@selector(handleShortcut:withUserInfo:)];
 
 	if(![[OSPreferences sharedInstance] TUTORIAL_SHOWN])
 		[[OSTutorialController sharedInstance] beginTutorial];
 
 	VERIFY_STOP(applicationDidFinishLaunching);
+}
+
+%new
+- (NSDictionary *)handleShortcut:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
+	if([[userinfo objectForKey:@"key"] intValue] == ARROW_LEFT_KEY){
+		
+		if([[OSSlider sharedInstance] currentPageIndex] > 0){
+			[[OSSlider sharedInstance] scrollToPane:[[OSPaneModel sharedInstance] paneAtIndex:[[OSSlider sharedInstance] currentPageIndex] - 1] animated:true];
+		}
+
+	}else if([[userinfo objectForKey:@"key"] intValue] == ARROW_RIGHT_KEY){
+		if([[OSSlider sharedInstance] currentPageIndex] < [[OSPaneModel sharedInstance] count] - 1){
+			[[OSSlider sharedInstance] scrollToPane:[[OSPaneModel sharedInstance] paneAtIndex:[[OSSlider sharedInstance] currentPageIndex] + 1] animated:true];
+		}
+	}
+
+	return nil;
 }
 
 %new
@@ -480,10 +498,7 @@ static BOOL preventSwitcherDismiss = false;
 	}
 
 	return nil;
-}
-	
-
-	
+}	
 
 %new
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
@@ -1209,6 +1224,36 @@ static BOOL networkActivity;
 
 %end
 
+
+static IOHIDEventSystemCallback eventCallback = NULL;
+
+static BOOL ctrlDown = false;
+
+void handle_event (void* target, void* refcon, IOHIDServiceRef service, IOHIDEventRef event) {
+	if(IOHIDEventGetType(event) == kIOHIDEventTypeKeyboard){
+
+		IOHIDEventRef localCopy = IOHIDEventCreateCopy(kCFAllocatorDefault, event);
+
+		int kbDown = IOHIDEventGetIntegerValue(localCopy, kIOHIDEventFieldKeyboardDown);
+		int usage = IOHIDEventGetIntegerValue(localCopy, kIOHIDEventFieldKeyboardUsage);
+
+		if(usage == CTRL_KEY){
+			ctrlDown = kbDown;
+		}else if((usage == ARROW_LEFT_KEY || usage == ARROW_RIGHT_KEY) && kbDown == 1 && ctrlDown == true){
+			CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
+			[messagingCenter sendMessageName:@"shortcut" userInfo:@{@"key" : @(usage)}];
+		}
+	}
+
+	eventCallback(target, refcon, service, event);
+}
+
+MSHook(Boolean, IOHIDEventSystemOpen, IOHIDEventSystemRef system, IOHIDEventSystemCallback callback, void* target, void* refcon, void* unused){
+	eventCallback = callback;
+	return _IOHIDEventSystemOpen(system, handle_event, target, refcon, unused);
+}
+
+
 __attribute__((constructor))
 static void initialize() {
 
@@ -1222,6 +1267,8 @@ static void initialize() {
 
   		[center runServer];
   		[center retain];
+
+  		MSHookFunction(&IOHIDEventSystemOpen, MSHake(IOHIDEventSystemOpen));
 	}else if([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"]){
 		%init(SpringBoard);
 		MSHookFunction(&SecTaskCopyValueForEntitlement, &$SecTaskCopyValueForEntitlement, &_SecTaskCopyValueForEntitlement);
