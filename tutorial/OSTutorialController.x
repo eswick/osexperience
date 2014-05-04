@@ -2,6 +2,7 @@
 #import "../include.h"
 #import "../explorer/CGPointExtension.h"
 #import "../OSPreferences.h"
+#import <mach_verify/mach_verify.h>
 
 #define snapMargin [prefs SNAP_MARGIN]
 
@@ -19,15 +20,18 @@
 }
 
 - (id)init{
+	VERIFY_START(OSTutorialController$init);
 	if(![super init])
 		return nil;
 
 
+	VERIFY_STOP(OSTutorialController$init);
 
 	return self;
 }
 
 - (void)beginTutorial{
+	VERIFY_START(beginTutorial);
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 	self.view.backgroundColor = [UIColor blackColor];
 
@@ -50,9 +54,11 @@
 	self.currentStep = 0;
 
 	[self nextStep];
+	VERIFY_STOP(beginTutorial);
 }
 
 - (void)endTutorial{
+	VERIFY_START(endTutorial);
 	[UIView animateWithDuration:0.75 delay:0  options:UIViewAnimationOptionCurveEaseIn animations:^{
 		self.view.alpha = 0;
 	} completion:^(BOOL finished){
@@ -65,6 +71,7 @@
 	self.inProgress = false;
 
 	[[OSPreferences sharedInstance] setTUTORIAL_SHOWN:true];
+	VERIFY_STOP(endTutorial);
 }
 
 - (void)nextStep{
@@ -86,6 +93,7 @@
 /* ====== Tutorial Steps ====== */
 
 - (void)beginThankYouStep{
+	VERIFY_START(beginThankYouStep);
 	NSDictionary *thankyous = [NSDictionary dictionaryWithContentsOfFile:@"/Library/Application Support/OS Experience/thankyou.plist"];
 
 	UILabel *intro = [[UILabel alloc] init];
@@ -172,10 +180,14 @@
 
 	});
 
+
+	VERIFY_STOP(beginThankYouStep);
 }
 
 
 - (void)beginIntroStep{
+	VERIFY_START(beginIntroStep);
+
 	UILabel *welcome = [[UILabel alloc] init];
 	welcome.text = @"Welcome to";
 	welcome.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:30];
@@ -224,9 +236,11 @@
 		}];
 	}];
 
+	VERIFY_STOP(beginIntroStep);
 }
 
 - (void)beginMenuBarStep{
+	VERIFY_START(beginMenuBarStep);
 	self.windowBar = [[UIToolbar alloc] init];
 	self.windowBar.frame = CGRectMake(0, -44, self.view.frame.size.width, 44);
 
@@ -324,6 +338,7 @@
 
 	[self runMenuOpenAnimation];
 
+	VERIFY_STOP(beginMenuBarStep);
 }
 
 - (void)runMenuOpenAnimation{
@@ -353,6 +368,8 @@
 }
 
 - (void)menuBarStepDownGesture{
+	VERIFY_START(menuBarStepDownGesture);
+
 	CGRect frame = self.windowBar.frame;
 	frame.origin.y = 0;
 
@@ -367,6 +384,8 @@
 			self.contractButton.view.alpha = 0.1;
 		} completion:nil];
 	}];
+
+	VERIFY_STOP(menuBarStepDownGesture);
 }
 
 - (void)setInstructionLabelText:(NSString*)text{
@@ -409,6 +428,7 @@
 }
 
 - (void)contractButtonPressed{
+	VERIFY_START(contractButtonPressed);
 	if(self.currentStep != OSTutorialStepMenuBar)
 		return;
 
@@ -446,6 +466,8 @@
 		[self setInstructionLabelText:@"Rotate the device."];
 		[self nextStep];
 	}];
+
+	VERIFY_STOP(contractButtonPressed);
 }
 
 
@@ -506,6 +528,7 @@
 }
 
 - (void)setLeftSnapIndicatorVisible:(BOOL)visible animated:(BOOL)animated{
+	VERIFY_START(setLeftSnapIndicatorVisible$animated);
 
 	self.showingLeftSnapIndicator = visible;
 
@@ -545,6 +568,7 @@
 		}
 	}
 
+	VERIFY_STOP(setLeftSnapIndicatorVisible$animated);
 }
 
 
@@ -634,6 +658,8 @@
 }
 
 - (void)beginRotateStep{
+	VERIFY_START(beginRotateStep);
+
 	self.contractButton.enabled = true;
 
 	self.instructionLabel.numberOfLines = 0;
@@ -644,10 +670,12 @@
 		self.contractButton.view.alpha = 0.1;
 	} completion:nil];
 
-
+	VERIFY_STOP(beginRotateStep);
 }
 
 - (void)expandButtonHeld:(UIGestureRecognizer*)recognizer{
+	VERIFY_START(expandButtonHeld);
+
 	if(self.currentStep != OSTutorialStepRotate || [recognizer state] != UIGestureRecognizerStateBegan)
 		return;
 
@@ -676,7 +704,9 @@
 				[self nextStep];
 			}
 		}];
-	}];	
+	}];
+
+	VERIFY_STOP(expandButtonHeld);
 }
 
 - (void)handleDownGesture{
