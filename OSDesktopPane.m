@@ -81,8 +81,17 @@
 	}else if([gesture state] == UIGestureRecognizerStateChanged){
 		CGRect frame = window.frame;
 		frame.origin = CGPointSub([gesture locationInView:self], [window grabPoint]);
+
+		/* Bounds checking */
 		if(frame.origin.y < self.statusBar.bounds.size.height)
 			frame.origin.y = self.statusBar.bounds.size.height;
+		if(frame.origin.x + (frame.size.width / 2) < 0)
+			frame.origin.x = -(frame.size.width / 2);
+		if(frame.origin.x + (frame.size.width / 2) > self.bounds.size.width)
+			frame.origin.x = self.bounds.size.width - (frame.size.width / 2);
+		if(frame.origin.y + window.windowBar.frame.size.height > self.bounds.size.height)
+			frame.origin.y = self.bounds.size.height - window.windowBar.frame.size.height;
+
 		window.frame = frame;
 
 		if(![window isKindOfClass:[OSAppWindow class]])
