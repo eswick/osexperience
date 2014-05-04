@@ -98,14 +98,22 @@
 			return;
 
 		if([gesture locationInView:self].x > self.bounds.size.width - snapMargin){ //Right side of screen
-			if(UIInterfaceOrientationIsLandscape([UIApp statusBarOrientation]) && UIInterfaceOrientationIsPortrait([[(OSAppWindow*)window application] statusBarOrientation])){
+			if(UIInterfaceOrientationIsLandscape([UIApp statusBarOrientation])){
+				if(!UIInterfaceOrientationIsPortrait([[(OSAppWindow*)window application] statusBarOrientation])){
+					[[(OSAppWindow*)window application] rotateToInterfaceOrientation:UIInterfaceOrientationPortrait];
+					return;
+				}
 				if(!self.showingRightSnapIndicator){
 					[self insertSubview:self.snapIndicator belowSubview:window];
 					[self setRightSnapIndicatorVisible:true animated:true];
 				}
 			}
 		}else if([gesture locationInView:self].x < snapMargin){
-			if(UIInterfaceOrientationIsLandscape([UIApp statusBarOrientation]) && UIInterfaceOrientationIsPortrait([[(OSAppWindow*)window application] statusBarOrientation])){
+			if(UIInterfaceOrientationIsLandscape([UIApp statusBarOrientation])){
+				if(!UIInterfaceOrientationIsPortrait([[(OSAppWindow*)window application] statusBarOrientation])){
+					[[(OSAppWindow*)window application] rotateToInterfaceOrientation:UIInterfaceOrientationPortrait];
+					return;
+				}
 				if(!self.showingLeftSnapIndicator){
 					[self insertSubview:self.snapIndicator belowSubview:window];
 					[self setLeftSnapIndicatorVisible:true animated:true];
