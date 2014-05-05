@@ -551,7 +551,7 @@ static BOOL preventSwitcherDismiss = false;
 %hook SBWindowContextHostManager
 
 - (id)hostViewForRequester:(id)arg1 enableAndOrderFront:(_Bool)arg2{
-	if([arg1 isEqualToString:@"com.apple.springboard.launchwithzoomanimation"])
+	if([arg1 isEqualToString:@"com.apple.springboard.launchwithzoomanimation"] || [arg1 isEqualToString:@"SBUIAnimationLockScreenToAppZoomIn"])
 		return nil;
 
 	return %orig;
