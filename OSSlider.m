@@ -319,6 +319,7 @@
 }
 
 - (void)updatePaging:(float)percentage{
+
 	CGPoint velocity = [self.swipeGestureRecognizer movementVelocityInPointsPerSecond];
 
 	Ivar horizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_horizontalVelocity");
@@ -336,9 +337,11 @@
 	float newContentOffset = 0;
 	newContentOffset = (-percentage * pageWidth) + self.pageOffsetBefore;
 
+#ifdef __LP64__ /* This doesn't seem to work on 32 bit devices. Crashes with a bus error. */
 	BOOL outsideX;
-
 	self.contentOffset = [self _rubberBandContentOffsetForOffset:CGPointMake(newContentOffset, self.contentOffset.y) outsideX:&outsideX outsideY:NULL];
+#endif
+	
 }
 
 - (void)swipeGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
