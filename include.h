@@ -290,11 +290,20 @@ typedef struct{
 
 @property(readonly, nonatomic) struct CGPoint movementVelocityInPointsPerSecond;
 @property(readonly, nonatomic) float cumulativePercentage;
+
+#ifdef __LP64__
 @property(readonly, nonatomic) double activeRecognitionDuration;
 @property(readonly, nonatomic) double incrementalMotion;
 @property(readonly, nonatomic) double cumulativeMotion;
 @property(readonly, nonatomic) double skippedCumulativePercentage;
 @property(nonatomic) double animationDistance;
+#else
+@property(readonly, nonatomic) float activeRecognitionDuration;
+@property(readonly, nonatomic) float incrementalMotion;
+@property(readonly, nonatomic) float cumulativeMotion;
+@property(readonly, nonatomic) float skippedCumulativePercentage;
+@property(nonatomic) float animationDistance;
+#endif
 
 - (void)updateForBeganOrMovedTouches:(void*)arg1;
 - (float)computeIncrementalGestureMotion:(void*)arg1;

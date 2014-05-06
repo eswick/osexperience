@@ -137,6 +137,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 	static BOOL launchpadClosing = false;
 
+	if([arg1 animationDistance] == 0)
+		return;
+
 	float percentage = [arg1 cumulativeMotion] / [arg1 animationDistance];
 
 	if([arg1 state] == UIGestureRecognizerStateBegan){
