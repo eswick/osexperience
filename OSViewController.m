@@ -39,6 +39,9 @@
 
 - (void)setDockPercentage:(float)percentage{
 
+    if(percentage < 0)
+        return;
+
     if((self.launchpadIsActive && !self.launchpadIsAnimating) || (self.missionControlIsActive && !self.missionControlIsAnimating))
         return;
 
