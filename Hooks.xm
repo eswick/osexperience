@@ -374,6 +374,16 @@ static BOOL preventSwitcherDismiss = false;
 
 %end
 
+%hook SBLockScreenViewController
+
+- (void)finishUIUnlockFromSource:(int)arg1{
+	%orig;
+
+	[[OSSlider sharedInstance] updateDockPosition];
+}
+
+%end
+
 %hook SpringBoard
 
 - (void)_lockButtonDownFromSource:(int)arg1{
