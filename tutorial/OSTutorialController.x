@@ -103,7 +103,7 @@
 	intro.text = @"I want to personally thank the following people. Without your advice and support, this would not have been possible.";
 	intro.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:30];
 	intro.textColor = [UIColor whiteColor];
-	CGRect frame;
+	CGRect frame = CGRectZero;
 	frame.size = [intro.text sizeWithFont:intro.font constrainedToSize:self.view.frame.size lineBreakMode:NSLineBreakByTruncatingTail];
 	intro.frame = frame;
 
@@ -119,7 +119,7 @@
 		nameLabel.text = name;
 		nameLabel.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:30];
 		nameLabel.textColor = [UIColor whiteColor];
-		CGRect frame;
+		CGRect frame = CGRectZero;
 		frame.size = [nameLabel.text sizeWithFont:nameLabel.font constrainedToSize:self.view.frame.size lineBreakMode:NSLineBreakByTruncatingTail];
 		nameLabel.frame = frame;
 		nameLabel.center = CGPointMake(self.view.bounds.size.width / 2, intro.frame.origin.y + intro.frame.size.height + ((nameLabel.frame.size.height + 5) * index) + 30);
@@ -160,7 +160,7 @@
 		outro.text = @"Over the past year of development, I have put my\nheart and soul into OS Experience.\n\nI hope you enjoy it as much as I have.";
 		outro.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:30];
 		outro.textColor = [UIColor whiteColor];
-		CGRect frame;
+		CGRect frame = CGRectZero;
 		frame.size = [outro.text sizeWithFont:outro.font constrainedToSize:self.view.frame.size lineBreakMode:NSLineBreakByWordWrapping];
 		outro.frame = frame;
 		outro.center = CGPointMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 2);
@@ -198,7 +198,7 @@
 	ose.font = [UIFont fontWithName:@"HelveticaNeue-Light" size:50];
 	ose.textColor = [UIColor whiteColor];
 
-	CGRect frame;
+	CGRect frame = CGRectZero;
 	frame.size = [ose.text sizeWithFont:ose.font constrainedToSize:self.view.frame.size lineBreakMode:NSLineBreakByTruncatingTail];
 	ose.frame = frame;
 
@@ -311,7 +311,7 @@
 	self.instructionLabel.textColor = [UIColor whiteColor];
 	self.instructionLabel.alpha = 0;
 
-	CGRect frame;
+	CGRect frame = CGRectZero;
 	frame.size = [self.instructionLabel.text sizeWithFont:self.instructionLabel.font constrainedToSize:self.view.frame.size lineBreakMode:NSLineBreakByTruncatingTail];
 	self.instructionLabel.frame = frame;
 	self.instructionLabel.center = CGPointMake(self.view.bounds.size.width / 2, self.view.bounds.size.height / 4);
@@ -401,7 +401,7 @@
 
 		self.instructionLabel.text = text;
 
-		CGRect frame;
+		CGRect frame = CGRectZero;
 		frame.size = [self.instructionLabel.text sizeWithFont:self.instructionLabel.font constrainedToSize:constraints lineBreakMode:NSLineBreakByWordWrapping];
 		self.instructionLabel.frame = frame;
 

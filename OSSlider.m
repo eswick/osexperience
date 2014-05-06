@@ -239,7 +239,7 @@
 
 	OSPane *intrudingPane;
 	CGRect currentPaneRect = CGRectIntersection(self.currentPane.frame, self.bounds);
-	CGRect intrudingPaneRect;
+	CGRect intrudingPaneRect = CGRectZero;
 
 	if(self.contentOffset.x >= self.currentPane.frame.origin.x){
 		intrudingPane = [[OSPaneModel sharedInstance] paneAtIndex:self.currentPageIndex + 1];
