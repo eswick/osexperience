@@ -61,6 +61,10 @@
 	return self;
 }
 
+- (void)paneThumbnailTapped:(OSPaneThumbnail*)thumbnail{
+	[[OSSlider sharedInstance] scrollToPane:[thumbnail pane] animated:true];
+}
+
 -(void)layoutSubviews{
 	if(!self.shouldLayoutSubviews)
 		return;
@@ -149,6 +153,8 @@
 	VERIFY_START(addPane);
 
 	OSPaneThumbnail *thumbnail = [[OSPaneThumbnail alloc] initWithPane:pane];
+
+	thumbnail.delegate = self;
 
 	UIPanGestureRecognizer *panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailPanGesture:)];
 	panGesture.maximumNumberOfTouches = 1;

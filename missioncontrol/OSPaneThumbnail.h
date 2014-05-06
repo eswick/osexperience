@@ -1,12 +1,18 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
-#import "../OSPane.h"
-#import "OSThumbnailView.h"
-#import "../OSAppPane.h"
 #import "../include.h"
 #import "../UIImage+Extensions.h"
 
-@class OSThumbnailPlaceholder, OSAppMirrorView;
+
+
+@class OSThumbnailPlaceholder, OSAppMirrorView, OSThumbnailView, OSPane, OSPaneThumbnail, OSWindow;
+
+@protocol OSPaneThumbnailDelegate
+
+- (void)paneThumbnailTapped:(OSPaneThumbnail*)thumbnail;
+
+@end
+
 
 @interface OSPaneThumbnail : UIView{
 	OSPane *_pane;
@@ -37,6 +43,7 @@
 @property (nonatomic, retain) UIView *shadowOverlayView;
 @property (nonatomic, retain) OSAppMirrorView *mirrorView;
 @property (nonatomic, retain) UIView *windowContainer;
+@property (nonatomic, assign) id<OSPaneThumbnailDelegate> delegate; 
 
 - (id)initWithPane:(OSPane*)pane;
 - (void)updateSize;

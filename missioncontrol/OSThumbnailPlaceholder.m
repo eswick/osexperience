@@ -1,5 +1,5 @@
 #import "OSThumbnailPlaceholder.h"
-
+#import "OSThumbnailView.h"
 
 
 

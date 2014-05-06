@@ -1,6 +1,7 @@
 #import "OSPaneThumbnail.h"
 #import "OSThumbnailPlaceholder.h"
 #import "OSAppMirrorView.h"
+#import "OSThumbnailView.h"
 #import <mach_verify/mach_verify.h>
 
 
@@ -147,9 +148,22 @@
 	[self.shadowOverlayView release];
 	[self.windowContainer release];
 
+	UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTap:)];
+	[self addGestureRecognizer:tapGesture];
+	[tapGesture release];
+
 	VERIFY_STOP(initWithPane);
 
 	return self;
+}
+
+- (void)handleTap:(UITapGestureRecognizer*)gesture{
+	VERIFY_START(handleTap);
+
+	if([gesture state] == UIGestureRecognizerStateRecognized)
+		[[self delegate] paneThumbnailTapped:self];
+
+	VERIFY_STOP(handleTap);
 }
 
 - (void)setCloseboxVisible:(BOOL)visible animated:(BOOL)animated{

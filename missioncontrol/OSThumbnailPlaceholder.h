@@ -3,7 +3,7 @@
 #import "OSPaneThumbnail.h"
 
 
-@class OSPaneThumbnail;
+@class OSPaneThumbnail, OSThumbnailPlaceholder;
 
 @interface OSThumbnailPlaceholder : OSPaneThumbnail
 
