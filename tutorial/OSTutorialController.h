@@ -23,6 +23,7 @@ typedef enum{
 @property (assign) BOOL showingLeftSnapIndicator;
 @property (retain) UIView *snapIndicator;
 @property (assign) BOOL snapped;
+@property (assign) BOOL systemGesturesOriginallyEnabled;
 
 + (id)sharedInstance;
 

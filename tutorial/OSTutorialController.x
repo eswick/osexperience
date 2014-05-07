@@ -39,6 +39,11 @@
 	[[%c(SBBacklightController) sharedInstance] preventIdleSleep];
 	[[%c(SBBacklightController) sharedInstance] cancelLockScreenIdleTimer];
 
+
+	self.systemGesturesOriginallyEnabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"SBUseSystemGestures"];
+	[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"SBUseSystemGestures"];
+	[UIApp userDefaultsDidChange:@"SBUseSystemGestures"];
+
 	[UIApp setStatusBarHidden:YES withAnimation:UIStatusBarAnimationSlide];
 
 	self.snapIndicator = [[UIView alloc] init];
@@ -64,6 +69,9 @@
 	} completion:^(BOOL finished){
 
 	}];
+
+	[[NSUserDefaults standardUserDefaults] setBool:self.systemGesturesOriginallyEnabled forKey:@"SBUseSystemGestures"];
+	[UIApp userDefaultsDidChange:@"SBUseSystemGestures"];
 
 	[[%c(SBBacklightController) sharedInstance] allowIdleSleep];
 	[[%c(SBBacklightController) sharedInstance] resetLockScreenIdleTimer];

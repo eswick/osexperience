@@ -398,6 +398,7 @@ typedef struct {
 - (void)clearMenuButtonTimer;
 - (BOOL)isLocked;
 - (id)frontmostApp; //New
+- (void)userDefaultsDidChange:(id)defaults;
 
 @end
 
