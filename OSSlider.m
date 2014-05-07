@@ -157,7 +157,10 @@
 	VERIFY_START(removePane);
 	
 	if([pane isKindOfClass:[OSDesktopPane class]]){
-		for(OSWindow *window in [(OSDesktopPane*)pane windows]){
+
+		NSArray *windows = [[(OSDesktopPane*)pane windows] copy];
+
+		for(OSWindow *window in windows){
 
 			OSDesktopPane *toPane = nil;
 			for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
@@ -175,6 +178,8 @@
 			[window switchToDesktopPane:toPane];
 			[self bringSubviewToFront:window];
 		}
+
+		[windows release];
 	}
 
 	OSPane *destination = nil;
