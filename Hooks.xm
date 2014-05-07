@@ -1171,12 +1171,6 @@ static BOOL networkActivity;
 
 %hook UIApplication
 
-- (id)init{
-	self = %orig;
-
-	return self;
-}
-
 - (BOOL)_isClassic{
 	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
 
@@ -1193,10 +1187,6 @@ static BOOL networkActivity;
 	}
 
 	return %orig;
-}
-
-- (BOOL)_shouldZoom{
-	return true;
 }
 
 - (BOOL)isNetworkActivityIndicatorVisible{
