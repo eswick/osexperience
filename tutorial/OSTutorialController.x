@@ -727,6 +727,9 @@
 	if(type & SBSystemGestureTypeShowControlCenter)
 		return true;
 
+	if(type & SBSystemGestureTypeSwitcher)
+		return true;
+
 	if(type & SBSystemGestureTypeSwitcher && self.currentStep == OSTutorialStepMenuBar){
 		return true;
 	}

@@ -2,8 +2,8 @@ ARCHS = arm64 armv7
 THEOS_BUILD_DIR = debs
 include theos/makefiles/common.mk
 
-#ENCRYPT=1
-INSTALL_LOCAL=1
+ENCRYPT=1
+#INSTALL_LOCAL=1
 MAKE_SOURCE_DYLIB=1
 
 
