@@ -376,10 +376,32 @@ static BOOL preventSwitcherDismiss = false;
 
 %hook SBLockScreenViewController
 
+static dispatch_once_t onceToken;
+
 - (void)finishUIUnlockFromSource:(int)arg1{
 	%orig;
 
+	if(![[NSUserDefaults standardUserDefaults] boolForKey:@"SBUseSystemGestures"] && [prefs SHOW_MG_POPUP]){
+		dispatch_once (&onceToken, ^{
+			UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Multitasking Gestures not enabled." message:@"Multitasking gestures are not enabled. Some features of OS Experience may be unavailable. Turn them on now?" delegate:self cancelButtonTitle:@"Don't ask again." otherButtonTitles:@"Yes", @"No", nil];
+			[alert show];
+			[alert release];
+		});
+	}
+
 	[[OSSlider sharedInstance] updateDockPosition];
+}
+
+%new
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(int)buttonIndex {
+	if(buttonIndex == 0){
+		//Don't ask again
+		[prefs setSHOW_MG_POPUP:false];
+	}else if(buttonIndex == 1){
+		//Yes
+		[[NSUserDefaults standardUserDefaults] setBool:true forKey:@"SBUseSystemGestures"];
+		[UIApp userDefaultsDidChange:@"SBUseSystemGestures"];
+	}
 }
 
 %end
