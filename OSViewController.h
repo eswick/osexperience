@@ -7,13 +7,14 @@
 #import "missioncontrol/OSThumbnailView.h"
 #import "missioncontrol/OSMCWindowLayoutManager.h"
 #import "OSSwitcherBackgroundView.h"
+#import <libactivator/libactivator.h>
 
 #define windowConstraintsTopMargin 7
 #define windowConstraintsBottomMargin 7
 
 @class OSSlider, OSIconContentView;
 
-@interface OSViewController : UIViewController{
+@interface OSViewController : UIViewController <LAListener>{
 	OSSlider *_slider;
 	SBDockView *_dock;
 	OSIconContentView *_iconContentView;

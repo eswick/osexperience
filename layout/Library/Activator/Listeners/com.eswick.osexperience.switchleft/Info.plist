@@ -1,0 +1,9 @@
+{
+	group = "OS Experience";
+	title = "Switch Left";
+	description = "Switch to the space on the left";
+	"compatible-modes" = (
+		springboard,
+		application,
+	);
+}

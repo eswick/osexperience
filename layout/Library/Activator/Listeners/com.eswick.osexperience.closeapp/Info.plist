@@ -1,0 +1,9 @@
+{
+	group = "OS Experience";
+	title = "Close Current App";
+	description = "Close the current fullscreen app";
+	"compatible-modes" = (
+		springboard,
+		application,
+	);
+}

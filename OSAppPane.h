@@ -25,5 +25,6 @@
 - (id)initWithDisplayIdentifier:(NSString*)displayIdentifier;
 - (void)setWindowBarVisible;
 - (void)setWindowBarHidden;
+- (void)contractButtonPressed;
 
 @end

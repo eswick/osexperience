@@ -14,7 +14,7 @@ OSExperience_FILES += $(wildcard tutorial/*.x) $(wildcard missioncontrol/*.xm) $
 OSExperience_CFLAGS += -O0 -Wno-unused-function -mno-thumb
 OSExperience_FRAMEWORKS += UIKit QuartzCore CoreGraphics IOKit Security CoreText
 OSExperience_PRIVATE_FRAMEWORKS += AppSupport GraphicsServices BackBoardServices SpringBoardFoundation
-OSExperience_LIBRARIES += rocketbootstrap objcipc MobileGestalt
+OSExperience_LIBRARIES += rocketbootstrap objcipc MobileGestalt activator
 else
 OSExperience_FILES = Notifier.x
 OSExperience_FRAMEWORKS += UIKit

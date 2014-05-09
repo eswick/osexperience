@@ -1,0 +1,9 @@
+{
+	group = "OS Experience";
+	title = "Minimize Current App";
+	description = "Minimize the current fullscreen app into windowed mode";
+	"compatible-modes" = (
+		springboard,
+		application,
+	);
+}

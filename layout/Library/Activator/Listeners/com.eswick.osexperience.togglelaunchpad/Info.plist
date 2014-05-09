@@ -1,0 +1,9 @@
+{
+	group = "OS Experience";
+	title = "Toggle Launchpad";
+	description = "Toggle Launchpad on/off";
+	"compatible-modes" = (
+		springboard,
+		application,
+	);
+}

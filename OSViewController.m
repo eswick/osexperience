@@ -33,7 +33,41 @@
     if(![super init])
         return nil;
 
+    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.switchright"];
+    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.switchleft"];
+    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.togglelaunchpad"];
+    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.closeapp"];
+    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.minimizeapp"];
+
     return self;
+}
+
+- (void)activator:(LAActivator *)activator receiveEvent:(LAEvent *)event forListenerName:(NSString *)listenerName{
+
+    if([listenerName isEqualToString:@"com.eswick.osexperience.switchright"]){
+        if([[OSSlider sharedInstance] currentPageIndex] < [[OSPaneModel sharedInstance] count] - 1){
+            [[OSSlider sharedInstance] scrollToPane:[[OSPaneModel sharedInstance] paneAtIndex:[[OSSlider sharedInstance] currentPageIndex] + 1] animated:true];
+        }
+
+    }else if([listenerName isEqualToString:@"com.eswick.osexperience.switchleft"]){
+        if([[OSSlider sharedInstance] currentPageIndex] > 0){
+            [[OSSlider sharedInstance] scrollToPane:[[OSPaneModel sharedInstance] paneAtIndex:[[OSSlider sharedInstance] currentPageIndex] - 1] animated:true];
+        }
+    }else if([listenerName isEqualToString:@"com.eswick.osexperience.togglelaunchpad"]){
+        [self setLaunchpadActive:!self.launchpadIsActive animated:true];
+    }else if([listenerName isEqualToString:@"com.eswick.osexperience.closeapp"]){
+        if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]]){
+            [[(OSAppPane*)[[OSSlider sharedInstance] currentPane] application] suspend];
+        }
+    }else if([listenerName isEqualToString:@"com.eswick.osexperience.minimizeapp"]){
+        if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSAppPane class]]){
+            [(OSAppPane*)[[OSSlider sharedInstance] currentPane] contractButtonPressed];
+        }
+    }
+}
+
+- (void)activator:(LAActivator *)activator abortEvent:(LAEvent *)event{
+    
 }
 
 
