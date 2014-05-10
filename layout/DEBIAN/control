@@ -1,6 +1,6 @@
 Package: com.eswick.osexperience
 Name: OS Experience
-Depends: mobilesubstrate, cc.tweak.libobjcipc, com.rpetrich.rocketbootstrap, libactivator
+Depends: mobilesubstrate, cc.tweak.libobjcipc, com.rpetrich.rocketbootstrap
 Version: 1.0.2
 Architecture: iphoneos-arm
 Description: Window manager and multitasking switcher.

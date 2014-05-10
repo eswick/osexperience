@@ -3,8 +3,8 @@ THEOS_BUILD_DIR = debs
 include theos/makefiles/common.mk
 
 #ENCRYPT=1
-INSTALL_LOCAL=1
-MAKE_SOURCE_DYLIB=1
+#INSTALL_LOCAL=1
+#MAKE_SOURCE_DYLIB=1
 
 
 TWEAK_NAME = OSExperience
@@ -14,7 +14,7 @@ OSExperience_FILES += $(wildcard tutorial/*.x) $(wildcard missioncontrol/*.xm) $
 OSExperience_CFLAGS += -O0 -Wno-unused-function -mno-thumb
 OSExperience_FRAMEWORKS += UIKit QuartzCore CoreGraphics IOKit Security CoreText
 OSExperience_PRIVATE_FRAMEWORKS += AppSupport GraphicsServices BackBoardServices SpringBoardFoundation
-OSExperience_LIBRARIES += rocketbootstrap objcipc MobileGestalt activator
+OSExperience_LIBRARIES += rocketbootstrap objcipc MobileGestalt
 else
 OSExperience_FILES = Notifier.x
 OSExperience_FRAMEWORKS += UIKit

@@ -33,11 +33,19 @@
     if(![super init])
         return nil;
 
-    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.switchright"];
-    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.switchleft"];
-    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.togglelaunchpad"];
-    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.closeapp"];
-    [LASharedActivator registerListener:self forName:@"com.eswick.osexperience.minimizeapp"];
+    void *activator = dlopen("/usr/lib/libactivator.dylib", RTLD_LAZY);
+
+    if(!objc_getClass("LAActivator") || activator == NULL){
+        return self;
+    }
+
+    Class LAActivator = objc_getClass("LAActivator");
+
+    [[LAActivator sharedInstance] registerListener:self forName:@"com.eswick.osexperience.switchright"];
+    [[LAActivator sharedInstance] registerListener:self forName:@"com.eswick.osexperience.switchleft"];
+    [[LAActivator sharedInstance] registerListener:self forName:@"com.eswick.osexperience.togglelaunchpad"];
+    [[LAActivator sharedInstance] registerListener:self forName:@"com.eswick.osexperience.closeapp"];
+    [[LAActivator sharedInstance] registerListener:self forName:@"com.eswick.osexperience.minimizeapp"];
 
     return self;
 }
