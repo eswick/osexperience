@@ -24,6 +24,19 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 /* ------------------------------ */
 
+%hook SBSearchViewController
+
+- (void)_fadeForLaunchWithDuration:(double)arg1 completion:(id)arg2{
+
+	dispatch_after(dispatch_time(DISPATCH_TIME_NOW, arg1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    	[[OSViewController sharedInstance] setLaunchpadActive:false animated:true];
+	});
+
+	%orig;
+}
+
+%end
+
 %hook SBWallpaperView
 
 - (BOOL)_shouldShowGradientOverWallpaper{
