@@ -14,6 +14,8 @@
 #import "tutorial/OSTutorialController.h"
 
 extern "C" void BKSTerminateApplicationForReasonAndReportWithDescription(NSString *app, int a, int b, NSString *description);
+extern "C" void BKSHIDServicesSystemGestureIsStealingEvents(BOOL stealing);
+
 extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CFStringRef entitlement, CFErrorRef *error);//In Security.framework
 
 #define notificationCenterID @"com.eswick.osexperience.notificationCenter"
@@ -126,6 +128,9 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		downGestureWasRecognized = false;
 
 		self.switcherGestureInProgress = false;
+
+		BKSHIDServicesSystemGestureIsStealingEvents(false);
+
 		return;
 	}
 
@@ -175,6 +180,8 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 				[[OSViewController sharedInstance] setDockPercentage:percentage];
 		}
 	}else if([arg1 state] == UIGestureRecognizerStateEnded){
+		BKSHIDServicesSystemGestureIsStealingEvents(false);
+
 		[[OSViewController sharedInstance] setLaunchpadAnimating:true];
 
 		if([arg1 completionTypeProjectingMomentumForInterval:3.0] != -1){
@@ -1292,7 +1299,6 @@ MSHook(Boolean, IOHIDEventSystemOpen, IOHIDEventSystemRef system, IOHIDEventSyst
 	eventCallback = callback;
 	return _IOHIDEventSystemOpen(system, handle_event, target, refcon, unused);
 }
-
 
 __attribute__((constructor))
 static void initialize() {
