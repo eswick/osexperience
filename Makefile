@@ -1,23 +1,33 @@
 ARCHS = arm64 armv7
 THEOS_BUILD_DIR = debs
+#messages=yes
 include theos/makefiles/common.mk
 
 #ENCRYPT=1
-#INSTALL_LOCAL=1
-#MAKE_SOURCE_DYLIB=1
+INSTALL_LOCAL=1
+MAKE_SOURCE_DYLIB=1
+
+VERSION=1.0.3
+
 
 
 TWEAK_NAME = OSExperience
 
+OSExperience_CFLAGS += -DVERSION=\"$(VERSION)\"
+
 ifdef MAKE_SOURCE_DYLIB
-OSExperience_FILES += $(wildcard tutorial/*.x) $(wildcard missioncontrol/*.xm) $(wildcard *.xm) $(wildcard *.m) $(wildcard missioncontrol/*.m) $(wildcard missioncontrol/*.mm) $(wildcard explorer/*.c) $(wildcard launchpad/*.m)
+OSExperience_FILES += $(wildcard tutorial/*.x) $(wildcard missioncontrol/*.xm) Hooks.xm $(wildcard *.m) $(wildcard missioncontrol/*.m) $(wildcard missioncontrol/*.mm) $(wildcard explorer/*.c) $(wildcard launchpad/*.m)
 OSExperience_CFLAGS += -O0 -Wno-unused-function -mno-thumb
 OSExperience_FRAMEWORKS += UIKit QuartzCore CoreGraphics IOKit Security CoreText
 OSExperience_PRIVATE_FRAMEWORKS += AppSupport GraphicsServices BackBoardServices SpringBoardFoundation
 OSExperience_LIBRARIES += rocketbootstrap objcipc MobileGestalt
+ifndef INSTALL_LOCAL
+OSExperience_INSTALL_PATH = /var/mobile/Library/Application Support/OS Experience/
+endif
 else
-OSExperience_FILES = Notifier.x
+OSExperience_FILES = Installer.xm
 OSExperience_FRAMEWORKS += UIKit
+OSExperience_LIBRARIES = MobileGestalt
 endif
 
 ifdef ENCRYPT
@@ -38,10 +48,10 @@ after-OSExperience-all::
 endif
 endif
 
-ifdef INSTALL_LOCAL
-before-package::
-	rm $(THEOS_STAGING_DIR)/DEBIAN/extrainst_
-endif
+#ifdef INSTALL_LOCAL
+#before-package::
+#	rm $(THEOS_STAGING_DIR)/DEBIAN/extrainst_
+#endif
 
 after-install::
 	install.exec "killall -9 backboardd"

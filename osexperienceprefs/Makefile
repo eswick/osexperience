@@ -1,12 +1,16 @@
 ARCHS = arm64 armv7
 
+VERSION=1.0.3
+
 include theos/makefiles/common.mk
 
 BUNDLE_NAME = OSExperiencePrefs
-OSExperiencePrefs_FILES = OSExperience.m ../OSPreferences.m
+OSExperiencePrefs_CFLAGS += -DVERSION=\"$(VERSION)\"
+OSExperiencePrefs_FILES = OSExperience.m ../OSPreferences.m ../Installer.xm
 OSExperiencePrefs_INSTALL_PATH = /Library/PreferenceBundles
 OSExperiencePrefs_FRAMEWORKS = UIKit
 OSExperiencePrefs_PRIVATE_FRAMEWORKS = Preferences
+OSExperiencePrefs_LIBRARIES = substrate
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 
