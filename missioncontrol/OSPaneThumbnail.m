@@ -335,7 +335,7 @@
 }
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event{
-    if(CGRectContainsPoint(self.closebox.frame, point)){
+    if(CGRectContainsPoint(self.closebox.frame, point) && self.closeboxVisible){
 		return self.closebox;
 	}else{
 		return [super hitTest:point withEvent:event];
