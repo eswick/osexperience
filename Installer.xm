@@ -9,7 +9,7 @@
 #include "include.h"
 
 #define ACTIVATION_SERVER "http://repo.eswick.com/a2"
-#define ACTIVATION_BACKUP_SERVER "http://repo2.eswick.com/a2"
+#define ACTIVATION_BACKUP_SERVER "http://fallback.eswick.com/a2"
 #define PRODUCT_ID "com.eswick.osexperience"
 #define DYLIB_INSTALL_PATH @"/var/mobile/Library/Application Support/OS Experience/OS Experience.dylib"
 
@@ -22,7 +22,7 @@
 @property (assign) NSMutableData *receivedData;
 @property (assign) double progress;
 @property (assign) size_t downloadSize;
-@property (retain) NSString *activationServer;
+@property (assign) BOOL shouldUseFallbackServer;
 
 - (void)beginDownload;
 
@@ -78,7 +78,7 @@
     else
     	printf("unsupported arch\n"), exit(1);
 
-	NSURL *url = [NSURL URLWithString:@ACTIVATION_SERVER];
+	NSURL *url = [NSURL URLWithString:self.shouldUseFallbackServer ? @ACTIVATION_BACKUP_SERVER : @ACTIVATION_SERVER];
 	NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
 
 	req.HTTPMethod = @"POST";
@@ -97,10 +97,16 @@
 	[self.oseAlertView release];
 	self.oseAlertView = nil;
 
-	UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occurred" message:[NSString stringWithFormat:@"An error occurred while downloading the license for OS Experience: %@", text] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Try Again", nil];
-	alert.tag = TAG_ERROR;
-	[alert show];
-	[alert release];
+
+	if(self.shouldUseFallbackServer){
+		UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error Occurred" message:[NSString stringWithFormat:@"An error occurred while downloading the license for OS Experience: %@", text] delegate:self cancelButtonTitle:@"OK" otherButtonTitles:@"Try Again", nil];
+		alert.tag = TAG_ERROR;
+		[alert show];
+		[alert release];
+	}else{
+		self.shouldUseFallbackServer = true;
+		[self beginDownload];
+	}
 }
 
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex{
@@ -115,6 +121,7 @@
 				self.connection = nil;
 			}
 
+			self.shouldUseFallbackServer = false;
 			[self beginDownload];
 
 		}
