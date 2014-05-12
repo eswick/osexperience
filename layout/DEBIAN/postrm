@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -f /var/mobile/Library/Application\ Support/OS\ Experience/OS\ Experience.dylib ]; then
+if [ -f /var/mobile/Library/Preferences/com.eswick.osexperience.license ]; then
 	echo Removing license...
-	rm /var/mobile/Library/Application\ Support/OS\ Experience/OS\ Experience.dylib
+	rm /var/mobile/Library/Preferences/com.eswick.osexperience.license
 fi

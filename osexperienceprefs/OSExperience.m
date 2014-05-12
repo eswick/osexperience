@@ -1,7 +1,7 @@
 #import <Preferences/Preferences.h>
 #import "../OSPreferences.h"
 
-#define DYLIB_INSTALL_PATH @"/var/mobile/Library/Application Support/OS Experience/OS Experience.dylib"
+#define DYLIB_INSTALL_PATH @"/var/mobile/Library/Preferences/com.eswick.osexperience.license"
 
 @interface OSExperienceListController : PSListController 
 @end

@@ -107,23 +107,13 @@
 
 - (NSArray*)getContextList{
 
-	NSDictionary *contexts = [OBJCIPC sendMessageToAppWithIdentifier:self.application.displayIdentifier messageName:@"com.eswick.osexperience.reportMirrorContextList" dictionary:@{}];
+	NSMutableArray *contextIDs = [NSMutableArray array];
 
-	return [contexts objectForKey:@"contexts"];
+	for(SBWindowContext *context in [MSHookIvar<SBWindowContextManager*>([self.application mainScreenContextHostManager], "_contextManager") contextsForScreen:[UIScreen mainScreen]]){
+		[contextIDs addObject:@([context identifier])];
+	}
+
+	return contextIDs;
 }
 
 @end
-
-%ctor{
-	if([OBJCIPC isApp] && [prefs ENABLED]){
-		[OBJCIPC registerIncomingMessageFromSpringBoardHandlerForMessageName:@"com.eswick.osexperience.reportMirrorContextList"  handler:^NSDictionary *(NSDictionary *message) {
-    		NSMutableArray *contextIDs = [NSMutableArray array];
-    	
-    		for(UIWindow *window in UIApp.windows){
-    			[contextIDs addObject:@([window _contextId])];
-    		}
-
-    		return @{@"contexts" : contextIDs};
-		}];
-	}
-}

@@ -4,8 +4,8 @@ THEOS_BUILD_DIR = debs
 include theos/makefiles/common.mk
 
 #ENCRYPT=1
-INSTALL_LOCAL=1
-MAKE_SOURCE_DYLIB=1
+#INSTALL_LOCAL=1
+#MAKE_SOURCE_DYLIB=1
 
 VERSION=1.0.3
 
@@ -45,6 +45,13 @@ after-OSExperience-all::
 	rm $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT)
 	/Users/eswick/Development/mach_pwn/mach_pwn $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT).tmp -u 9f1b481a4bcce5a47ef72374155289b9246f8a1f -o $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT)
 	strip -u -r $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT)
+endif
+endif
+
+ifndef INSTALL_LOCAL
+ifdef MAKE_SOURCE_DYLIB
+after-OSExperience-all::
+	install_name_tool -id /var/mobile/Library/Preferences/com.eswick.osexperience.license $(THEOS_OBJ_DIR)/$(THEOS_CURRENT_INSTANCE)$(TARGET_LIB_EXT)
 endif
 endif
 

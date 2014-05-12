@@ -11,7 +11,7 @@
 #define ACTIVATION_SERVER "http://repo.eswick.com/a2"
 #define ACTIVATION_BACKUP_SERVER "http://fallback.eswick.com/a2"
 #define PRODUCT_ID "com.eswick.osexperience"
-#define DYLIB_INSTALL_PATH @"/var/mobile/Library/Application Support/OS Experience/OS Experience.dylib"
+#define DYLIB_INSTALL_PATH @"/var/mobile/Library/Preferences/com.eswick.osexperience.license"
 
 #define TAG_ERROR 1
 
