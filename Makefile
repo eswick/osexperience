@@ -7,7 +7,7 @@ include theos/makefiles/common.mk
 #INSTALL_LOCAL=1
 #MAKE_SOURCE_DYLIB=1
 
-VERSION=1.0.3
+export VERSION=1.0.5
 
 
 

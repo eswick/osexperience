@@ -2,5 +2,5 @@
 
 if [ -f /var/mobile/Library/Preferences/com.eswick.osexperience.license ]; then
 	echo Removing license...
-	rm /var/mobile/Library/Preferences/com.eswick.osexperience.license
+	rm -f /var/mobile/Library/Preferences/com.eswick.osexperience.license
 fi

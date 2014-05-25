@@ -26,6 +26,14 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 /* ------------------------------ */
 
+%hook SBBulletinWindowController
+
+- (BOOL)isBusy{
+	return false;
+}
+
+%end
+
 %hook SBSearchViewController
 
 - (void)_fadeForLaunchWithDuration:(double)arg1 completion:(id)arg2{
