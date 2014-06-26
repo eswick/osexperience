@@ -1,11 +1,12 @@
+TARGET=iphone:7.0:7.0
 ARCHS = arm64 armv7
 THEOS_BUILD_DIR = debs
 #messages=yes
 include theos/makefiles/common.mk
 
 #ENCRYPT=1
-#INSTALL_LOCAL=1
-#MAKE_SOURCE_DYLIB=1
+INSTALL_LOCAL=1
+MAKE_SOURCE_DYLIB=1
 
 export VERSION=1.0.5
 
@@ -17,7 +18,7 @@ OSExperience_CFLAGS += -DVERSION=\"$(VERSION)\"
 
 ifdef MAKE_SOURCE_DYLIB
 OSExperience_FILES += $(wildcard tutorial/*.x) $(wildcard missioncontrol/*.xm) Hooks.xm $(wildcard *.m) $(wildcard missioncontrol/*.m) $(wildcard missioncontrol/*.mm) $(wildcard explorer/*.c) $(wildcard launchpad/*.m)
-OSExperience_CFLAGS += -O0 -Wno-unused-function -mno-thumb
+OSExperience_CFLAGS += -O0 -Wno-unused-function -mno-thumb -Wno-deprecated-declarations
 OSExperience_FRAMEWORKS += UIKit QuartzCore CoreGraphics IOKit Security CoreText
 OSExperience_PRIVATE_FRAMEWORKS += AppSupport GraphicsServices BackBoardServices SpringBoardFoundation
 OSExperience_LIBRARIES += rocketbootstrap objcipc MobileGestalt
