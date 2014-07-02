@@ -1,6 +1,6 @@
 ARCHS = arm64 armv7
 
-VERSION=1.0.5
+VERSION=1.0.6
 
 include theos/makefiles/common.mk
 

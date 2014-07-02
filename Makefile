@@ -5,10 +5,10 @@ THEOS_BUILD_DIR = debs
 include theos/makefiles/common.mk
 
 #ENCRYPT=1
-INSTALL_LOCAL=1
-MAKE_SOURCE_DYLIB=1
+#INSTALL_LOCAL=1
+#MAKE_SOURCE_DYLIB=1
 
-export VERSION=1.0.5
+export VERSION=1.0.6
 
 
 
@@ -32,7 +32,7 @@ OSExperience_LIBRARIES = MobileGestalt
 endif
 
 ifdef ENCRYPT
-OSExperience_FILES += Initializer.S Initializer.init
+#OSExperience_FILES += Initializer.S Initializer.init
 OSExperience_CFLAGS += -DMACH_ENCRYPT -DMACH_VERIFY_UDID
 endif
 
