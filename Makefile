@@ -1,4 +1,4 @@
-TARGET=iphone:7.0:7.0
+TARGET=iphone:7.1:7.1
 ARCHS = arm64 armv7
 THEOS_BUILD_DIR = debs
 #messages=yes
@@ -8,7 +8,7 @@ include theos/makefiles/common.mk
 #INSTALL_LOCAL=1
 #MAKE_SOURCE_DYLIB=1
 
-export VERSION=1.0.6
+export VERSION=1.0.7
 
 
 

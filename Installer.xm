@@ -61,7 +61,7 @@
 
 	MSHookIvar<UIView*>(self.oseAlertView, "_accessoryView") = loading;
 	[self.oseAlertView show];
-	
+
 
 	/* get arch */
 	NSString *arch = nil;
@@ -125,7 +125,7 @@
 			[self beginDownload];
 
 		}
-			
+
 	}
 }
 
@@ -141,7 +141,7 @@
     [self.receivedData appendData:data];
 
     self.progress = (double)self.receivedData.length / (double)self.downloadSize;
-    
+
     self.oseAlertView.title = [NSString stringWithFormat:@"Downloading License\nPlease Wait... (%.0f%%)", self.progress * 100];
 }
 

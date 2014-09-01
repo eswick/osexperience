@@ -21,6 +21,23 @@ typedef enum{
 } SBSystemGestureType;
 
 
+@interface BKEventFocusDestination : NSObject {
+    NSString *_clientID;
+    unsigned int _eventPort;
+    unsigned int _contextID;
+    NSString *_displayUUID;
+}
+
+@property(copy, nonatomic) NSString *displayUUID; // @synthesize displayUUID=_displayUUID;
+@property(nonatomic) unsigned int contextID; // @synthesize contextID=_contextID;
+@property(nonatomic) unsigned int eventPort; // @synthesize eventPort=_eventPort;
+@property(readonly, nonatomic) NSString *clientID; // @synthesize clientID=_clientID;
+- (id)description;
+- (void)dealloc;
+- (id)initWithClientID:(id)arg1;
+
+@end
+
 @interface SBBacklightController : NSObject
 
 - (void)preventIdleSleepForNumberOfSeconds:(float)arg1;
@@ -135,7 +152,7 @@ typedef enum{
 - (void)startDeliveringNotificationsToMainThread;
 @end
 
-typedef struct { 
+typedef struct {
     union{
         BOOL itemIsEnabled[25];
         struct{
@@ -691,7 +708,7 @@ typedef struct {
 - (void)_setHidden:(BOOL)arg1;
 
 
-@end 
+@end
 
 @interface SBAppToAppTransitionController
 

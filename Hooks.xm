@@ -86,7 +86,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
 		[[(SpringBoard*)UIApp statusBarWindow] setAlpha:1.0];
 	}else{
-		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{	
+		[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseInOut animations:^{
 			[[(SpringBoard*)UIApp statusBarWindow] setAlpha:0.0];
 		}completion:^(BOOL finished){
 		}];
@@ -208,7 +208,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 			}else{
 				[UIView animateWithDuration:0.25
 					delay:0
-					options: UIViewAnimationOptionCurveEaseOut 
+					options: UIViewAnimationOptionCurveEaseOut
 					animations:^{
 						self.scaleGestureInProgress = false;
 						[[OSViewController sharedInstance] setLaunchpadVisiblePercentage:0];
@@ -221,7 +221,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 		}else{
 			[UIView animateWithDuration:0.25
 				delay:0
-				options: UIViewAnimationOptionCurveEaseOut 
+				options: UIViewAnimationOptionCurveEaseOut
 				animations:^{
 					self.scaleGestureInProgress = false;
 					[[OSSlider sharedInstance] updateDockPosition];
@@ -480,7 +480,7 @@ static dispatch_once_t onceToken;
 
 - (void)_handleMenuButtonEvent{
 	VERIFY_START(_handleMenuButtonEvent);
-	
+
 
 	if([[%c(SBNotificationCenterController) sharedInstance] isVisible]){
 		[[%c(SBNotificationCenterController) sharedInstance] dismissAnimated:true];
@@ -511,9 +511,9 @@ static dispatch_once_t onceToken;
 	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
 	rocketbootstrap_distributedmessagingcenter_apply(messagingCenter);
 	[messagingCenter runServerOnCurrentThread];
-	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
-	[messagingCenter registerForMessageName:@"checkin" target:self selector:@selector(handleMessageNamed:withUserInfo:)]; 
-	[messagingCenter registerForMessageName:@"frontmostApp" target:self selector:@selector(handleFrontmostAppRequest:withUserInfo:)]; 
+	[messagingCenter registerForMessageName:@"forceClassic" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+	[messagingCenter registerForMessageName:@"checkin" target:self selector:@selector(handleMessageNamed:withUserInfo:)];
+	[messagingCenter registerForMessageName:@"frontmostApp" target:self selector:@selector(handleFrontmostAppRequest:withUserInfo:)];
 	[messagingCenter registerForMessageName:@"shortcut" target:self selector:@selector(handleShortcut:withUserInfo:)];
 
 	if(![[OSPreferences sharedInstance] TUTORIAL_SHOWN])
@@ -525,7 +525,7 @@ static dispatch_once_t onceToken;
 %new
 - (NSDictionary *)handleShortcut:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
 	if([[userinfo objectForKey:@"key"] intValue] == ARROW_LEFT_KEY){
-		
+
 		if([[OSSlider sharedInstance] currentPageIndex] > 0){
 			[[OSSlider sharedInstance] scrollToPane:[[OSPaneModel sharedInstance] paneAtIndex:[[OSSlider sharedInstance] currentPageIndex] - 1] animated:true];
 		}
@@ -554,14 +554,14 @@ static dispatch_once_t onceToken;
 	}else if([[[OSSlider sharedInstance] currentPane] isKindOfClass:[OSDesktopPane class]] && ![[OSViewController sharedInstance] launchpadIsActive]){
 		OSDesktopPane *pane = (OSDesktopPane*)[[OSSlider sharedInstance] currentPane];
 		if([pane activeWindow]){
-			if([[pane activeWindow] isKindOfClass:[OSAppWindow class]]){				
+			if([[pane activeWindow] isKindOfClass:[OSAppWindow class]]){
 				return [(OSAppWindow*)[pane activeWindow] application];
 			}
 		}
 	}
 
 	return nil;
-}	
+}
 
 %new
 - (NSDictionary *)handleMessageNamed:(NSString *)name withUserInfo:(NSDictionary *)userinfo {
@@ -1022,7 +1022,7 @@ static dispatch_once_t onceToken;
 
 	SBUIAnimationController *animationController = MSHookIvar<SBUIAnimationController*>(self, "_animationController");
 	[animationController beginAnimation];
-	
+
 	struct objc_super superInfo = {
         self,
         [self superclass]
@@ -1059,7 +1059,7 @@ MSHook (CFTypeRef, SecTaskCopyValueForEntitlement, void *task, CFStringRef entit
 	}
 
 	VERIFY_STOP(SecTaskCopyValueForEntitlement);
-	
+
 	return value;
 }
 
@@ -1104,11 +1104,11 @@ static BOOL missionControlActive;
 
 		BKWorkspaceServer *server = [self workspaceForApplication:application];
 		[server _activate:application activationSettings:nil deactivationSettings:nil token:[[%c(BKSWorkspaceActivationTokenFactory) sharedInstance] generateToken] completion:nil];
-	
+
 	}else if([name isEqualToString:@"setApplicationPerformOriginals"]){
 		BKApplication *application = [self applicationForBundleIdentifier:[userinfo objectForKey:@"bundleIdentifier"]];
 		[application setPerformOriginals:[[userinfo objectForKey:@"performOriginals"] boolValue]];
-		
+
 	}else if([name isEqualToString:@"setKeyWindowContext"]){
 		springBoardContext = [(NSNumber*)[userinfo objectForKey:@"context"] intValue];
 	}else if([name isEqualToString:@"setMissionControlActivated"]){
@@ -1198,6 +1198,13 @@ static BOOL OSGestureInProgress = false;
 %end
 
 %hook BKEventFocusManager
+
+- (id)destinationForEventFromDisplay:(id)arg1 {
+	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
+	NSDictionary *response = [messagingCenter sendMessageAndReceiveReplyName:@"frontmostApp" userInfo:nil];
+
+	return [[[objc_getClass("BKEventFocusDestination") alloc] initWithClientID:[response objectForKey:@"bundleID"]] autorelease];
+}
 
 - (id)currentEventFocusClientIDOnDisplay:(id)arg1{
 	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
@@ -1329,5 +1336,5 @@ static void initialize() {
 	}else{
 		%init(other);
 	}
-	
+
 }
