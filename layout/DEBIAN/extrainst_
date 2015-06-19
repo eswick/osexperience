@@ -1,8 +1,0 @@
-#!/bin/sh
-
-if [[ $1 == install || $1 == upgrade ]]; then
-	if [ -f /var/mobile/Library/Preferences/com.eswick.osexperience.license ]; then
-		echo Removing license...
-		rm -f /var/mobile/Library/Preferences/com.eswick.osexperience.license
-	fi
-fi

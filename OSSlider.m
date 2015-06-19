@@ -1,5 +1,4 @@
 #import "OSSlider.h"
-#import <mach_verify/mach_verify.h>
 #import "OSPreferences.h"
 
 #define marginSize [prefs PANE_SEPARATOR_SIZE]
@@ -26,7 +25,7 @@
 }
 
 - (id)init{
-	VERIFY_START(init);
+
 
 	CGRect frame = [[UIScreen mainScreen] bounds];
 	frame.size.width += marginSize;
@@ -45,14 +44,14 @@
 	[self setDelegate:self];
 
 	[self removeGestureRecognizer:self.panGestureRecognizer];
-	
-	VERIFY_STOP(init);
+
+
 
 	return self;
 }
 
 - (void)handleUpSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
-	VERIFY_START(handleUpSwitcherGesture);
+
 
 	if([[self currentPane] isKindOfClass:[OSAppPane class]]){
 		if([(OSAppPane*)[self currentPane] windowBarIsOpen]){
@@ -60,13 +59,13 @@
 			return;
 		}
 	}
-	[[OSViewController sharedInstance] setMissionControlActive:true animated:true]; 
+	[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
 
-	VERIFY_STOP(handleUpSwitcherGesture);
+
 }
 
 - (void)handleDownSwitcherGesture:(UISwipeGestureRecognizer *)gesture{
-	VERIFY_START(handleDownSwitcherGesture);
+
 
 	if([[OSViewController sharedInstance] missionControlIsActive]){
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
@@ -79,11 +78,11 @@
 		}
 	}
 
-	VERIFY_STOP(handleDownSwitcherGesture);
+
 }
 
 - (void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
-	VERIFY_START(willRotateToInterfaceOrientation$duration);
+
 
 	int appViewDegrees;
 
@@ -122,12 +121,12 @@
  	[self updateDockPosition];
 
 
- 	VERIFY_STOP(willRotateToInterfaceOrientation$duration);
+
 }
 
 - (void)addPane:(OSPane*)pane{
 
-	VERIFY_START(addPane);
+
 
 	CGSize contentSize = self.contentSize;
 	contentSize.width = (marginSize + pane.frame.size.width) * [[OSPaneModel sharedInstance] count];
@@ -149,13 +148,13 @@
 
 	[self alignPanes];
 
-	VERIFY_STOP(addPane);
+
 }
 
 
 - (void)removePane:(OSPane*)pane{
-	VERIFY_START(removePane);
-	
+
+
 	if([pane isKindOfClass:[OSDesktopPane class]]){
 
 		NSArray *windows = [[(OSDesktopPane*)pane windows] copy];
@@ -183,7 +182,7 @@
 	}
 
 	OSPane *destination = nil;
-	
+
 	if(pane != [self currentPane]){
 		destination = [self currentPane];
 	}else{
@@ -204,8 +203,8 @@
 		[self alignPanes];
 		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 	});
-	
-	VERIFY_STOP(removePane);
+
+
 }
 
 - (void)alignPanes{
@@ -213,12 +212,12 @@
 
 	for(OSPane *pane in [[OSPaneModel sharedInstance] panes]){
 		[pane paneIndexWillChange];
-		
+
 		CGRect bounds = CGRectMake(0, 0, self.bounds.size.width - marginSize, self.bounds.size.height);
 		pane.bounds = bounds;
 
 		[pane setCenter:CGPointMake((self.bounds.size.width * [[OSPaneModel sharedInstance] indexOfPane:pane]) - (marginSize / 2) + (self.bounds.size.width / 2), pane.center.y)];
-		
+
 		pane.layer.shadowPath = [UIBezierPath bezierPathWithRect:pane.bounds].CGPath;
 
 		[pane paneIndexDidChange];
@@ -264,7 +263,7 @@
 
 	float currentPanePercentage = (currentPaneRect.size.width * 100) / self.frame.size.width;
 	float intrudingPanePercentage = (intrudingPaneRect.size.width * 100) / self.frame.size.width;
-	
+
 	float shownPercentage = 0;
 
 	if(!self.currentPane.showsDock)
@@ -294,16 +293,16 @@
 }
 
 - (void)scrollToPane:(OSPane*)pane animated:(BOOL)animated{
-	VERIFY_START(scrollToPane$animated);
+
 
 	if(!animated){
 		self.contentOffset = CGPointMake([[OSPaneModel sharedInstance] indexOfPane:pane] * self.bounds.size.width, 0);
 		[self updateDockPosition];
 		[[OSThumbnailView sharedInstance] updateSelectedThumbnail];
 	}else{
-		[UIView animateWithDuration:([[OSViewController sharedInstance] missionControlIsActive] ? mcScrollDuration : scrollDuration) 
-			delay:([[OSViewController sharedInstance] missionControlIsActive] ? 0 : 0.25) 
-			options: UIViewAnimationOptionCurveEaseInOut 
+		[UIView animateWithDuration:([[OSViewController sharedInstance] missionControlIsActive] ? mcScrollDuration : scrollDuration)
+			delay:([[OSViewController sharedInstance] missionControlIsActive] ? 0 : 0.25)
+			options: UIViewAnimationOptionCurveEaseInOut
 			animations:^{
 
 				CGRect bounds = [self bounds];
@@ -316,7 +315,7 @@
         	}];
 	}
 
-	VERIFY_STOP(scrollToPane$animated);
+
 }
 
 - (void)beginPaging{
@@ -333,7 +332,7 @@
 
 	double *horizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(horizontalVelocity_ivar)));
 	double *previousHorizontalVelocity = ((double*)((uint8_t*)self + ivar_getOffset(previousHorizontalVelocity_ivar)));
-	
+
 	*previousHorizontalVelocity = *horizontalVelocity;
 	*horizontalVelocity = -(velocity.x / 300);
 
@@ -346,11 +345,11 @@
 	BOOL outsideX;
 	self.contentOffset = [self _rubberBandContentOffsetForOffset:CGPointMake(newContentOffset, self.contentOffset.y) outsideX:&outsideX outsideY:NULL];
 #endif
-	
+
 }
 
 - (void)swipeGestureEndedWithCompletionType:(long long)arg1 cumulativePercentage:(double)arg2{
-	VERIFY_START(swipeGestureEndedWithCompletionType$cumulativePercentage);
+
 
 	Ivar horizontalVelocity_ivar = class_getInstanceVariable(object_getClass(self), "_horizontalVelocity");
 	if (!horizontalVelocity_ivar) return;
@@ -359,7 +358,7 @@
 	[self _prepareToPageWithHorizontalVelocity:*horizontalVelocity verticalVelocity:0];
 	[self _endPanNormal:true];
 
-	VERIFY_STOP(swipeGestureEndedWithCompletionType$cumulativePercentage);
+
 }
 
 - (void)dealloc{
@@ -368,19 +367,3 @@
 
 
 @end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

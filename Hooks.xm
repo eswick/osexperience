@@ -9,7 +9,6 @@
 #import <substrate.h>
 #import "explorer/OSExplorerWindow.h"
 #import <rocketbootstrap.h>
-#import <mach_verify/mach_verify.h>
 #import "OSPreferences.h"
 #import "tutorial/OSTutorialController.h"
 
@@ -80,7 +79,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 %property (assign) BOOL scaleGestureInProgress;
 
 - (void)_deviceLockStateChanged:(id)arg1{
-	VERIFY_START(_deviceLockStateChanged);
+
 
 	if([[[arg1 userInfo] objectForKey:@"kSBNotificationKeyState"] boolValue]){
 		[[OSViewController sharedInstance] setLaunchpadActive:false animated:false];
@@ -93,7 +92,7 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 	}
 	%orig;
 
-	VERIFY_STOP(_deviceLockStateChanged);
+
 }
 
 - (UIView*)contentView{
@@ -279,12 +278,12 @@ extern "C" CFTypeRef SecTaskCopyValueForEntitlement(/*SecTaskRef*/void* task, CF
 
 static BOOL preventSwitcherDismiss = false;
 - (void)dismissSwitcherAnimated:(BOOL)arg1{
-	VERIFY_START(dismissSwitcherAnimated);
+
 
 	if(!preventSwitcherDismiss)
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:arg1];
 
-	VERIFY_STOP(dismissSwitcherAnimated);
+
 }
 
 - (void)activateApplicationAnimated:(id)arg1{
@@ -294,19 +293,19 @@ static BOOL preventSwitcherDismiss = false;
 }
 
 - (void)_toggleSwitcher{
-	VERIFY_START(_toggleSwitcher);
+
 
 	if([[OSViewController sharedInstance] missionControlIsActive])
 		[[OSViewController sharedInstance] setMissionControlActive:false animated:true];
 	else
 		[[OSViewController sharedInstance] setMissionControlActive:true animated:true];
 
-	VERIFY_STOP(_toggleSwitcher);
+
 }
 
 
 - (id)init{
-	VERIFY_START(SBUIController$init);
+
 
 	self = %orig;
 
@@ -327,14 +326,14 @@ static BOOL preventSwitcherDismiss = false;
 
 	[messagingCenter sendMessageAndReceiveReplyName:@"setKeyWindowContext" userInfo:dictionary];
 
-	VERIFY_STOP(SBUIController$init);
+
 	return self;
 }
 
 
 
 - (void)window:(id)arg1 willAnimateRotationToInterfaceOrientation:(int)arg2 duration:(double)arg3{
-	VERIFY_START(window$willAnimateRotationToInterfaceOrientation$duration);
+
 
 	int degrees;
 
@@ -374,7 +373,7 @@ static BOOL preventSwitcherDismiss = false;
 
 	[[OSSlider sharedInstance] updateDockPosition];
 
-	VERIFY_STOP(window$willAnimateRotationToInterfaceOrientation$duration);
+
 }
 
 - (BOOL)hasPendingAppActivatedByGesture{
@@ -479,7 +478,7 @@ static dispatch_once_t onceToken;
 }
 
 - (void)_handleMenuButtonEvent{
-	VERIFY_START(_handleMenuButtonEvent);
+
 
 
 	if([[%c(SBNotificationCenterController) sharedInstance] isVisible]){
@@ -501,11 +500,11 @@ static dispatch_once_t onceToken;
 	else
 		[[OSViewController sharedInstance] setLaunchpadActive:true animated:true];
 
-	VERIFY_STOP(_handleMenuButtonEvent);
+
 }
 
 - (void)applicationDidFinishLaunching:(id)arg1{
-	VERIFY_START(applicationDidFinishLaunching);
+
 	%orig;
 
 	CPDistributedMessagingCenter *messagingCenter = [CPDistributedMessagingCenter centerNamed:@"com.eswick.osexperience.springboardserver"];
@@ -519,7 +518,7 @@ static dispatch_once_t onceToken;
 	if(![[OSPreferences sharedInstance] TUTORIAL_SHOWN])
 		[[OSTutorialController sharedInstance] beginTutorial];
 
-	VERIFY_STOP(applicationDidFinishLaunching);
+
 }
 
 %new
@@ -656,7 +655,7 @@ static dispatch_once_t onceToken;
 
 -(void)didExitWithInfo:(id)arg1 type:(int)arg2{
 
-	VERIFY_START(didExitWithInfo$type);
+
 
 	if([self isRelaunching]){
 		%orig;
@@ -702,7 +701,7 @@ static dispatch_once_t onceToken;
 
     %orig;
 
-    VERIFY_STOP(didExitWithInfo$type);
+
 }
 
 
@@ -763,7 +762,7 @@ static dispatch_once_t onceToken;
 }
 
 - (void)didLaunch:(BKSApplicationProcessInfo*)arg1{
-	VERIFY_START(didLaunch);
+
 
 	if([self isRelaunching])
 		[self setRelaunching:false];
@@ -776,7 +775,7 @@ static dispatch_once_t onceToken;
 
 	[self addToSlider];
 
-	VERIFY_STOP(didLaunch);
+
 }
 
 
@@ -917,7 +916,7 @@ static dispatch_once_t onceToken;
 %hook SBIconController
 
 -(void)iconWasTapped:(SBApplicationIcon*)arg1{
-	VERIFY_START(iconWasTapped);
+
 
 	if(![[arg1 application] isRunning]){
 		[[arg1 application] icon:arg1 launchFromLocation:0];
@@ -925,11 +924,11 @@ static dispatch_once_t onceToken;
 		[[arg1 application] addToSlider];
 	}
 
-	VERIFY_STOP(iconWasTapped);
+
 }
 
 -(void)iconTapped:(SBIconView*)arg1{
-	VERIFY_START(iconTapped);
+
 
 	[arg1 setHighlighted:false];
 
@@ -945,7 +944,7 @@ static dispatch_once_t onceToken;
         %orig;
     }
 
-    VERIFY_STOP(iconTapped);
+
 }
 
 - (void)_resetRootIconLists{
@@ -961,12 +960,12 @@ static dispatch_once_t onceToken;
 }
 
 - (void)willRotateToInterfaceOrientation:(long long)arg1 duration:(double)arg2{
-	VERIFY_START(SBIconController$willRotateToInterfaceOrientation$duration);
+
 
 	[[[OSViewController sharedInstance] iconContentView] contentView].transform = CGAffineTransformIdentity;
 	%orig;
 
-	VERIFY_STOP(SBIconController$willRotateToInterfaceOrientation$duration);
+
 }
 
 %end
@@ -1015,7 +1014,7 @@ static dispatch_once_t onceToken;
 %hook SBAppToAppWorkspaceTransaction
 
 - (void)_commit{
-	VERIFY_START(_commit);
+
 
 	[self _setupAnimation];
 	[self _kickOffActivation];
@@ -1033,7 +1032,7 @@ static dispatch_once_t onceToken;
     [self animationController:nil willBeginAnimation:nil];
     [self animationControllerDidFinishAnimation:nil];
 
-    VERIFY_STOP(_commit);
+
 }
 
 %end
@@ -1049,7 +1048,7 @@ static dispatch_once_t onceToken;
 
 MSHook (CFTypeRef, SecTaskCopyValueForEntitlement, void *task, CFStringRef entitlement, CFErrorRef *error){
 
-	VERIFY_START(SecTaskCopyValueForEntitlement);
+
 
 	CFTypeRef value = _SecTaskCopyValueForEntitlement(task, entitlement, error);
 
@@ -1058,7 +1057,7 @@ MSHook (CFTypeRef, SecTaskCopyValueForEntitlement, void *task, CFStringRef entit
 		value = kCFBooleanTrue;
 	}
 
-	VERIFY_STOP(SecTaskCopyValueForEntitlement);
+
 
 	return value;
 }

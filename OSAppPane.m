@@ -1,5 +1,4 @@
 #import "OSAppPane.h"
-#import <mach_verify/mach_verify.h>
 
 
 
@@ -15,7 +14,7 @@
 
 
 -(id)initWithDisplayIdentifier:(NSString*)displayIdentifier{
-	VERIFY_START(initWithDisplayIdentifier);
+
 
 	self.application = [[objc_getClass("SBApplicationController") sharedInstance] applicationWithDisplayIdentifier:displayIdentifier];
 
@@ -76,7 +75,7 @@
 	[self.windowBar release];
 	[self.windowBarShadowView release];
 
-	VERIFY_STOP(initWithDisplayIdentifier);
+
 
 	return self;
 }
@@ -86,11 +85,11 @@
 }
 
 - (void)setWindowBarHidden{
-	VERIFY_START(setWindowBarHidden);
+
 
 	CGRect frame = [[self windowBar] frame];
 	frame.origin.y = -frame.size.height;
-		
+
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
 		[[self windowBar] setFrame:frame];
 		self.windowBarShadowView.alpha = 0.0;
@@ -98,29 +97,29 @@
 	}completion:^(BOOL finished){
 		[[self windowBar] setHidden:true];
 	}];
-		
+
 	[self setWindowBarOpen:false];
 
-	VERIFY_STOP(setWindowBarHidden);
+
 }
 
 - (void)setWindowBarVisible{
-	VERIFY_START(setWindowBarVisible);
+
 
 	[[self windowBar] setHidden:false];
 	CGRect frame = [[self windowBar] frame];
 	frame.origin.y = 0;
-		
+
 	[UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseIn animations:^{
 		[[self windowBar] setFrame:frame];
 		self.windowBarShadowView.alpha = 0.5;
 	}completion:^(BOOL finished){
 
 	}];
-		
+
 	[self setWindowBarOpen:true];
 
-	VERIFY_STOP(setWindowBarVisible);
+
 }
 
 - (void)dealloc{
@@ -142,7 +141,7 @@
 
 - (void)contractButtonPressed{
 
-	VERIFY_START(contractButtonPressed);
+
 
 	CGAffineTransform appViewTransform = self.appView.transform;
 
@@ -211,12 +210,12 @@
 		}
 
 		CGPoint origin = [self convertPoint:CGPointMake(window.frame.origin.x, window.frame.origin.y + window.windowBar.bounds.size.height) toView:[[OSViewController sharedInstance] view]];
-		
+
 		CGRect appFrame = self.appView.frame;
 		appFrame.origin = origin;
 		self.appView.frame = appFrame;
 
-		
+
 		window.windowBar.frame = CGRectMake(window.frame.origin.x, window.frame.origin.y, window.bounds.size.width, window.windowBar.bounds.size.height);
 
 		self.windowBar.frame = window.windowBar.frame;
@@ -252,7 +251,7 @@
 		[window release];
   	}];
 
-	VERIFY_STOP(contractButtonPressed);
+
 }
 
 

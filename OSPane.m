@@ -2,7 +2,6 @@
 #import "missioncontrol/OSPaneThumbnail.h"
 #import "missioncontrol/OSThumbnailView.h"
 #import "missioncontrol/OSThumbnailPlaceholder.h"
-#import <mach_verify/mach_verify.h>
 
 
 @implementation OSPane
@@ -12,7 +11,7 @@
 
 
 -(id)initWithName:(NSString*)name thumbnail:(UIImage*)thumbnail{
-	VERIFY_START(initWithName$thumbnail);
+
 
 	CGRect frame = [[UIScreen mainScreen] bounds];
 	if(![self isPortrait]){
@@ -34,9 +33,9 @@
 	self.layer.shadowRadius = 10;
 	self.layer.shadowOpacity = 0.5;
 	self.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
-	
-	VERIFY_STOP(initWithName$thumbnail);
-	
+
+
+
 	return self;
 
 }

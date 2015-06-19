@@ -1,6 +1,5 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
-#import <mach_verify/mach_verify.h>
 #import "tutorial/OSTutorialController.h"
 
 #define LP_VARIANCE 0.1
@@ -75,7 +74,7 @@
 }
 
 - (void)activator:(LAActivator *)activator abortEvent:(LAEvent *)event{
-    
+
 }
 
 
@@ -102,7 +101,7 @@
 }
 
 - (void)handleUpGesture{
-    VERIFY_START(handleUpGesture);
+
 
     if([[OSTutorialController sharedInstance] inProgress]){
         [[OSTutorialController sharedInstance] handleUpGesture];
@@ -132,11 +131,11 @@
         return;
     }
 
-    VERIFY_STOP(handleUpGesture);
+
 }
 
 - (void)handleDownGesture{
-    VERIFY_START(handleDownGesture);
+
 
     if([[OSTutorialController sharedInstance] inProgress]){
         [[OSTutorialController sharedInstance] handleDownGesture];
@@ -158,14 +157,14 @@
         }completion:nil];
     }
 
-    VERIFY_STOP(handleDownGesture);
+
 }
 
 
 /*----- Mission Control -------*/
 
 - (void)setMissionControlActive:(BOOL)active{
-    VERIFY_START(setMissionControlActive);
+
 
     _missionControlActive = active;
 
@@ -178,17 +177,17 @@
         [messagingCenter sendMessageName:@"setMissionControlDeactivated" userInfo:nil];
     }
 
-    VERIFY_STOP(setMissionControlActive);
+
 }
 
 - (void)setMissionControlActive:(BOOL)active animated:(BOOL)animated{
-    VERIFY_START(setMissionControlActive$animated);
+
 
     if(self.missionControlIsActive == active)
         return;
 
     if(active){
-        
+
         [[UIApplication sharedApplication] setStatusBarHidden:true withAnimation:true];
 
         self.switcherBackgroundView.hidden = false;
@@ -349,7 +348,7 @@
 
     }
 
-    VERIFY_STOP(setMissionControlActive$animated);
+
 }
 
 - (CGRect)missionControlWindowConstraints{
@@ -384,7 +383,7 @@
 
 
 -(void)loadView{
-    VERIFY_START(loadView);
+
 
 	self.view = [[UIView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
@@ -427,7 +426,7 @@
 
     self.desktopShowsDock = true;
 
-    VERIFY_STOP(loadView);
+
 }
 
 - (void)menuButtonPressed{
@@ -441,7 +440,7 @@
 }
 
 - (void)animateIconLaunch:(SBIconView*)iconView{
-    VERIFY_START(animateIconLaunch);
+
 
 	UIImageView *launchZoomView = [[UIImageView alloc] init];
 	launchZoomView.image = [iconView iconImageSnapshot];
@@ -462,7 +461,7 @@
     	[launchZoomView release];
     }];
 
-    VERIFY_STOP(animateIconLaunch);
+
 }
 
 - (void)deactivateLaunchpadWithIconView:(SBIconView*)iconView{
@@ -482,7 +481,7 @@
 }
 
 - (void)setLaunchpadActive:(BOOL)activated animated:(BOOL)animated{
-    VERIFY_START(setLaunchpadActive$animated);
+
 
 	if(activated){
 		[self.iconContentView prepareForDisplay];
@@ -503,7 +502,7 @@
         	[UIView animateWithDuration:0.25 delay:0.0 options: UIViewAnimationOptionCurveEaseInOut animations:^{
 
                 [self setDockPercentage:0.0];
-                
+
                 [self setLaunchpadVisiblePercentage:1];
 
             } completion:^(BOOL finished){
@@ -551,7 +550,7 @@
 
 	}
 
-    VERIFY_STOP(setLaunchpadActive$animated);
+
 }
 
 -(BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation{

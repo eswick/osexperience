@@ -2,7 +2,6 @@
 #import "OSViewController.h"
 #import "missioncontrol/OSPaneThumbnail.h"
 #import "missioncontrol/OSAppMirrorView.h"
-#import <mach_verify/mach_verify.h>
 
 
 @implementation OSWindow
@@ -19,7 +18,7 @@
 
 
 - (id)initWithFrame:(CGRect)arg1 title:(NSString*)title{
-	VERIFY_START(initWithFrame$title);
+
 
 	if(![super initWithFrame:arg1])
 		return nil;
@@ -89,8 +88,8 @@
 	[items release];
 	[gestureBackdrop release];
 	[self.expandButton release];
-	
-	VERIFY_STOP(initWithFrame$title);
+
+
 
 	return self;
 }
@@ -103,7 +102,7 @@
 	if(![[OSViewController sharedInstance] missionControlIsActive]){
 		return;
 	}
-	
+
 	if(gesture.state == UIGestureRecognizerStateBegan){
 
 		self.grabPoint = [gesture locationInView:self];
@@ -121,7 +120,7 @@
 		[self setFrame:frame];
 
 		[[OSThumbnailView sharedInstance] updatePressedThumbnails];
-	
+
 	}else if(gesture.state == UIGestureRecognizerStateEnded){
 
 		if([self selectedThumbnailView] == nil){
@@ -131,9 +130,9 @@
 				frame.origin = self.originBeforeGesture;
 				[self setFrame:frame];
 			}completion:^(BOOL finished){
-			
+
 			}];
-			
+
 			[[OSThumbnailView sharedInstance] updatePressedThumbnails];
 		}else{
 			if([[[self selectedThumbnailView] pane] isKindOfClass:[OSDesktopPane class]]){//If hovering over an OSPaneThumbnail
@@ -174,7 +173,7 @@
 
 					[mirrorView release];
 				}
-				
+
 				[UIView animateWithDuration:0.15 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
 					[[selectedThumbnail shadowOverlayView] setAlpha:0.0];
 				}completion:^(BOOL finished){
@@ -198,12 +197,12 @@
 
 			}
 		}
-		
+
 	}
 }
 
 - (void)switchToDesktopPane:(OSDesktopPane*)pane{
-	VERIFY_START(switchToDesktopPane);
+
 
 	for(OSDesktopPane *desktopPane in [[OSPaneModel sharedInstance] panes]){
 		if(![desktopPane isKindOfClass:[OSDesktopPane class]])
@@ -214,12 +213,12 @@
 	[self setDelegate:pane];
 	[pane.windows addObject:self];
 
-	VERIFY_STOP(switchToDesktopPane);
+
 }
 
 - (OSPaneThumbnail*)selectedThumbnailView{
 	CGPoint originInThumbnailWrapper = [[self superview] convertPoint:self.frame.origin toView:[[OSThumbnailView sharedInstance] wrapperView]];
-		
+
 	CGRect rectInWrapper = self.frame;
 	rectInWrapper.origin = originInThumbnailWrapper;
 
@@ -249,7 +248,7 @@
 		const float percentage = fingerPosition.y / max;
 
 		float transform = (((percentage * 100) * (self.maxScale - missionControlMinDragScale)) / 100) + missionControlMinDragScale;
-		
+
 		if(transform < missionControlMinDragScale){
 			transform = missionControlMinDragScale;
 		}else if(transform > self.maxScale){

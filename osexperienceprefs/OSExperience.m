@@ -3,17 +3,7 @@
 
 #define DYLIB_INSTALL_PATH @"/var/mobile/Library/Preferences/com.eswick.osexperience.license"
 
-@interface OSExperienceListController : PSListController 
-@end
-
-@interface OSDownloadController : NSObject
-@property (assign) UIAlertView *oseAlertView;
-@property (assign) NSURLConnection *connection;
-@property (assign) NSMutableData *receivedData;
-@property (assign) double progress;
-@property (assign) size_t downloadSize;
-@property (retain) NSString *activationServer;
-- (void)beginDownload;
+@interface OSExperienceListController : PSListController
 @end
 
 #define RESPRING_ALERT 1
@@ -25,14 +15,6 @@
 		_specifiers = [[self loadSpecifiersFromPlistName:@"OSExperience" target:self] retain];
 	}
 	return _specifiers;
-}
-
-- (void)viewDidAppear:(_Bool)arg1{
-	[super viewDidAppear:arg1];
-	if(![[NSFileManager defaultManager] fileExistsAtPath:DYLIB_INSTALL_PATH]){
-		OSDownloadController *controller = [[OSDownloadController alloc] init];
-		[controller beginDownload];
-	}
 }
 
 - (void)setEnabled:(NSNumber*)enabled forSpecifier:(PSSpecifier*)specifier{
@@ -84,4 +66,3 @@
 }
 
 @end
-

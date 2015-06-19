@@ -2,7 +2,6 @@
 #import "../include.h"
 #import <substrate.h>
 #import <objcipc/objcipc.h>
-#import <mach_verify/mach_verify.h>
 #import "../OSPreferences.h"
 
 @interface OSContextServer : NSObject
@@ -13,7 +12,7 @@
 
 
 - (id)initWithApplication:(SBApplication*)application{
-	VERIFY_START(initWithApplication);
+
 
 	if(![super init])
 		return nil;
@@ -21,7 +20,7 @@
 	self.application = application;
 	self.clipsToBounds = true;
 
-	VERIFY_STOP(initWithApplication);
+
 
 	return self;
 }
@@ -54,7 +53,7 @@
 
 	for(UIView *view in self.subviews){
 		if([view isKindOfClass:%c(SBProxyRemoteView)]){
-			CGAffineTransform transform = CGAffineTransformMakeRotation(DegreesToRadians(rotationDegree)); 
+			CGAffineTransform transform = CGAffineTransformMakeRotation(DegreesToRadians(rotationDegree));
 			transform = CGAffineTransformScale(transform, scale / [[UIScreen mainScreen] scale], scale / [[UIScreen mainScreen] scale]);
 			view.transform = CGAffineTransformTranslate(transform, translationx, translationy);
 		}else if([view isKindOfClass:%c(SBFullscreenZoomView)]){
@@ -74,7 +73,7 @@
 			continue;
 		float scale = (UIInterfaceOrientationIsPortrait([UIApp statusBarOrientation]) ? self.bounds.size.width : self.bounds.size.height) / ([[UIScreen mainScreen] bounds].size.width * [[UIScreen mainScreen] scale]);
 
-		CGAffineTransform transform = CGAffineTransformMakeRotation(DegreesToRadians(rotationDegree)); 
+		CGAffineTransform transform = CGAffineTransformMakeRotation(DegreesToRadians(rotationDegree));
 		remoteView.transform = CGAffineTransformScale(transform, scale, scale);
 	}
 }
@@ -86,7 +85,7 @@
 		[self addSubview:[[%c(SBUIController) sharedInstance] systemGestureSnapshotWithIOSurfaceSnapshotOfApp:self.application includeStatusBar:true]];
 		return;
 	}
-	
+
 	for(NSNumber *contextID in [self getContextList]){
 		SBProxyRemoteView *remoteView = [[%c(SBProxyRemoteView) alloc] init];
 

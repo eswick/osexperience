@@ -1,7 +1,6 @@
 #import "OSThumbnailView.h"
 #import "OSThumbnailPlaceholder.h"
 #import "OSPaneThumbnail.h"
-#import <mach_verify/mach_verify.h>
 
 @implementation OSThumbnailView
 @synthesize wrapperView = _wrapperView;
@@ -24,7 +23,7 @@
 
 - (id)init{
 
-	VERIFY_START(init);
+
 
 	CGRect frame = [[UIScreen mainScreen] bounds];
 
@@ -56,7 +55,7 @@
 
 	self.shouldLayoutSubviews = true;
 
-	VERIFY_STOP(init);
+
 
 	return self;
 }
@@ -111,7 +110,7 @@
 
 
 -(void)willRotateToInterfaceOrientation: (UIInterfaceOrientation)orientation duration:(NSTimeInterval)duration{
-	VERIFY_START(willRotateToInterfaceOrientation$duration);
+
 
 	CGRect frame = [[UIScreen mainScreen] bounds];
 
@@ -128,7 +127,7 @@
 	[self alignSubviews];
 
 
-	VERIFY_STOP(willRotateToInterfaceOrientation$duration);
+
 }
 
 
@@ -150,7 +149,7 @@
 
 - (void)addPane:(OSPane*)pane{
 
-	VERIFY_START(addPane);
+
 
 	OSPaneThumbnail *thumbnail = [[OSPaneThumbnail alloc] initWithPane:pane];
 
@@ -160,7 +159,7 @@
 	panGesture.maximumNumberOfTouches = 1;
 	[thumbnail addGestureRecognizer:panGesture];
 
-	
+
 	UILongPressGestureRecognizer *longPressRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleThumbnailLongPress:)];
 	[thumbnail addGestureRecognizer:longPressRecognizer];
 	[longPressRecognizer release];
@@ -175,11 +174,11 @@
 	[panGesture release];
 	[thumbnail release];
 
-	VERIFY_STOP(addPane);
+
 }
 
 - (void)removePane:(OSPane*)pane animated:(BOOL)animated{
-	VERIFY_START(removePane$animated);
+
 
 	OSPaneThumbnail *thumbnail;
 
@@ -215,7 +214,7 @@
 		[self alignSubviews];
 	}
 
-	VERIFY_STOP(removePane$animated);
+
 }
 
 - (void)handleThumbnailLongPress:(UILongPressGestureRecognizer *)gesture{
@@ -327,7 +326,7 @@
 }
 
 - (void)addDesktopButtonWasTapped:(OSAddDesktopButton*)button{
-	VERIFY_START(addDesktopButtonWasTapped);
+
 
 	OSDesktopPane *desktop = [[OSDesktopPane alloc] init];
 
@@ -390,7 +389,7 @@
 
 	[desktop release];
 
-	VERIFY_STOP(addDesktopButtonWasTapped);
+
 }
 
 - (BOOL)isPortrait:(UIInterfaceOrientation)orientation{
@@ -420,7 +419,7 @@
 				if(![window isKindOfClass:[OSWindow class]] || [[(OSDesktopPane*)[thumbnail pane] windows] containsObject:window])
 					continue;
 				CGPoint originInThumbnailWrapper = [[window superview] convertPoint:window.frame.origin toView:self.wrapperView];
-		
+
 				CGRect rectInWrapper = window.frame;
 				rectInWrapper.origin = originInThumbnailWrapper;
 
